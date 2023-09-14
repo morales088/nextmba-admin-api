@@ -10,10 +10,14 @@ export class RegisterUserDTO{
   @IsNotEmpty()
   @MinLength(8)
   password: string;
+
+  @IsNotEmpty()
+  role: number
 }
 
 export class ValidateUserDTO {
   sub: string;
   name: string;
   email: string;
+  role: number
 }

@@ -15,7 +15,8 @@ export class AuthController {
     return this.authService.login({
       sub: user.id,
       name: user.name,
-      email: user.email
+      email: user.email,
+      role: user.role
     });
   }
 

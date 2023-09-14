@@ -39,8 +39,7 @@ export class AuthService {
     const hashedPassword = await this.hashService.hashPassword(registerUserDto.password);
 
     const userData = {
-      name: registerUserDto.name,
-      email: registerUserDto.email,
+      ...registerUserDto,
       password: hashedPassword,
     };
 

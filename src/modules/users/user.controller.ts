@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   BadRequestException,
   UploadedFile,
+  NotFoundException,
 } from '@nestjs/common';
 import { ChangePasswordDTO } from './dto/change-password.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -16,6 +17,7 @@ import { UpdateUserDTO } from './dto/update-user.dto';
 import { UserService } from './services/user.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageService } from '../images/services/image.service';
+import { error } from 'console';
 
 @Controller('user')
 @UseGuards(AuthGuard('jwt'))
@@ -28,7 +30,13 @@ export class UserController {
   @Get('/')
   async getUser(@Request() req: any) {
     const { userId } = req.user;
-    return this.userService.findById(userId);
+    const user = await this.userService.findById(userId);
+
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+
+    return user
   }
 
   @Put('/')

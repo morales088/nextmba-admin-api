@@ -10,15 +10,15 @@ export class UserRepository extends AbstractRepository<User> {
   }
 
   get modelName(): string {
-    return 'User'; // Specify the Prisma model name for User entity
+    return 'User'; // Specify the Prisma model name for entity
   }
 
   async findUserWithPassword(email: string) {
-    return this.prisma.user.findUnique({ where: { email } });
+    return this.prisma[this.modelName].findUnique({ where: { email } });
   }
 
   async findByEmail(email: string) {
-    return this.prisma.user.findUnique({
+    return this.prisma[this.modelName].findUnique({
       where: { email },
       select: {
         id: true,

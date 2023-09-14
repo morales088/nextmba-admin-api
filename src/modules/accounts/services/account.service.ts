@@ -20,6 +20,11 @@ export class AccountService {
     const { resetToken, newPassword, confirmPassword } = resetPasswordDto;
 
     const tokenOwner = await this.passwordTokenRepository.findTokenOwner(resetToken);
+
+    if (!tokenOwner) {
+      throw new BadRequestException(`Token expired / not found.`);
+    }
+
     const user = await this.userService.findById(tokenOwner.userId);
 
     if (newPassword !== confirmPassword) {
