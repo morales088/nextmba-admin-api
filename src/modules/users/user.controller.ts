@@ -29,8 +29,8 @@ export class UserController {
 
   @Get('/')
   async getUser(@Request() req: any) {
-    const { userId } = req.user;
-    const user = await this.userService.findById(userId);
+    const { email } = req.user;
+    const user = await this.userService.findByEmail(email);
 
     if (!user) {
       throw new NotFoundException('User not found.');
@@ -41,6 +41,7 @@ export class UserController {
 
   @Put('/')
   async updateUser(@Request() req: any, @Body() updateUserDto: UpdateUserDTO) {
+    console.log("💡 ~ updateUserDto:", updateUserDto)
     const { userId } = req.user;
     await this.userService.updateUser(userId, updateUserDto);
     return { message: 'User updated successfully.' };

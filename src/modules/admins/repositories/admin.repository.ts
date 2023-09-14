@@ -4,7 +4,7 @@ import { PrismaService } from 'src/common/prisma/prisma.service';
 import { User } from '@prisma/client';
 
 @Injectable()
-export class UserRepository extends AbstractRepository<User> {
+export class AdminRepository extends AbstractRepository<User> {
   constructor(protected readonly prisma: PrismaService) {
     super(prisma);
   }
@@ -13,30 +13,14 @@ export class UserRepository extends AbstractRepository<User> {
     return 'User'; // Specify the Prisma model name for entity
   }
 
-  async findUserWithPassword(email: string) {
-    return this.prisma[this.modelName].findUnique({ where: { email } });
-  }
-
-  async updatePassword(id: number, password: string) {
-    return this.prisma[this.modelName].update({
-      where: { id },
-      data: {
-        password,
-      },
-    });
-  }
-
-  async findByEmail(email: string) {
-    return this.prisma[this.modelName].findUnique({
-      where: { email },
+  async findAllAdmin() {
+    return this.prisma[this.modelName].findMany({
       select: {
         id: true,
         name: true,
         email: true,
         role: true,
         status: true,
-        createdAt: true,
-        updatedAt: true,
       },
     });
   }

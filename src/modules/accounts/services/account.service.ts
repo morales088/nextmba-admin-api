@@ -33,10 +33,7 @@ export class AccountService {
 
     const newHashedPassword = await this.hashService.hashPassword(newPassword);
 
-    await this.userService.updateUser(user.id, {
-      ...user,
-      password: newHashedPassword,
-    });
+    await this.userService.updateUserPassword(user.id, newHashedPassword);
 
     await this.passwordTokenRepository.delete(tokenOwner.id);
 
