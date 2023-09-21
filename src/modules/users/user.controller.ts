@@ -17,7 +17,6 @@ import { UpdateUserDTO } from './dto/update-user.dto';
 import { UserService } from './services/user.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageService } from '../images/services/image.service';
-import { error } from 'console';
 
 @Controller('user')
 @UseGuards(AuthGuard('jwt'))
@@ -36,12 +35,11 @@ export class UserController {
       throw new NotFoundException('User not found.');
     }
 
-    return user
+    return user;
   }
 
   @Put('/')
   async updateUser(@Request() req: any, @Body() updateUserDto: UpdateUserDTO) {
-    console.log("💡 ~ updateUserDto:", updateUserDto)
     const { userId } = req.user;
     await this.userService.updateUser(userId, updateUserDto);
     return { message: 'User updated successfully.' };

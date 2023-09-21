@@ -7,7 +7,7 @@ import { AccountModule } from './modules/accounts/account.module';
 import { AdminModule } from './modules/admins/admin.module';
 import * as dotenv from 'dotenv';
 
-dotenv.config({ path: `.env${'.' + process.env?.NODE_ENV}` });
+dotenv.config();
 
 @Module({
   imports: [

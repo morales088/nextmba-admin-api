@@ -1,8 +1,7 @@
 import { Body, Controller, Get, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AdminService } from './services/admin.service';
-import { HashService } from '../../common/utils/hash.service';
-import { CreateAdminDTO, UpdateAdminDTO } from './dto/create-admin.dto';
+import { CreateAdminDTO, UpdateAdminDTO } from './dto/admin.dto';
 
 @Controller('admin')
 @UseGuards(AuthGuard('jwt'))

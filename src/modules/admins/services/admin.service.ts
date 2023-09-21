@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AdminRepository } from '../repositories/admin.repository';
-import { CreateAdminDTO, UpdateAdminDTO } from '../dto/create-admin.dto';
+import { CreateAdminDTO, UpdateAdminDTO } from '../dto/admin.dto';
 import { HashService } from 'src/common/utils/hash.service';
 
 @Injectable()
