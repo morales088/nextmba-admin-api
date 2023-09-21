@@ -31,10 +31,11 @@ export class UserService {
 
     const newHashedPassword = await this.hashService.hashPassword(newPassword);
 
-    return this.updateUser(user.id, {
-      ...user,
-      password: newHashedPassword
-    })
+    return this.updateUserPassword(user.id, newHashedPassword);
+  }
+
+  async updateUserPassword(id: number, password: string) {
+    return this.userRepository.updatePassword(id, password);
   }
 
   async uploadUserProfile(userId: number, imageLink: string) {
@@ -62,7 +63,11 @@ export class UserService {
   }
 
   async updateUser(id: number, data: Partial<User>) {
-    return this.userRepository.update(id, data);
+    const updateData = {
+      name: data.name,
+      email: data.email,
+    };
+    return this.userRepository.update(id, updateData);
   }
 
   async deleteUser(id: number) {

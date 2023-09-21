@@ -10,7 +10,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { UserRepository } from './repositories/user.repository';
 import { PrismaModule } from 'src/common/prisma/prisma.module';
 import { CloudinaryModule } from 'src/common/cloudinary/cloudinary.module';
-import { ImageService } from '../images/services/image.service';
 import { ImageModule } from '../images/image.module';
 
 @Module({

@@ -1,17 +1,16 @@
+import { Module } from '@nestjs/common';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/users/user.module';
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { CloudinaryModule } from './common/cloudinary/cloudinary.module';
 import { AccountModule } from './modules/accounts/account.module';
+import { AdminModule } from './modules/admins/admin.module';
 import * as dotenv from 'dotenv';
 
-dotenv.config({ path: `.env${'.' + process.env?.NODE_ENV}` });
+dotenv.config();
 
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.MONGO_URI),
     MailerModule.forRoot({
       transport: {
         host: process.env.MAIL_HOST,
@@ -30,6 +29,7 @@ dotenv.config({ path: `.env${'.' + process.env?.NODE_ENV}` });
     UserModule,
     CloudinaryModule,
     AccountModule,
+    AdminModule,
   ],
   controllers: [],
   providers: [],
