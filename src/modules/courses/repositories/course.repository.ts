@@ -41,4 +41,5 @@ export class CourseRepository extends AbstractRepository<Courses> {
   async findById(id: number) {
     return this.prisma[this.modelName].find({ where: { id: id } });
   }
+  
 }
