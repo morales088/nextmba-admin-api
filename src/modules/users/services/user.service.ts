@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/
 import { UserRepository } from '../repositories/user.repository';
 import { HashService } from 'src/common/utils/hash.service';
 import { ChangePasswordDTO } from '../dto/change-password.dto';
-import { User } from '@prisma/client';
+import { Users } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -58,11 +58,11 @@ export class UserService {
     return this.userRepository.findAll();
   }
 
-  async createUser(data: Partial<User>) {
+  async createUser(data: Partial<Users>) {
     return this.userRepository.create(data);
   }
 
-  async updateUser(id: number, data: Partial<User>) {
+  async updateUser(id: number, data: Partial<Users>) {
     const updateData = {
       name: data.name,
       email: data.email,

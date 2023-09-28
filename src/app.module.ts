@@ -5,6 +5,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { CloudinaryModule } from './common/cloudinary/cloudinary.module';
 import { AccountModule } from './modules/accounts/account.module';
 import { AdminModule } from './modules/admins/admin.module';
+import { CoursesModule } from './modules/courses/courses.module';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -30,6 +31,7 @@ dotenv.config();
     CloudinaryModule,
     AccountModule,
     AdminModule,
+    CoursesModule,
   ],
   controllers: [],
   providers: [],

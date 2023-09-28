@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { AbstractRepository } from 'src/common/repositories/abstract.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
-import { User } from '@prisma/client';
+import { Users } from '@prisma/client';
 
 @Injectable()
-export class UserRepository extends AbstractRepository<User> {
+export class UserRepository extends AbstractRepository<Users> {
   constructor(protected readonly prisma: PrismaService) {
     super(prisma);
   }
 
   get modelName(): string {
-    return 'User'; // Specify the Prisma model name for entity
+    return 'Users'; // Specify the Prisma model name for entity
   }
 
   async findUserWithPassword(email: string) {
