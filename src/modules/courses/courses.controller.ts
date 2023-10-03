@@ -30,11 +30,9 @@ export class CoursesController {
 
   @Put('/:courseId')
   async UpdateCourse(
-    @Param('courseId') courseId: string,
+    @Param('courseId') courseId: number,
     @Request() req: any, 
     @Body() updateCourseDto: UpdateCourseDto) {
-
-    // const { email } = req.user;
     const details = req.user;
     return await this.courseService.updateCourse(courseId,updateCourseDto);
 
