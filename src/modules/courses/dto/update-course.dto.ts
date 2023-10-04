@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { IsDecimal, IsNotEmpty, IsOptional, IsString, isNumber } from 'class-validator';
+import { IsDecimal, IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateCourseDto {
   @IsOptional()
@@ -31,4 +31,8 @@ export class UpdateCourseDto {
 
   @IsOptional()
   is_displayed: number;
+
+  @IsNumber()
+  @IsIn([0, 1]) // 0 - delete, 1 - active
+  status: number;
 }

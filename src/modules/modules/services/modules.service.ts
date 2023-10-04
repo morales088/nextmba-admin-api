@@ -15,7 +15,7 @@ export class ModulesService {
     return this.moduleRepository.insert(data);
   }
 
-  async updateModules(id: number, data) {
-    return this.moduleRepository.update(id, data);
+  async updateModule(id: number, data) {
+    return this.moduleRepository.updateModule(id, data);
   }
 }

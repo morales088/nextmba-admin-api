@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { IsDateString, IsNotEmpty, IsOptional, IsString, isNumber } from 'class-validator';
+import { IsDateString, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, isNumber } from 'class-validator';
 
 export class UpdateModuleDto {
 
@@ -26,4 +26,9 @@ export class UpdateModuleDto {
   @IsOptional()
   @IsDateString()
   end_date: Date;
+
+  @IsOptional()
+  @IsNumber()
+  @IsIn([0, 1]) // 0 - delete, 1 - active
+  status: number;
 }

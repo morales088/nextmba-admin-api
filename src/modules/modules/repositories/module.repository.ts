@@ -28,11 +28,10 @@ export class ModuleRepository extends AbstractRepository<Modules> {
     return this.prisma[this.modelName].create({ data });
   }
 
-  async updateCourse(id: number, data: UpdateModuleDto): Promise<Modules> {
-    // const course = await this.findById(id);
-    const course = await this.find();
+  async updateModule(id: number, data: UpdateModuleDto): Promise<Modules> {
+    const module = await this.findById(id);
     
-    if (!course) {
+    if (!module) {
       throw new BadRequestException('Module does not exist.');
     }
     
@@ -40,9 +39,5 @@ export class ModuleRepository extends AbstractRepository<Modules> {
       where: { id : id },
       data: data,
     });
-  }
-
-  async findById(id: number) {
-    return this.prisma[this.modelName].findUnique({ where: { id : id } });
   }
 }

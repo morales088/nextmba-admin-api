@@ -17,7 +17,7 @@ export class ModulesController {
   }
 
   @Post('/')
-  async createModules(@Body() createModuleDto: CreateModuleDto) {
+  async createModule(@Body() createModuleDto: CreateModuleDto) {
 
     const moduleData = {
       ...createModuleDto,
@@ -32,7 +32,7 @@ export class ModulesController {
     @Request() req: any, 
     @Body() updateModuleDto: UpdateModuleDto
     ) {
-        return await this.modulesService.updateModules(moduleId, updateModuleDto)
+        return await this.modulesService.updateModule(moduleId, updateModuleDto)
   }
 
 }
