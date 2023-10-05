@@ -47,18 +47,19 @@ model Courses {
 }
 
 model Modules {
-  id            Int       @id @default(autoincrement())
-  course        Courses   @relation(fields: [course_id], references: [id])
+  id            Int            @id @default(autoincrement())
+  course        Courses        @relation(fields: [course_id], references: [id])
   course_id     Int
-  name          String    @db.VarChar(255)
+  name          String         @db.VarChar(255)
   description   String?
   zoom_link     String?
   external_link String?
   start_date    DateTime
   end_date      DateTime
-  status        Int       @default(1)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime? @updatedAt
+  status        Int            @default(1)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime?      @updatedAt
+  Translations  Translations[]
 }
 
 model Speakers {
@@ -68,6 +69,19 @@ model Speakers {
   company     String?
   description String?
   profile     String?
+
+  status    Int       @default(1)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Translations {
+  id            Int     @id @default(autoincrement())
+  language_code String  @db.VarChar(255)
+  module        Modules @relation(fields: [module_id], references: [id])
+  module_id     Int
+  name          String  @db.VarChar(255)
+  description   String?
 
   status    Int       @default(1)
   createdAt DateTime  @default(now())

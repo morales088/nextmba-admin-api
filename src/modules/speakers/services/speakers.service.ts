@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SpeakerRepository } from '../repositories/speakery.repository';
+import { SpeakerRepository } from '../repositories/speaker.repository';
 import { CreateSpeakerDto } from '../dto/create-speaker.dto';
 
 @Injectable()
