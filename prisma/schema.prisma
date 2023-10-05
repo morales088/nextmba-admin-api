@@ -30,7 +30,6 @@ model ResetPasswordToken {
   updatedAt DateTime? @updatedAt
 }
 
-
 model Courses {
   id            Int       @id @default(autoincrement())
   name          String    @db.VarChar(255)
@@ -44,4 +43,47 @@ model Courses {
   status        Int       @default(1)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime? @updatedAt
+  Modules       Modules[]
+}
+
+model Modules {
+  id            Int            @id @default(autoincrement())
+  course        Courses        @relation(fields: [course_id], references: [id])
+  course_id     Int
+  name          String         @db.VarChar(255)
+  description   String?
+  zoom_link     String?
+  external_link String?
+  start_date    DateTime
+  end_date      DateTime
+  status        Int            @default(1)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime?      @updatedAt
+  Translations  Translations[]
+}
+
+model Speakers {
+  id          Int     @id @default(autoincrement())
+  name        String  @db.VarChar(255)
+  position    String?
+  company     String?
+  description String?
+  profile     String?
+
+  status    Int       @default(1)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Translations {
+  id            Int     @id @default(autoincrement())
+  language_code String  @db.VarChar(255)
+  module        Modules @relation(fields: [module_id], references: [id])
+  module_id     Int
+  name          String  @db.VarChar(255)
+  description   String?
+
+  status    Int       @default(1)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
 }

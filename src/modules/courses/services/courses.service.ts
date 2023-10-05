@@ -16,7 +16,7 @@ export class CoursesService {
     return this.courseRepository.insert(data);
   }
 
-  async updateCourse(id, data) {
+  async updateCourse(id: number, data) {
     return this.courseRepository.updateCourse(id, data);
   }
 }

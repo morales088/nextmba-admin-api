@@ -6,6 +6,9 @@ import { CloudinaryModule } from './common/cloudinary/cloudinary.module';
 import { AccountModule } from './modules/accounts/account.module';
 import { AdminModule } from './modules/admins/admin.module';
 import { CoursesModule } from './modules/courses/courses.module';
+import { ModulesModule } from './modules/modules/modules.module';
+import { SpeakersModule } from './modules/speakers/speakers.module';
+import { TranslationsModule } from './modules/translations/translations.module';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -32,6 +35,9 @@ dotenv.config();
     AccountModule,
     AdminModule,
     CoursesModule,
+    ModulesModule,
+    SpeakersModule,
+    TranslationsModule,
   ],
   controllers: [],
   providers: [],

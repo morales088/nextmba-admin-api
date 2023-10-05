@@ -1,7 +1,8 @@
 import { Prisma } from '@prisma/client';
-import { IsDecimal, IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, isNumber } from 'class-validator';
 
-export class UpdateCourseDto {
+export class UpdateModuleDto {
+
   @IsOptional()
   @IsString()
   name: string;
@@ -12,26 +13,21 @@ export class UpdateCourseDto {
 
   @IsOptional()
   @IsString()
-  cover_photo: string;
+  zoom_link: string;
 
   @IsOptional()
   @IsString()
-  course_link: string;
+  external_link: string;
 
   @IsOptional()
-  @IsDecimal({ decimal_digits: '2' })
-  price: Prisma.Decimal;
+  @IsDateString()
+  start_date: Date;
 
   @IsOptional()
-  @IsString()
-  telegram_link: string;
+  @IsDateString()
+  end_date: Date;
 
   @IsOptional()
-  paid: number;
-
-  @IsOptional()
-  is_displayed: number;
-
   @IsNumber()
   @IsIn([0, 1]) // 0 - delete, 1 - active
   status: number;
