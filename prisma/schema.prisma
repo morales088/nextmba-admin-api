@@ -108,4 +108,20 @@ model Topics {
   status    Int       @default(1)
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
+  Files     Files[]
+}
+
+model Files {
+  id Int @id @default(autoincrement())
+
+  topic    Topics @relation(fields: [topic_id], references: [id])
+  topic_id Int
+
+  name        String  @db.VarChar(255)
+  type        Int     @default(1) // [1 - materials, 2 - assignment]
+  file_link   String?
+
+  status    Int       @default(1)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
 }

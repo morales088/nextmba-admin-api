@@ -27,7 +27,7 @@ export class SpeakersController {
   }
 
   @Put('/:speakerId')
-  async updateModules(
+  async updateSpeaker(
     @Param('speakerId') speakerId: number,
     @Request() req: any, 
     @Body() updateModuleDto: UpdateSpeakerDto
