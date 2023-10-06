@@ -9,6 +9,7 @@ import { CoursesModule } from './modules/courses/courses.module';
 import { ModulesModule } from './modules/modules/modules.module';
 import { SpeakersModule } from './modules/speakers/speakers.module';
 import { TranslationsModule } from './modules/translations/translations.module';
+import { TopicsModule } from './modules/topics/topics.module';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -38,6 +39,7 @@ dotenv.config();
     ModulesModule,
     SpeakersModule,
     TranslationsModule,
+    TopicsModule,
   ],
   controllers: [],
   providers: [],

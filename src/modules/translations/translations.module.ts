@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TranslationsController } from './translations.controller';
 import { TranslationsService } from './services/translations.service';
-import { TranslationRepository } from './repositories/translation.repositories.dto';
+import { TranslationRepository } from './repositories/translation.repositories';
 import { PrismaModule } from 'src/common/prisma/prisma.module';
 
 @Module({

@@ -20,9 +20,9 @@ export class TranslationRepository extends AbstractRepository<Translations> {
 
   async insert(data: Partial<Translations>): Promise<Translations> {
     
-    const course = await this.prisma.modules.findUnique({ where: { id : data.module_id } });
+    const module = await this.prisma.modules.findUnique({ where: { id : data.module_id } });
     
-    if (!course) {
+    if (!module) {
       throw new BadRequestException('Module does not exist.');
     }
     
