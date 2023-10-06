@@ -27,7 +27,7 @@ export class TopicsController {
     }
 
     @Put('/:topicId')
-    async updateModules(
+    async updateTopic(
       @Param('topicId') topicId: number,
       @Request() req: any, 
       @Body() updateTopicDto: UpdateTopicDto

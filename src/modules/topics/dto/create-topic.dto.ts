@@ -21,7 +21,7 @@ export class CreateTopicDto {
   
   @IsOptional()
   @IsIn([1, 2]) // [1 - main lecture, 2 - assignment]
-  type: string;
+  type: number;
   
   @IsOptional()
   @IsNumber()

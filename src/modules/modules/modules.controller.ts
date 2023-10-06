@@ -27,7 +27,7 @@ export class ModulesController {
   }
 
   @Put('/:moduleId')
-  async updateModules(
+  async updateModule(
     @Param('moduleId') moduleId: number,
     @Request() req: any, 
     @Body() updateModuleDto: UpdateModuleDto
