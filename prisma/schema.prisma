@@ -60,6 +60,7 @@ model Modules {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime?      @updatedAt
   Translations  Translations[]
+  Topics        Topics[]
 }
 
 model Speakers {
@@ -73,6 +74,7 @@ model Speakers {
   status    Int       @default(1)
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
+  Topics    Topics[]
 }
 
 model Translations {
@@ -82,6 +84,26 @@ model Translations {
   module_id     Int
   name          String  @db.VarChar(255)
   description   String?
+
+  status    Int       @default(1)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Topics {
+  id Int @id @default(autoincrement())
+
+  module     Modules  @relation(fields: [module_id], references: [id])
+  module_id  Int
+  speaker    Speakers @relation(fields: [speaker_id], references: [id])
+  speaker_id Int
+
+  name        String  @db.VarChar(255)
+  description String?
+  cover_photo String?
+  type        Int     @default(1) //[1 - main lecture, 2 - assignment]
+  position    Int     @default(1)
+  publish     Int     @default(0) //publish to library when replay is available
 
   status    Int       @default(1)
   createdAt DateTime  @default(now())
