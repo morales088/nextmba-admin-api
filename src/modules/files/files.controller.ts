@@ -1,9 +1,11 @@
-import { Body, Controller, Get, Param, Post, Put, Request } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { FilesService } from './sevices/files.service';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('files')
+@UseGuards(AuthGuard('jwt'))
 export class FilesController {
     constructor(
         private readonly filesService: FilesService,

@@ -61,6 +61,7 @@ model Modules {
   updatedAt     DateTime?      @updatedAt
   Translations  Translations[]
   Topics        Topics[]
+  Medias        Medias[]
 }
 
 model Speakers {
@@ -109,6 +110,7 @@ model Topics {
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
   Files     Files[]
+  Medias    Medias[]
 }
 
 model Files {
@@ -117,9 +119,27 @@ model Files {
   topic    Topics @relation(fields: [topic_id], references: [id])
   topic_id Int
 
-  name        String  @db.VarChar(255)
-  type        Int     @default(1) // [1 - materials, 2 - assignment]
-  file_link   String?
+  name      String  @db.VarChar(255)
+  type      Int     @default(1) // [1 - materials, 2 - assignment]
+  file_link String?
+
+  status    Int       @default(1)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Medias {
+  id Int @id @default(autoincrement())
+
+  module    Modules @relation(fields: [module_id], references: [id])
+  module_id Int
+  topic     Topics  @relation(fields: [topic_id], references: [id])
+  topic_id  Int
+
+  language_code String @db.VarChar(255)
+  media_type    Int    @default(1) // 1 - livestream, 2 - replay
+  source        Int    @default(1) // [1 - yt, 2 - cf, 3 - vimeo, 4 - zoom]
+  source_code   String @db.VarChar(255)
 
   status    Int       @default(1)
   createdAt DateTime  @default(now())

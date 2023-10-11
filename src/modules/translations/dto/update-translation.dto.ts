@@ -3,7 +3,7 @@ import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validato
 export class UpdateTranslationDto {
   @IsOptional()
   @IsString()
-  @IsIn(['en', 'es']) // en - english, es - espanish
+  @IsIn(['en', 'es', 'pt', 'fr']) // en - english, es - espanish, pt - portuguese, fr - french
   language_code: string;
 
   @IsOptional()
