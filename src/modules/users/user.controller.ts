@@ -37,6 +37,13 @@ export class UserController {
 
     return user;
   }
+  @Get('/all')
+  async getAllUser(@Request() req: any) {
+    const { email } = req.user;
+    const user = await this.userService.findAllUsers();
+
+    return user;
+  }
 
   @Put('/')
   async updateUser(@Request() req: any, @Body() updateUserDto: UpdateUserDTO) {

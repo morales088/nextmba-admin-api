@@ -13,6 +13,10 @@ export class UserRepository extends AbstractRepository<Users> {
     return 'Users'; // Specify the Prisma model name for entity
   }
 
+  async findActiveUsers() {
+    return this.prisma[this.modelName].findMany({ where: { status: 1 } });
+  }
+
   async findUserWithPassword(email: string) {
     return this.prisma[this.modelName].findUnique({ where: { email } });
   }

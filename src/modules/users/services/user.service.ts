@@ -55,7 +55,9 @@ export class UserService {
   }
 
   async findAllUsers() {
-    return this.userRepository.findAll();
+    // return this.userRepository.findAll();
+    return this.userRepository.findActiveUsers()
+    
   }
 
   async createUser(data: Partial<Users>) {
