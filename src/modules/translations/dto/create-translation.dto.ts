@@ -3,7 +3,7 @@ import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export class CreateTranslationDto {
   @IsNotEmpty()
   @IsString()
-  @IsIn(['en', 'es']) // en - english, es - espanish
+  @IsIn(['en', 'es', 'pt', 'fr']) // en - english, es - espanish, pt - portuguese, fr - french
   language_code: string;
 
   @IsNotEmpty()

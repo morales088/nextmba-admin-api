@@ -11,6 +11,7 @@ import { SpeakersModule } from './modules/speakers/speakers.module';
 import { TranslationsModule } from './modules/translations/translations.module';
 import { TopicsModule } from './modules/topics/topics.module';
 import { FilesModule } from './modules/files/files.module';
+import { MediasModule } from './modules/medias/medias.module';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -42,6 +43,7 @@ dotenv.config();
     TranslationsModule,
     TopicsModule,
     FilesModule,
+    MediasModule,
   ],
   controllers: [],
   providers: [],

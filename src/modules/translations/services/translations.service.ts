@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { TranslationRepository } from '../repositories/translation.repositories';
+import { TranslationRepository } from '../repositories/translation.repository';
 
 @Injectable()
 export class TranslationsService {
