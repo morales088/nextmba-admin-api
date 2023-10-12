@@ -48,15 +48,15 @@ export class UserController {
   @Put('/')
   async updateUser(@Request() req: any, @Body() updateUserDto: UpdateUserDTO) {
     const { userId } = req.user;
-    await this.userService.updateUser(userId, updateUserDto);
-    return { message: 'User updated successfully.' };
+    const user = await this.userService.updateUser(userId, updateUserDto);
+    return { message: 'User updated successfully.', user: user };
   }
 
   @Post('/change-password')
   async changePassword(@Request() req: any, @Body() changePasswordDto: ChangePasswordDTO) {
     const { email } = req.user;
-    await this.userService.changePassword(email, changePasswordDto);
-    return { message: 'Password updated successfully.' };
+    const user = await this.userService.changePassword(email, changePasswordDto);
+    return { message: 'Password updated successfully.', user : user };
   }
 
   @Post('/upload-image')
