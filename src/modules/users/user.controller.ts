@@ -10,6 +10,7 @@ import {
   BadRequestException,
   UploadedFile,
   NotFoundException,
+  Param,
 } from '@nestjs/common';
 import { ChangePasswordDTO } from './dto/change-password.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -45,9 +46,12 @@ export class UserController {
     return user;
   }
 
-  @Put('/')
-  async updateUser(@Request() req: any, @Body() updateUserDto: UpdateUserDTO) {
-    const { userId } = req.user;
+  @Put('/:userId')
+  async updateUser(
+    @Param('userId') userId: number,
+    @Request() req: any, 
+    @Body() updateUserDto: UpdateUserDTO) {
+    // const { userId } = req.user;
     const user = await this.userService.updateUser(userId, updateUserDto);
     return { message: 'User updated successfully.', user: user };
   }
