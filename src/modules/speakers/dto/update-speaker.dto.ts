@@ -19,7 +19,7 @@ export class UpdateSpeakerDto {
 
   @IsOptional()
   @IsString()
-  profile_photo: string;
+  profile: string;
 
   @IsOptional()
   @IsNumber()

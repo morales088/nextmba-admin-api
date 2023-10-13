@@ -19,5 +19,5 @@ export class CreateSpeakerDto {
 
   @IsOptional()
   @IsString()
-  profile_photo: string;
+  profile: string;
 }
