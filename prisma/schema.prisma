@@ -31,19 +31,20 @@ model ResetPasswordToken {
 }
 
 model Courses {
-  id            Int       @id @default(autoincrement())
-  name          String    @db.VarChar(255)
-  description   String?
-  cover_photo   String?
-  course_link   String?
-  price         Decimal   @db.Decimal(9, 2)
-  telegram_link String?
-  paid          Int       @default(1)
-  is_displayed  Int       @default(1)
-  status        Int       @default(1)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime? @updatedAt
-  Modules       Modules[]
+  id              Int               @id @default(autoincrement())
+  name            String            @db.VarChar(255)
+  description     String?
+  cover_photo     String?
+  course_link     String?
+  price           Decimal           @db.Decimal(9, 2)
+  telegram_link   String?
+  paid            Int               @default(1)
+  is_displayed    Int               @default(1)
+  status          Int               @default(1)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime?         @updatedAt
+  Modules         Modules[]
+  Student_courses Student_courses[]
 }
 
 model Modules {
@@ -140,6 +141,63 @@ model Medias {
   media_type    Int    @default(1) // 1 - livestream, 2 - replay
   source        Int    @default(1) // [1 - yt, 2 - cf, 3 - vimeo, 4 - zoom]
   source_code   String @db.VarChar(255)
+
+  status    Int       @default(1)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Students {
+  id Int @id @default(autoincrement())
+
+  name                 String    @db.VarChar(255)
+  email                String    @db.VarChar(255)
+  password             String    @db.VarChar(255)
+  phone                String
+  country              String
+  company              String
+  position             String
+  language             String    @default("en") // en - english, es - espanish
+  last_login           DateTime?
+  profile_picture      String?
+  chat_moderator       Boolean   @default(false) //[false - not, true - moderator]
+  forgot_password_code String
+  account_type         Int       @default(1) //[1 - trial, 2 - regular, 3 - pro]
+  affiliate_access     Int       @default(0) //[0 - not, 1 - partner]
+
+  status          Int               @default(1)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime?         @updatedAt
+  Student_links   Student_links[]
+  Student_courses Student_courses[]
+}
+
+model Student_links {
+  id Int @id @default(autoincrement())
+
+  student   Students @relation(fields: [studentId], references: [id])
+  studentId Int
+
+  name String @db.VarChar(255)
+  link String
+  icon String
+
+  status    Int       @default(1)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Student_courses {
+  id Int @id @default(autoincrement())
+
+  student   Students @relation(fields: [studentId], references: [id])
+  studentId Int
+  course    Courses  @relation(fields: [courseId], references: [id])
+  courseId  Int
+
+  course_type     Int      @default(1) //[1 - paid, 2 - manually added, 3 - gifted]
+  starting_date   DateTime @default(now())
+  expiration_date DateTime @default(dbgenerated("NOW() + interval '1 year'"))
 
   status    Int       @default(1)
   createdAt DateTime  @default(now())

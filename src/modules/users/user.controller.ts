@@ -10,6 +10,7 @@ import {
   BadRequestException,
   UploadedFile,
   NotFoundException,
+  Param,
 } from '@nestjs/common';
 import { ChangePasswordDTO } from './dto/change-password.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -37,19 +38,29 @@ export class UserController {
 
     return user;
   }
+  @Get('/all')
+  async getAllUser(@Request() req: any) {
+    const { email } = req.user;
+    const user = await this.userService.findAllUsers();
 
-  @Put('/')
-  async updateUser(@Request() req: any, @Body() updateUserDto: UpdateUserDTO) {
-    const { userId } = req.user;
-    await this.userService.updateUser(userId, updateUserDto);
-    return { message: 'User updated successfully.' };
+    return user;
+  }
+
+  @Put('/:userId')
+  async updateUser(
+    @Param('userId') userId: number,
+    @Request() req: any, 
+    @Body() updateUserDto: UpdateUserDTO) {
+    // const { userId } = req.user;
+    const user = await this.userService.updateUser(userId, updateUserDto);
+    return { message: 'User updated successfully.', user: user };
   }
 
   @Post('/change-password')
   async changePassword(@Request() req: any, @Body() changePasswordDto: ChangePasswordDTO) {
     const { email } = req.user;
-    await this.userService.changePassword(email, changePasswordDto);
-    return { message: 'Password updated successfully.' };
+    const user = await this.userService.changePassword(email, changePasswordDto);
+    return { message: 'Password updated successfully.', user : user };
   }
 
   @Post('/upload-image')
