@@ -7,6 +7,10 @@ export class TranslationsService {
       private readonly translationRepository: TranslationRepository
     ) {}
 
+    async getTranslation(id:number) {
+      return this.translationRepository.findById(id);
+    }
+
     async getTranslations() {
       return this.translationRepository.find();
     }

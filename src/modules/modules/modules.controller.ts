@@ -7,33 +7,33 @@ import { UpdateModuleDto } from './dto/update-module.dto';
 @Controller('modules')
 @UseGuards(AuthGuard('jwt'))
 export class ModulesController {
-    constructor(
-      private readonly modulesService: ModulesService,
-    ) {}
-    
+  constructor(private readonly modulesService: ModulesService) {}
+
+  @Get('/:moduleId')
+  async getModule(@Param('moduleId') moduleId: number) {
+    return await this.modulesService.getModule(moduleId);
+  }
+
   @Get('/')
   async getModules() {
-    return await this.modulesService.getModules()
+    return await this.modulesService.getModules();
   }
 
   @Post('/')
   async createModule(@Body() createModuleDto: CreateModuleDto) {
-
     const moduleData = {
       ...createModuleDto,
     };
 
-    return await this.modulesService.createModules(moduleData)
+    return await this.modulesService.createModules(moduleData);
   }
 
   @Put('/:moduleId')
   async updateModule(
     @Param('moduleId') moduleId: number,
-    @Request() req: any, 
+    @Request() req: any,
     @Body() updateModuleDto: UpdateModuleDto
-    ) {
-        return await this.modulesService.updateModule(moduleId, updateModuleDto)
+  ) {
+    return await this.modulesService.updateModule(moduleId, updateModuleDto);
   }
-
 }
-

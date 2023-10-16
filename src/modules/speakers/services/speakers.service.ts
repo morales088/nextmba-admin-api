@@ -7,6 +7,10 @@ export class SpeakersService {
     constructor(
       private readonly speakerRepository: SpeakerRepository
     ) {}
+
+    async getSpeaker(id:number) {
+      return this.speakerRepository.findById(id);
+    }
     
   async getSpeakers() {
     return this.speakerRepository.find();

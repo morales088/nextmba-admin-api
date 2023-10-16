@@ -32,6 +32,7 @@ export class UpdateCourseDto {
   @IsOptional()
   is_displayed: number;
 
+  @IsOptional()
   @IsNumber()
   @IsIn([0, 1]) // 0 - delete, 1 - active
   status: number;

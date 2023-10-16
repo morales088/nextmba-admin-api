@@ -7,6 +7,10 @@ export class TopicsService {
         private readonly topicsRepository: TopicsRepository
       ) {}
 
+      async getTopic(id:number) {
+        return this.topicsRepository.findById(id);
+      }
+
       async getTopics() {
         return this.topicsRepository.find();
       }

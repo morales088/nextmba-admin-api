@@ -10,6 +10,13 @@ export class TopicsController {
     constructor(
         private readonly topicsService: TopicsService,
       ) {}
+
+      @Get('/:topicId')
+      async getTopic(
+        @Param('topicId') topicId: number
+        ) {
+        return await this.topicsService.getTopic(topicId);
+      }
       
     @Get('/')
     async getTopics() {

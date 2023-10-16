@@ -6,6 +6,10 @@ export class ModulesService {
     constructor(
       private readonly moduleRepository: ModuleRepository
     ) {}
+
+    async getModule(id:number) {
+      return this.moduleRepository.findById(id);
+    }
     
   async getModules() {
     return this.moduleRepository.find();

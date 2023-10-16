@@ -10,6 +10,13 @@ export class TranslationsController {
     constructor(
         private readonly translationsService: TranslationsService,
       ) {}
+
+      @Get('/:translationId')
+      async getTranslation(
+        @Param('translationId') translationId: number
+        ) {
+        return await this.translationsService.getTranslation(translationId);
+      }
   
     @Get('/')
     async getTranslations() {

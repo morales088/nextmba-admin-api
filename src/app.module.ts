@@ -12,6 +12,7 @@ import { TranslationsModule } from './modules/translations/translations.module';
 import { TopicsModule } from './modules/topics/topics.module';
 import { FilesModule } from './modules/files/files.module';
 import { MediasModule } from './modules/medias/medias.module';
+import { ProductsModule } from './modules/products/products.module';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -44,6 +45,7 @@ dotenv.config();
     TopicsModule,
     FilesModule,
     MediasModule,
+    ProductsModule,
   ],
   controllers: [],
   providers: [],
