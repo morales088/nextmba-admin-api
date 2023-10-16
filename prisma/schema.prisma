@@ -43,9 +43,9 @@ model Courses {
   status          Int               @default(1)
   createdAt       DateTime          @default(now())
   updatedAt       DateTime?         @updatedAt
-  Modules         Modules[]
-  Student_courses Student_courses[]
-  Product_items   Product_items[]
+  modules         Modules[]
+  student_courses Student_courses[]
+  product_items   Product_items[]
 }
 
 model Modules {
@@ -61,9 +61,9 @@ model Modules {
   status        Int            @default(1)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime?      @updatedAt
-  Translations  Translations[]
-  Topics        Topics[]
-  Medias        Medias[]
+  translations  Translations[]
+  topics        Topics[]
+  medias        Medias[]
 }
 
 model Speakers {
@@ -77,7 +77,7 @@ model Speakers {
   status    Int       @default(1)
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
-  Topics    Topics[]
+  topics    Topics[]
 }
 
 model Translations {
@@ -111,8 +111,8 @@ model Topics {
   status    Int       @default(1)
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
-  Files     Files[]
-  Medias    Medias[]
+  files     Files[]
+  medias    Medias[]
 }
 
 model Files {
@@ -169,8 +169,8 @@ model Students {
   status          Int               @default(1)
   createdAt       DateTime          @default(now())
   updatedAt       DateTime?         @updatedAt
-  Student_links   Student_links[]
-  Student_courses Student_courses[]
+  student_links   Student_links[]
+  student_courses Student_courses[]
 }
 
 model Student_links {
@@ -217,7 +217,7 @@ model Products {
   status        Int             @default(1)
   createdAt     DateTime        @default(now())
   updatedAt     DateTime?       @updatedAt
-  Product_items Product_items[]
+  product_items Product_items[]
 }
 
 model Product_items {
