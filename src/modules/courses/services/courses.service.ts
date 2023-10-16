@@ -8,6 +8,10 @@ export class CoursesService {
     private readonly courseRepository: CourseRepository
   ) {}
 
+  async getCourse(id:number) {
+    return this.courseRepository.findById(id);
+  }
+
   async getCourses() {
     return this.courseRepository.find();
   }

@@ -2,7 +2,6 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { AbstractRepository } from 'src/common/repositories/abstract.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { Product_items } from '@prisma/client';
-import { CreateItemDto } from '../dto/create-item.dto';
 
 @Injectable()
 export class ProductItemRepository extends AbstractRepository<Product_items> {
@@ -27,20 +26,19 @@ export class ProductItemRepository extends AbstractRepository<Product_items> {
       }
   }
 
-  //   async updateCourse(id: number, data: UpdateCourseDto): Promise<Courses> {
-  //     const course = await this.findById(id);
+    async update(id: number, data: any): Promise<any> {
+      const productItem = await this.findById(id);
 
-  //     if (!course) {
-  //       throw new BadRequestException('Course does not exist.');
-  //     }
+      if (!productItem) {
+        throw new BadRequestException('product item does not exist.');
+      }
+      await this.prisma.product_items.update({
+        where: { id : id },
+        data: data,
+      });
+    }
 
-  //     return this.prisma[this.modelName].update({
-  //       where: { id : id },
-  //       data: data,
-  //     });
-  //   }
-
-  //   async findById(id: number) {
-  //     return this.prisma[this.modelName].findUnique({ where: { id : id } });
-  //   }
+    async findById(id: number) {
+      return this.prisma[this.modelName].findUnique({ where: { id : id } });
+    }
 }

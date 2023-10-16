@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ProductsService } from './services/products.service';
 import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Controller('products')
 @UseGuards(AuthGuard('jwt'))
@@ -11,13 +12,20 @@ export class ProductsController {
       
     ) {}
 
+  @Get('/:productId')
+  async getProduct(
+    @Param('productId') productId: number
+    ) {
+    return await this.productsService.getProduct(productId);
+  }
+
   @Get('/')
-  async getCourses() {
+  async getProducts() {
     return await this.productsService.getProducts();
   }
 
   @Post('/')
-  async createCourse(@Body() createProductDto: CreateProductDto) {
+  async createProduct(@Body() createProductDto: CreateProductDto) {
 
     const product = {
       ...createProductDto,
@@ -27,13 +35,13 @@ export class ProductsController {
 
   }
 
-//   @Put('/:courseId')
-//   async UpdateCourse(
-//     @Param('courseId') courseId: number,
-//     @Request() req: any, 
-//     @Body() updateCourseDto: UpdateCourseDto) {
-//     const details = req.user;
-//     return await this.courseService.updateCourse(courseId,updateCourseDto);
+  @Put('/:productId')
+  async UpdateCourse(
+    @Param('productId') productId: number,
+    @Request() req: any, 
+    @Body() updateProductDto: UpdateProductDto) {
+    const details = req.user;
+    return await this.productsService.updateProduct(productId, updateProductDto);
 
-//   }
+  }
 }

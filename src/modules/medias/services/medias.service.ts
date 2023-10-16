@@ -7,6 +7,10 @@ export class MediasService {
         private readonly mediaRepository: MediaRepository
       ) {}
 
+      async getMedia(id:number) {
+        return this.mediaRepository.findById(id);
+      }
+
       async getMedias(){
           return await this.mediaRepository.find()
       }

@@ -1,7 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { Type } from 'class-transformer';
 import { IsArray, IsDecimal, IsNotEmpty, IsOptional, IsString, ValidateNested, isNumber } from 'class-validator';
-import { CreateItemDto } from './create-item.dto';
 
 export class CreateProductDto {
   @IsNotEmpty()
@@ -24,17 +23,17 @@ export class CreateProductDto {
   
   @IsNotEmpty()
   @ValidateNested({ each: true })
-  @Type(() => CreateItemDto)
+  @Type(() => ItemsDTO)
   // @IsArray({ message: '["product_id" : 1, "course_id" : 1, "quantity": 1]' })
-  product_items: CreateItemDto[];
+  product_items: ItemsDTO[];
 }
 
 
-// export class ItemsDTO {
+export class ItemsDTO {
 
-//   @IsNotEmpty()
-//   course_id: number;
+  @IsNotEmpty()
+  course_id: number;
 
-//   @IsNotEmpty()
-//   quantity: number;
-// }
+  @IsNotEmpty()
+  quantity: number;
+}

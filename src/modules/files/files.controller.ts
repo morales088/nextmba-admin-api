@@ -10,6 +10,13 @@ export class FilesController {
     constructor(
         private readonly filesService: FilesService,
       ) {}
+
+      @Get('/:fileId')
+      async getFile(
+        @Param('fileId') fileId: number
+        ) {
+        return await this.filesService.getFile(fileId);
+      }
       
       @Get('/')
       async getTopics() {

@@ -7,6 +7,10 @@ export class ProductsService {
     private readonly productRepository: ProductRepository
   ) {}
 
+  async getProduct(id:number) {
+    return this.productRepository.findById(id);
+  }
+  
   async getProducts() {
     return this.productRepository.find();
   }
@@ -15,7 +19,7 @@ export class ProductsService {
     return this.productRepository.insert(data);
   }
 
-//   async updateCourse(id: number, data) {
-//     return this.courseRepository.updateCourse(id, data);
-//   }
+  async updateProduct(id: number, data) {
+    return this.productRepository.updateProduct(id, data);
+  }
 }

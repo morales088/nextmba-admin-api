@@ -7,9 +7,12 @@ import { UpdateSpeakerDto } from './dto/update-speaker.dto';
 @Controller('speakers')
 @UseGuards(AuthGuard('jwt'))
 export class SpeakersController {
-    constructor(
-      private readonly speakersService: SpeakersService,
-    ) {}
+  constructor(private readonly speakersService: SpeakersService) {}
+
+  @Get('/:speakerId')
+  async getSpeaker(@Param('speakerId') speakerId: number) {
+    return await this.speakersService.getSpeaker(speakerId);
+  }
 
   @Get('/')
   async getSpeakers() {
@@ -18,20 +21,19 @@ export class SpeakersController {
 
   @Post('/')
   async createSpeaker(@Body() createSpeakerDto: CreateSpeakerDto) {
-
     const speakerData = {
       ...createSpeakerDto,
     };
 
-    return await this.speakersService.createSpeaker(speakerData)
+    return await this.speakersService.createSpeaker(speakerData);
   }
 
   @Put('/:speakerId')
   async updateSpeaker(
     @Param('speakerId') speakerId: number,
-    @Request() req: any, 
+    @Request() req: any,
     @Body() updateModuleDto: UpdateSpeakerDto
-    ) {
-        return await this.speakersService.updateSpeaker(speakerId, updateModuleDto)
+  ) {
+    return await this.speakersService.updateSpeaker(speakerId, updateModuleDto);
   }
 }

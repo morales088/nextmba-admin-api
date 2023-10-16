@@ -7,6 +7,10 @@ export class FilesService {
         private readonly fileRepository: FileRepository
       ) {}
 
+      async getFile(id:number) {
+        return this.fileRepository.findById(id);
+      }
+
     async getFiles(){
         return await this.fileRepository.find()
     }

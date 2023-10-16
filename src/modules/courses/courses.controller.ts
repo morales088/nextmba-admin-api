@@ -12,6 +12,13 @@ export class CoursesController {
     
   ) {}
 
+  @Get('/:courseId')
+  async getCourse(
+    @Param('courseId') courseId: number
+    ) {
+    return await this.courseService.getCourse(courseId);
+  }
+
   @Get('/')
   async getCourses() {
     return await this.courseService.getCourses();

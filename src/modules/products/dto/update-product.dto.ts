@@ -1,5 +1,6 @@
 import { Prisma } from '@prisma/client';
-import { IsDecimal, IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsDecimal, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 export class UpdateProductDto {
   @IsOptional()
@@ -8,30 +9,38 @@ export class UpdateProductDto {
 
   @IsOptional()
   @IsString()
-  description: string;
-
-  @IsOptional()
-  @IsString()
-  cover_photo: string;
-
-  @IsOptional()
-  @IsString()
-  course_link: string;
-
+  code: string;
+  
   @IsOptional()
   @IsDecimal({ decimal_digits: '2' })
   price: Prisma.Decimal;
 
   @IsOptional()
-  @IsString()
-  telegram_link: string;
+  pro_access: boolean;
 
   @IsOptional()
-  paid: number;
+  library_access: boolean;
+  
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => ItemsDTO)
+  product_items: ItemsDTO[];
 
   @IsOptional()
-  is_displayed: number;
+  @IsNumber()
+  @IsIn([0, 1]) // 0 - delete, 1 - active
+  status: number;
+}
 
+export class ItemsDTO {
+
+  @IsNotEmpty()
+  id: number;
+
+  @IsOptional()
+  quantity: number;
+
+  @IsOptional()
   @IsNumber()
   @IsIn([0, 1]) // 0 - delete, 1 - active
   status: number;

@@ -10,6 +10,13 @@ export class MediasController {
     constructor(
         private readonly mediasService: MediasService,
       ) {}
+
+      @Get('/:mediaId')
+      async getMedia(
+        @Param('mediaId') mediaId: number
+        ) {
+        return await this.mediasService.getMedia(mediaId);
+      }
       
       @Get('/')
       async getTopics() {
