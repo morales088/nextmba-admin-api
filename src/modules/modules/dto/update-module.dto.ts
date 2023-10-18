@@ -29,6 +29,6 @@ export class UpdateModuleDto {
 
   @IsOptional()
   @IsNumber()
-  @IsIn([0, 1]) // 0 - delete, 1 - active
+  @IsIn([1, 2, 3, 4, 5]) // [1 - draft, 2 - offline, 3 - live, 4 - pending replay, 5 - replay]
   status: number;
 }
