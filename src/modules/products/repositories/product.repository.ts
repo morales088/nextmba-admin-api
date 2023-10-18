@@ -20,7 +20,7 @@ export class ProductRepository extends AbstractRepository<Products> {
   }
   
   async find(): Promise<Products> {
-    return this.prisma[this.modelName].findMany({ where: { status: 1 }, include: { Product_items: true } });
+    return this.prisma[this.modelName].findMany({ where: { status: 1 }, include: { product_items: true } });
   }
 
   async insert(data: CreateProductDto): Promise<Products> {
@@ -70,6 +70,6 @@ export class ProductRepository extends AbstractRepository<Products> {
     }
 
     async findById(id: number) {
-      return this.prisma[this.modelName].findUnique({ where: { id : id }, include: { Product_items: true } });
+      return this.prisma[this.modelName].findUnique({ where: { id : id }, include: { product_items: true } });
     }
 }
