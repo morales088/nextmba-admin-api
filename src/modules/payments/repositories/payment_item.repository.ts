@@ -1,0 +1,82 @@
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { AbstractRepository } from 'src/common/repositories/abstract.repository';
+import { PrismaService } from 'src/common/prisma/prisma.service';
+import { Payment_items, Payments } from '@prisma/client';
+
+@Injectable()
+export class PaymentItemRepository extends AbstractRepository<Payment_items> {
+  constructor(protected readonly prisma: PrismaService) {
+    super(prisma);
+  }
+
+  get modelName(): string {
+    return 'Payment_items'; // Specify the Prisma model name for entity
+  }
+
+  async find(id: number): Promise<Payment_items> {
+    return this.prisma[this.modelName].findMany({ where: { payment_id: id, status: 1 } });
+  }
+
+  async insert(studentId: number, paymentId: number, productCode: string): Promise<any> {
+    const product = await this.prisma.products.findFirst({
+      where: { code: productCode, status: 1 },
+      include: { product_items: true },
+    });
+    
+    try {
+      for (const product_item of product.product_items) {
+        // check student course
+        const studentCourse = await this.prisma.student_courses.findFirst({
+          where: { student_id: studentId, course_id: product_item.course_id, status: 1 },
+        });
+
+        const giftable = studentCourse ? product_item.quantity : product_item.quantity - 1;
+
+        // insert payment items
+        const itemData = {
+          payment_id: paymentId,
+          course_id: product_item.course_id,
+          quantity: product_item.quantity,
+          giftable: giftable,
+        };
+        
+        await this.prisma[this.modelName].create({ data: itemData });
+
+        // insert student course
+        const startingDate = new Date();
+        const expirationDate = new Date();
+        expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+
+        const studentCourseData = {
+          student_id: studentId,
+          course_id: product_item.course_id,
+          starting_date: startingDate,
+          expiration_date: expirationDate,
+        };
+        
+        if (!studentCourse) await this.prisma.student_courses.create({ data: studentCourseData });
+      }
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+
+    return 'payment items successfully created';
+  }
+
+  //   async updateModule(id: number, data: UpdateModuleDto): Promise<Modules> {
+  //     const module = await this.findById(id);
+
+  //     if (!module) {
+  //       throw new BadRequestException('Module does not exist.');
+  //     }
+
+  //     return this.prisma[this.modelName].update({
+  //       where: { id : id },
+  //       data: data,
+  //     });
+  //   }
+
+  async findById(id: number) {
+    return this.prisma[this.modelName].findUnique({ where: { id: id } });
+  }
+}

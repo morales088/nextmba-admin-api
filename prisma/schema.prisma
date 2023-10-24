@@ -46,6 +46,7 @@ model Courses {
   modules         Modules[]
   student_courses Student_courses[]
   product_items   Product_items[]
+  payment_items   Payment_items[]
 }
 
 model Modules {
@@ -151,50 +152,42 @@ model Medias {
 model Students {
   id Int @id @default(autoincrement())
 
-  name                 String    @db.VarChar(255)
-  email                String    @db.VarChar(255) @unique
-  password             String    @db.VarChar(255)
-  phone                String
-  country              String
-  company              String
-  position             String
-  language             String    @default("en") // en - english, es - espanish
-  last_login           DateTime?
-  profile_picture      String?
-  chat_moderator       Boolean   @default(false) //[false - not, true - moderator]
-  forgot_password_code String
-  account_type         Int       @default(1) //[1 - trial, 2 - regular, 3 - pro]
-  affiliate_access     Int       @default(0) //[0 - not, 1 - partner]
+  name             String    @db.VarChar(255)
+  email            String    @unique @db.VarChar(255)
+  password         String    @db.VarChar(255)
+  phone            String?
+  country          String?
+  industry         String?
+  company          String?
+  position         String?
+  language         String    @default("en") // en - english, es - espanish
+  last_login       DateTime?
+  profile_picture  String?
+  // chat_moderator       Boolean   @default(false) //[false - not, true - moderator]
+  // forgot_password_code String
+  library_access   Int       @default(0)
+  account_type     Int       @default(1) //[1 - trial, 2 - regular, 3 - pro]
+  affiliate_access Int       @default(0) //[0 - not, 1 - partner]
+
+  website   String?
+  linkendIn String?
+  instagram String?
+  telegram  String?
 
   status          Int               @default(1)
   createdAt       DateTime          @default(now())
   updatedAt       DateTime?         @updatedAt
-  student_links   Student_links[]
   student_courses Student_courses[]
-}
-
-model Student_links {
-  id Int @id @default(autoincrement())
-
-  student   Students @relation(fields: [studentId], references: [id])
-  studentId Int
-
-  name String @db.VarChar(255)
-  link String
-  icon String
-
-  status    Int       @default(1)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
+  payments        Payments[]
 }
 
 model Student_courses {
   id Int @id @default(autoincrement())
 
-  student   Students @relation(fields: [studentId], references: [id])
-  studentId Int
-  course    Courses  @relation(fields: [courseId], references: [id])
-  courseId  Int
+  student   Students @relation(fields: [student_id], references: [id])
+  student_id Int
+  course    Courses  @relation(fields: [course_id], references: [id])
+  course_id  Int
 
   course_type     Int      @default(1) //[1 - paid, 2 - manually added, 3 - gifted]
   starting_date   DateTime @default(now())
@@ -218,6 +211,7 @@ model Products {
   createdAt     DateTime        @default(now())
   updatedAt     DateTime?       @updatedAt
   product_items Product_items[]
+  payments      Payments[]
 }
 
 model Product_items {
@@ -229,6 +223,55 @@ model Product_items {
   course_id  Int
 
   quantity Int @default(1)
+
+  status    Int       @default(1)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Payments {
+  id Int @id @default(autoincrement())
+
+  student      Students @relation(fields: [student_id], references: [id])
+  student_id   Int
+  product      Products @relation(fields: [product_id], references: [id])
+  product_id   Int
+  product_code String   @db.VarChar(255)
+
+  reference_id          String?
+  price                 Decimal @db.Decimal(9, 2)
+  payment_method        Int     @default(1) //1 - paid, 2 - manual
+  name                  String  @db.VarChar(255)
+  email                 String  @db.VarChar(255)
+  contact_number        String?
+  country               String?
+  created_by            Int?    @default(0)
+  utm_source            String?
+  utm_medium            String?
+  utm_campaign          String?
+  utm_content           String?
+  from_student_id       Int?    @default(0)
+  affiliate_code        String?
+  commission_percentage Decimal @default(0) @db.Decimal(9, 2)
+  commission_status     Int     @default(0) //[0 - unpaid, 1 - paid]
+  remarks               String?
+
+  status        Int             @default(1)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime?       @updatedAt
+  payment_items Payment_items[]
+}
+
+model Payment_items {
+  id Int @id @default(autoincrement())
+
+  payment    Payments @relation(fields: [payment_id], references: [id])
+  payment_id Int
+  course     Courses  @relation(fields: [course_id], references: [id])
+  course_id  Int
+
+  quantity Int @default(1)
+  giftable Int @default(0)
 
   status    Int       @default(1)
   createdAt DateTime  @default(now())

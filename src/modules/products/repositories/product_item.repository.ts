@@ -20,7 +20,7 @@ export class ProductItemRepository extends AbstractRepository<Product_items> {
   async insert(data:any): Promise<any> {
 
       try {
-        return await this.prisma.product_items.create({ data });
+        return await this.prisma[this.modelName].create({ data });
       } catch (error) {
         return { success: false, error: error.message };
       }

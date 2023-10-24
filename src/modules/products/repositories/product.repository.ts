@@ -20,10 +20,16 @@ export class ProductRepository extends AbstractRepository<Products> {
   }
   
   async find(): Promise<Products> {
-    return this.prisma[this.modelName].findMany({ where: { status: 1 }, include: { Product_items: true } });
+    return this.prisma[this.modelName].findMany({ where: { status: 1 }, include: { product_items: true } });
   }
 
   async insert(data: CreateProductDto): Promise<Products> {
+    const productCode = await this.findByCode(data.code);
+
+    if (productCode) {
+      throw new BadRequestException('Product code already exist.');
+    }
+
     const { product_items, ...productsData } = data; // remove product items to array
 
     const createProduct = await this.prisma[this.modelName].create({ data: productsData });
@@ -38,7 +44,7 @@ export class ProductRepository extends AbstractRepository<Products> {
 
     return this.prisma[this.modelName].findUnique({
       where: { id: createProduct.id },
-      include: { Product_items: true },
+      include: { product_items: true },
     });
   }
 
@@ -47,6 +53,12 @@ export class ProductRepository extends AbstractRepository<Products> {
 
       if (!product) {
         throw new BadRequestException('Product does not exist.');
+      }
+      
+      const productCode = await this.findByCode(data.code);
+  
+      if (productCode) {
+        throw new BadRequestException('Product code already exist.');
       }
       
       // update product
@@ -65,11 +77,18 @@ export class ProductRepository extends AbstractRepository<Products> {
 
       return this.prisma[this.modelName].findUnique({
         where: { id: id },
-        include: { Product_items: true },
+        include: { product_items: true },
       });
     }
 
     async findById(id: number) {
-      return this.prisma[this.modelName].findUnique({ where: { id : id }, include: { Product_items: true } });
+      return this.prisma[this.modelName].findUnique({ where: { id : id }, include: { product_items: true } });
+    }
+
+    async findByCode(code: string) {
+      return await this.prisma.products.findFirst({
+        where: { code: code, status: 1 },
+        include: { product_items: true },
+      });
     }
 }

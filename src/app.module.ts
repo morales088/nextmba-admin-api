@@ -13,6 +13,8 @@ import { TopicsModule } from './modules/topics/topics.module';
 import { FilesModule } from './modules/files/files.module';
 import { MediasModule } from './modules/medias/medias.module';
 import { ProductsModule } from './modules/products/products.module';
+import { PaymentsModule } from './modules/payments/payments.module';
+import { StudentsModule } from './modules/students/students.module';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -46,6 +48,8 @@ dotenv.config();
     FilesModule,
     MediasModule,
     ProductsModule,
+    PaymentsModule,
+    StudentsModule,
   ],
   controllers: [],
   providers: [],
