@@ -38,6 +38,14 @@ export class UserController {
 
     return user;
   }
+
+  @Get('/:userId')
+  async getUserById(@Param('userId') userId: number) {
+    const user = await this.userService.findById(userId);
+
+    return user;
+  }
+
   @Get('/all')
   async getAllUser(@Request() req: any) {
     const { email } = req.user;
