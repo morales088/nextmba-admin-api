@@ -47,6 +47,22 @@ export class UpdateStudentDto {
   affiliate_access: number;
 
   @IsOptional()
+  @IsString()
+  website: string;
+
+  @IsOptional()
+  @IsString()
+  linkendIn: string;
+
+  @IsOptional()
+  @IsString()
+  instagram: string;
+
+  @IsOptional()
+  @IsString()
+  telegram: string;
+
+  @IsOptional()
   @IsNumber()
   @IsIn([0, 1]) // 0 - delete, 1 - active
   status: number;

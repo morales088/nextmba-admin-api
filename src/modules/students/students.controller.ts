@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { StudentsService } from './services/students.service';
 import { CreateStudentDto } from './dto/create-student.dto';
+import { UpdateStudentDto } from './dto/update-student.dto';
 
 @Controller('students')
 @UseGuards(AuthGuard('jwt'))
@@ -9,17 +10,17 @@ export class StudentsController {
     constructor(private readonly studentsService: StudentsService) {}
   
     @Get('/:StudentId')
-    async getModule(@Param('StudentId') StudentId: number) {
+    async getStudent(@Param('StudentId') StudentId: number) {
       return await this.studentsService.getStudent(StudentId);
     }
   
     @Get('/')
-    async getModules() {
+    async getStudents() {
       return await this.studentsService.getStudents();
     }
   
     @Post('/')
-    async createModule(@Body() createStudentDto: CreateStudentDto) {
+    async createStudent(@Body() createStudentDto: CreateStudentDto) {
       const studentData = {
         ...createStudentDto,
       };
@@ -27,12 +28,12 @@ export class StudentsController {
       return await this.studentsService.createStudent(studentData);
     }
   
-    // @Put('/:moduleId')
-    // async updateModule(
-    //   @Param('moduleId') moduleId: number,
-    //   @Request() req: any,
-    //   @Body() updateModuleDto: UpdateModuleDto
-    // ) {
-    //   return await this.modulesService.updateModule(moduleId, updateModuleDto);
-    // }
+    @Put('/:studentId')
+    async updateStudent(
+      @Param('studentId') studentId: number,
+      @Request() req: any,
+      @Body() updateStudentDto: UpdateStudentDto
+    ) {
+      return await this.studentsService.updateStudent(studentId, updateStudentDto);
+    }
 }

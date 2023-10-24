@@ -2,10 +2,12 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { AbstractRepository } from 'src/common/repositories/abstract.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { Payments } from '@prisma/client';
+import { PaymentItemRepository } from './payment_item.repository';
 
 @Injectable()
 export class PaymentRepository extends AbstractRepository<Payments> {
-  constructor(protected readonly prisma: PrismaService) {
+  constructor(protected readonly prisma: PrismaService, 
+    private readonly paymentItemRepository: PaymentItemRepository) {
     super(prisma);
   }
 
@@ -17,21 +19,29 @@ export class PaymentRepository extends AbstractRepository<Payments> {
     return this.prisma[this.modelName].findMany({ where: { status: 1 }, include: { payment_items: true } });
   }
 
-//   async insert(data: Partial<Modules>): Promise<Modules> {
-//     const course = await this.prisma.courses.findUnique({ where: { id : data.course_id } });
-    
-//     if (!course) {
-//       throw new BadRequestException('Course does not exist.');
-//     }
-    
-//     return this.prisma[this.modelName].create({ data });
-//   }
+  async insert(studentId:number, productId:number, data: Partial<Payments>): Promise<any> {
 
-//   async updateModule(id: number, data: UpdateModuleDto): Promise<Modules> {
-//     const module = await this.findById(id);
+    // insert payment
+    const paymentData = {
+      student_id : studentId,
+      product_id : productId,
+      ...data
+    }
     
-//     if (!module) {
-//       throw new BadRequestException('Module does not exist.');
+    const createPayment = await this.prisma[this.modelName].create({data: paymentData })
+
+    // insert payment items 
+    const createPaymentItems = await this.paymentItemRepository.insert(studentId, createPayment.id, data.product_code)
+
+    
+    return await this.findById(createPayment.id)
+  }
+
+//   async update(id: number, data): Promise<Payments> {
+//     const payment = await this.findById(id);
+    
+//     if (!payment) {
+//       throw new BadRequestException('payment does not exist.');
 //     }
     
 //     return this.prisma[this.modelName].update({

@@ -165,39 +165,29 @@ model Students {
   profile_picture  String?
   // chat_moderator       Boolean   @default(false) //[false - not, true - moderator]
   // forgot_password_code String
+  library_access   Int       @default(0)
   account_type     Int       @default(1) //[1 - trial, 2 - regular, 3 - pro]
   affiliate_access Int       @default(0) //[0 - not, 1 - partner]
+
+  website   String?
+  linkendIn String?
+  instagram String?
+  telegram  String?
 
   status          Int               @default(1)
   createdAt       DateTime          @default(now())
   updatedAt       DateTime?         @updatedAt
-  student_links   Student_links[]
   student_courses Student_courses[]
   payments        Payments[]
-}
-
-model Student_links {
-  id Int @id @default(autoincrement())
-
-  student   Students @relation(fields: [studentId], references: [id])
-  studentId Int
-
-  name String @db.VarChar(255)
-  link String
-  icon String
-
-  status    Int       @default(1)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
 }
 
 model Student_courses {
   id Int @id @default(autoincrement())
 
-  student   Students @relation(fields: [studentId], references: [id])
-  studentId Int
-  course    Courses  @relation(fields: [courseId], references: [id])
-  courseId  Int
+  student   Students @relation(fields: [student_id], references: [id])
+  student_id Int
+  course    Courses  @relation(fields: [course_id], references: [id])
+  course_id  Int
 
   course_type     Int      @default(1) //[1 - paid, 2 - manually added, 3 - gifted]
   starting_date   DateTime @default(now())

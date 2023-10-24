@@ -7,14 +7,15 @@ export class CreateStudentDto {
   @IsString()
   name: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   email: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @MinLength(8, {
     message: 'Password must be at least 8 characters long.',
   })
+
   @IsString()
   password: string;
 
@@ -38,7 +39,7 @@ export class CreateStudentDto {
   @IsString()
   position: string;
   
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @IsIn(['en', 'es', 'pt', 'fr']) // en - english, es - espanish, pt - portuguese, fr - french
   language: string;
@@ -56,4 +57,20 @@ export class CreateStudentDto {
   @IsNumber()
   @IsIn([0, 1]) // [0 - not, 1 - partner]
   affiliate_access: number;
+
+  @IsOptional()
+  @IsString()
+  website: string;
+
+  @IsOptional()
+  @IsString()
+  linkendIn: string;
+
+  @IsOptional()
+  @IsString()
+  instagram: string;
+
+  @IsOptional()
+  @IsString()
+  telegram: string;
 }
