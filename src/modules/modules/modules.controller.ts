@@ -36,4 +36,5 @@ export class ModulesController {
   ) {
     return await this.modulesService.updateModule(moduleId, updateModuleDto);
   }
+  
 }

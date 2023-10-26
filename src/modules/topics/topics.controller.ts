@@ -7,38 +7,34 @@ import { AuthGuard } from '@nestjs/passport';
 @Controller('topics')
 @UseGuards(AuthGuard('jwt'))
 export class TopicsController {
-    constructor(
-        private readonly topicsService: TopicsService,
-      ) {}
+  constructor(private readonly topicsService: TopicsService) {}
 
-      @Get('/:topicId')
-      async getTopic(
-        @Param('topicId') topicId: number
-        ) {
-        return await this.topicsService.getTopic(topicId);
-      }
-      
-    @Get('/')
-    async getTopics() {
-      return await this.topicsService.getTopics();
-    }
-    
-    @Post('/')
-    async createTopic(@Body() createTopicDto:CreateTopicDto) {
-  
-      const topicData = {
-        ...createTopicDto,
-      };
+  @Get('/:topicId')
+  async getTopic(@Param('topicId') topicId: number) {
+    return await this.topicsService.getTopic(topicId);
+  }
 
-      return await this.topicsService.createTopic(topicData)
-    }
+  @Get('module/:moduleId')
+  async getByModuleId(@Param('moduleId') moduleId: number) {
+    return await this.topicsService.getByModuleId(moduleId);
+  }
 
-    @Put('/:topicId')
-    async updateTopic(
-      @Param('topicId') topicId: number,
-      @Request() req: any, 
-      @Body() updateTopicDto: UpdateTopicDto
-      ) {
-          return await this.topicsService.updateTopic(topicId, updateTopicDto)
-    }
+  @Get('/')
+  async getTopics() {
+    return await this.topicsService.getTopics();
+  }
+
+  @Post('/')
+  async createTopic(@Body() createTopicDto: CreateTopicDto) {
+    const topicData = {
+      ...createTopicDto,
+    };
+
+    return await this.topicsService.createTopic(topicData);
+  }
+
+  @Put('/:topicId')
+  async updateTopic(@Param('topicId') topicId: number, @Request() req: any, @Body() updateTopicDto: UpdateTopicDto) {
+    return await this.topicsService.updateTopic(topicId, updateTopicDto);
+  }
 }

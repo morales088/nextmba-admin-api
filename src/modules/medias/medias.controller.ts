@@ -7,38 +7,34 @@ import { UpdateMediaDto } from './dto/update-media.dto';
 @Controller('medias')
 @UseGuards(AuthGuard('jwt'))
 export class MediasController {
-    constructor(
-        private readonly mediasService: MediasService,
-      ) {}
+  constructor(private readonly mediasService: MediasService) {}
 
-      @Get('/:mediaId')
-      async getMedia(
-        @Param('mediaId') mediaId: number
-        ) {
-        return await this.mediasService.getMedia(mediaId);
-      }
-      
-      @Get('/')
-      async getTopics() {
-        return await this.mediasService.getMedias();
-      }
+  @Get('/:mediaId')
+  async getMedia(@Param('mediaId') mediaId: number) {
+    return await this.mediasService.getMedia(mediaId);
+  }
 
-      @Post('/')
-      async createFiles(@Body() createMediaDto : CreateMediaDto) {
-    
-        const mediaDto = {
-          ...createMediaDto,
-        };
-  
-        return await this.mediasService.createMedia(mediaDto)
-      }
-  
-      @Put('/:fileId')
-      async updateFile(
-        @Param('fileId') fileId: number,
-        @Request() req: any, 
-        @Body() updateMediaDto: UpdateMediaDto
-        ) {
-            return await this.mediasService.updateMedia(fileId, updateMediaDto)
-      }
+  @Get('module/:moduleId')
+  async getByModuleId(@Param('moduleId') moduleId: number) {
+    return await this.mediasService.getByModuleId(moduleId);
+  }
+
+  @Get('/')
+  async getTopics() {
+    return await this.mediasService.getMedias();
+  }
+
+  @Post('/')
+  async createFiles(@Body() createMediaDto: CreateMediaDto) {
+    const mediaDto = {
+      ...createMediaDto,
+    };
+
+    return await this.mediasService.createMedia(mediaDto);
+  }
+
+  @Put('/:fileId')
+  async updateFile(@Param('fileId') fileId: number, @Request() req: any, @Body() updateMediaDto: UpdateMediaDto) {
+    return await this.mediasService.updateMedia(fileId, updateMediaDto);
+  }
 }

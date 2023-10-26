@@ -4,6 +4,9 @@ export class UpdateFileDto {
 //   @IsNotEmpty()
 //   topic_id: number;
 
+  @IsNotEmpty()
+  module_id: number;
+
   @IsOptional()
   @IsString()
   name: string;

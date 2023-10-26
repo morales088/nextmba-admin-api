@@ -19,28 +19,31 @@ export class TranslationRepository extends AbstractRepository<Translations> {
   }
 
   async insert(data: Partial<Translations>): Promise<Translations> {
-    
-    const module = await this.prisma.modules.findUnique({ where: { id : data.module_id } });
-    
+    const module = await this.prisma.modules.findUnique({ where: { id: data.module_id } });
+
     if (!module) {
       throw new BadRequestException('Module does not exist.');
     }
-    
+
     return this.prisma[this.modelName].create({ data });
   }
 
   async updateTranslation(id: number, data: UpdateTranslationDto): Promise<Translations> {
     const translation = await this.findById(id);
-    
+
     if (!translation) {
       throw new BadRequestException('translation does not exist.');
     }
-    
+
     return this.prisma[this.modelName].update({
-      where: { id : id },
+      where: { id: id },
       data: data,
     });
   }
 
-
+  async findByModuleId(moduleId: number) {
+    return await this.prisma[this.modelName].findMany({
+      where: { module_id: moduleId, status: 1 },
+    });
+  }
 }

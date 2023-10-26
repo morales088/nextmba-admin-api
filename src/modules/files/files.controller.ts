@@ -7,39 +7,34 @@ import { AuthGuard } from '@nestjs/passport';
 @Controller('files')
 @UseGuards(AuthGuard('jwt'))
 export class FilesController {
-    constructor(
-        private readonly filesService: FilesService,
-      ) {}
+  constructor(private readonly filesService: FilesService) {}
 
-      @Get('/:fileId')
-      async getFile(
-        @Param('fileId') fileId: number
-        ) {
-        return await this.filesService.getFile(fileId);
-      }
-      
-      @Get('/')
-      async getTopics() {
-        return await this.filesService.getFiles();
-      }
-      
-      @Post('/')
-      async createFiles(@Body() createFileDto : CreateFileDto) {
-    
-        const fileData = {
-          ...createFileDto,
-        };
-  
-        return await this.filesService.createFile(fileData)
-      }
-  
-      @Put('/:fileId')
-      async updateFile(
-        @Param('fileId') fileId: number,
-        @Request() req: any, 
-        @Body() updateFileDto: UpdateFileDto
-        ) {
-            return await this.filesService.updateFile(fileId, updateFileDto)
-      }
+  @Get('/:fileId')
+  async getFile(@Param('fileId') fileId: number) {
+    return await this.filesService.getFile(fileId);
+  }
 
+  @Get('module/:moduleId')
+  async getByModuleId(@Param('moduleId') moduleId: number) {
+    return await this.filesService.getByModuleId(moduleId);
+  }
+
+  @Get('/')
+  async getTopics() {
+    return await this.filesService.getFiles();
+  }
+
+  @Post('/')
+  async createFiles(@Body() createFileDto: CreateFileDto) {
+    const fileData = {
+      ...createFileDto,
+    };
+
+    return await this.filesService.createFile(fileData);
+  }
+
+  @Put('/:fileId')
+  async updateFile(@Param('fileId') fileId: number, @Request() req: any, @Body() updateFileDto: UpdateFileDto) {
+    return await this.filesService.updateFile(fileId, updateFileDto);
+  }
 }
