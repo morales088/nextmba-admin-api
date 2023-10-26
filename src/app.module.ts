@@ -15,6 +15,8 @@ import { MediasModule } from './modules/medias/medias.module';
 import { ProductsModule } from './modules/products/products.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { StudentsModule } from './modules/students/students.module';
+import { AwsService } from './common/aws/aws.service';
+import { AwsS3Service } from './common/aws/aws_s3.service';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
