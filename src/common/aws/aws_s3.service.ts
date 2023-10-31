@@ -7,12 +7,12 @@ import { AwsService } from './aws.service';
 export class AwsS3Service {
   constructor(private readonly awsService: AwsService) {}
 
-  async uploadFile(file: Express.Multer.File): Promise<string> {
+  async uploadSmallFile(path: string, file: Express.Multer.File): Promise<string> {
 
       const s3 = this.awsService.getS3Instance();
       const params: S3.Params = {
         Bucket: process.env.AWS_BUCKET,
-        Key: `images/courses_cover/${Date.now().toString()}${extname(file.originalname)}`,
+        Key: `${path}/${Date.now().toString()}${extname(file.originalname)}`,
         Body: file.buffer,
       };
 
@@ -21,8 +21,8 @@ export class AwsS3Service {
       
   }
 
-  async uploadBigfile(file: Express.Multer.File) {
-    const fileName = `${Date.now().toString()}-${file.originalname}`;
+  async uploadBigfile(path:string, file: Express.Multer.File) {
+    const fileName = `${path}/${Date.now().toString()}-${file.originalname}`;
     const uploadId = await this.initiateMultipartUpload(fileName);
     const parts: AWS.S3.CompletedPart[] = [];
 
@@ -85,5 +85,21 @@ export class AwsS3Service {
     return response.Location;
   }
   
+  async upload(path: string, file: Express.Multer.File): Promise<string> {
+    let fileUrl;
+    if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/jpg' || file.mimetype === 'image/png'){
+    
+      if (file.size > 100000000) {
+        // more than 100mb
+        fileUrl = await this.uploadBigfile(path, file);
+      } else {
+        fileUrl = await this.uploadSmallFile(path, file);
+      }
+
+    }else{
+      throw new Error('Upload jpeg/jpg/png file.');
+    }
+    return fileUrl;  
+}
 
 }
