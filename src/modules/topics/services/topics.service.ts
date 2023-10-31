@@ -11,6 +11,10 @@ export class TopicsService {
         return this.topicsRepository.findById(id);
       }
 
+      async getByModuleId(id:number) {
+        return this.topicsRepository.findByModuleId(id);
+      }
+
       async getTopics() {
         return this.topicsRepository.find();
       }

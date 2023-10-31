@@ -54,4 +54,10 @@ export class TopicsRepository extends AbstractRepository<Topics> {
     });
   }
 
+  async findByModuleId(moduleId: number) {
+    return await this.prisma[this.modelName].findMany({
+      where: { module_id: moduleId, status: 1 },
+    });
+  }
+
 }

@@ -5,6 +5,9 @@ export class CreateFileDto {
   topic_id: number;
 
   @IsNotEmpty()
+  module_id: number;
+
+  @IsNotEmpty()
   @IsString()
   name: string;
 

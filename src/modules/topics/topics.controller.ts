@@ -35,6 +35,11 @@ export class TopicsController {
     return await this.topicsService.getTopics();
   }
 
+  @Get('module/:moduleId')
+  async getByModuleId(@Param('moduleId') moduleId: number) {
+    return await this.topicsService.getByModuleId(moduleId);
+  }
+
   @Post('/')
   @UseInterceptors(FileInterceptor('file_cover'))
   async createTopic(
@@ -63,7 +68,6 @@ export class TopicsController {
     @UploadedFile()
     file_cover: Express.Multer.File
   ) {
-
     const topicData = {
       ...updateTopicDto,
     };

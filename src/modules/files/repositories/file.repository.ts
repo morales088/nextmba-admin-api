@@ -42,4 +42,10 @@ export class FileRepository extends AbstractRepository<Files> {
     });
   }
 
+  async findByModuleId(moduleId: number) {
+    return await this.prisma[this.modelName].findFirst({
+      where: { module_id: moduleId, status: 1 },
+    });
+  }
+
 }

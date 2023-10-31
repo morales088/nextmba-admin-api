@@ -65,6 +65,7 @@ model Modules {
   translations  Translations[]
   topics        Topics[]
   medias        Medias[]
+  files         Files[]
 }
 
 model Speakers {
@@ -119,8 +120,10 @@ model Topics {
 model Files {
   id Int @id @default(autoincrement())
 
-  topic    Topics @relation(fields: [topic_id], references: [id])
-  topic_id Int
+  module    Modules @relation(fields: [module_id], references: [id])
+  module_id Int
+  topic     Topics  @relation(fields: [topic_id], references: [id])
+  topic_id  Int
 
   name      String  @db.VarChar(255)
   type      Int     @default(1) // [1 - materials, 2 - assignment]
@@ -184,9 +187,9 @@ model Students {
 model Student_courses {
   id Int @id @default(autoincrement())
 
-  student   Students @relation(fields: [student_id], references: [id])
+  student    Students @relation(fields: [student_id], references: [id])
   student_id Int
-  course    Courses  @relation(fields: [course_id], references: [id])
+  course     Courses  @relation(fields: [course_id], references: [id])
   course_id  Int
 
   course_type     Int      @default(1) //[1 - paid, 2 - manually added, 3 - gifted]

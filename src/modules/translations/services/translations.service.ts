@@ -11,6 +11,10 @@ export class TranslationsService {
       return this.translationRepository.findById(id);
     }
 
+    async getByModuleId(id:number) {
+      return this.translationRepository.findByModuleId(id);
+    }
+
     async getTranslations() {
       return this.translationRepository.find();
     }

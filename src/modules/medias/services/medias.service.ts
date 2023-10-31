@@ -11,6 +11,10 @@ export class MediasService {
         return this.mediaRepository.findById(id);
       }
 
+      async getByModuleId(id:number) {
+        return this.mediaRepository.findByModuleId(id);
+      }
+
       async getMedias(){
           return await this.mediaRepository.find()
       }
