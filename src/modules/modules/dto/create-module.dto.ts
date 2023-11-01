@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsDate, IsDateString, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsDate, IsDateString, IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateModuleDto {
   @IsNotEmpty()
@@ -30,4 +30,8 @@ export class CreateModuleDto {
   @Type(() => Date)
   @IsDate()
   end_date: Date;
+
+  @IsOptional()
+  @IsBoolean()
+  display_topic: boolean;
 }

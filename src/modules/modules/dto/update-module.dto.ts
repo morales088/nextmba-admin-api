@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { IsDateString, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, isNumber } from 'class-validator';
+import { IsBoolean, IsDateString, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, isNumber } from 'class-validator';
 
 export class UpdateModuleDto {
 
@@ -31,4 +31,8 @@ export class UpdateModuleDto {
   @IsNumber()
   @IsIn([1, 2, 3, 4, 5]) // [1 - draft, 2 - offline, 3 - live, 4 - pending replay, 5 - replay]
   status: number;
+
+  @IsOptional()
+  @IsBoolean()
+  display_topic: boolean;
 }
