@@ -9,10 +9,12 @@ import { StudentsService } from '../students/services/students.service';
 import { HashService } from 'src/common/utils/hash.service';
 import { ProductRepository } from '../products/repositories/product.repository';
 import { ProductItemRepository } from '../products/repositories/product_item.repository';
+import { ApiKeyGuard } from 'src/common/guards/api-key.guard';
+import { PaymentApiController } from './payment_api.controller';
 
 @Module({
   imports: [PrismaModule],
-  controllers: [PaymentsController],
+  controllers: [PaymentsController, PaymentApiController],
   providers: [
     PaymentsService,
     PaymentRepository,
@@ -22,6 +24,7 @@ import { ProductItemRepository } from '../products/repositories/product_item.rep
     ProductItemRepository,
     StudentsService,
     HashService,
+    ApiKeyGuard
   ],
 })
 export class PaymentsModule {}

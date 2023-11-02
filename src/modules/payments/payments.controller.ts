@@ -19,10 +19,11 @@ export class PaymentsController {
     return await this.paymentsService.getPayments();
   }
 
-  @Post('/')
+  @Post('/manual')
   async createModule(@Body() createPaymentDto: CreatePaymentDto) {
     const paymentData = {
       ...createPaymentDto,
+      payment_method : 2
     };
 
     return await this.paymentsService.createPayment(paymentData);

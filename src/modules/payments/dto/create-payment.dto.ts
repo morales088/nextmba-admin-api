@@ -18,10 +18,10 @@ export class CreatePaymentDto {
   // price: Prisma.Decimal;
   price: number;
 
-  @IsOptional()
-  @IsNumber()
-  @IsIn([1, 2]) 
-  payment_method: number;
+  // @IsOptional()
+  // @IsNumber()
+  // @IsIn([1, 2]) 
+  // payment_method: number;
 
   @IsNotEmpty()
   @IsString()
