@@ -28,7 +28,8 @@ export class CreateTopicDto {
   position: number;
 
   @IsOptional()
-  @IsBoolean()
+  @IsNumber()
+  @IsIn([0, 1])
   publish: number;
 
 }
