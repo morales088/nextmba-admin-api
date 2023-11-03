@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import { Type } from 'class-transformer';
 import { IsBoolean, IsDateString, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, isNumber } from 'class-validator';
 
 export class UpdateModuleDto {
@@ -20,11 +21,11 @@ export class UpdateModuleDto {
   external_link: string;
 
   @IsOptional()
-  @IsDateString()
+  @Type(() => Date)
   start_date: Date;
 
   @IsOptional()
-  @IsDateString()
+  @Type(() => Date)
   end_date: Date;
 
   @IsOptional()

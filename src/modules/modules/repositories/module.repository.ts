@@ -30,7 +30,6 @@ export class ModuleRepository extends AbstractRepository<Modules> {
 
   async updateModule(id: number, data: UpdateModuleDto): Promise<Modules> {
     const module = await this.findById(id);
-    
     if (!module) {
       throw new BadRequestException('Module does not exist.');
     }
