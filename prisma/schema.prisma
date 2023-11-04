@@ -194,6 +194,7 @@ model Student_courses {
   course_id  Int
 
   course_type     Int      @default(1) //[1 - paid, 2 - manually added, 3 - gifted]
+  module_quantity Int      @default(12)
   starting_date   DateTime @default(now())
   expiration_date DateTime @default(dbgenerated("NOW() + interval '1 year'"))
 

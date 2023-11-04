@@ -11,6 +11,7 @@ import { ProductRepository } from '../products/repositories/product.repository';
 import { ProductItemRepository } from '../products/repositories/product_item.repository';
 import { ApiKeyGuard } from 'src/common/guards/api-key.guard';
 import { PaymentApiController } from './payment_api.controller';
+import { StudentCoursesRepository } from '../students/repositories/student_courses.repository';
 
 @Module({
   imports: [PrismaModule],
@@ -24,7 +25,8 @@ import { PaymentApiController } from './payment_api.controller';
     ProductItemRepository,
     StudentsService,
     HashService,
-    ApiKeyGuard
+    ApiKeyGuard,
+    StudentCoursesRepository,
   ],
 })
 export class PaymentsModule {}
