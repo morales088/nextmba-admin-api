@@ -18,7 +18,6 @@ export class ProductItemRepository extends AbstractRepository<Product_items> {
   }
 
   async insert(data:any): Promise<any> {
-
       try {
         return await this.prisma[this.modelName].create({ data });
       } catch (error) {

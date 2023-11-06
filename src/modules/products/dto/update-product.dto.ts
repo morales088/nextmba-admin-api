@@ -33,9 +33,8 @@ export class UpdateProductDto {
 }
 
 export class ItemsDTO {
-
   @IsNotEmpty()
-  id: number;
+  course_id: number;
 
   @IsOptional()
   quantity: number;
