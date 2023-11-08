@@ -11,15 +11,17 @@ datasource db {
 }
 
 model Users {
-  id           Int       @id @default(autoincrement())
-  name         String?
-  email        String    @unique
-  password     String
-  profileImage String?
-  role         Int
-  status       Int       @default(1)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime? @updatedAt
+  id                 Int                  @id @default(autoincrement())
+  name               String?
+  email              String               @unique
+  password           String
+  profileImage       String?
+  role               Int
+  status             Int                  @default(1)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime?            @updatedAt
+  affiliates         Affiliates[]
+  affilate_withdraws Affilate_withdraws[]
 }
 
 model ResetPasswordToken {
@@ -178,11 +180,13 @@ model Students {
   instagram String?
   telegram  String?
 
-  status          Int               @default(1)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime?         @updatedAt
-  student_courses Student_courses[]
-  payments        Payments[]
+  status             Int                  @default(1)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime?            @updatedAt
+  student_courses    Student_courses[]
+  payments           Payments[]
+  affiliates         Affiliates[]
+  affilate_withdraws Affilate_withdraws[]
 }
 
 model Student_courses {
@@ -279,6 +283,41 @@ model Payment_items {
   giftable Int @default(0)
 
   status    Int       @default(1)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Affiliates {
+  id Int @id @default(autoincrement())
+
+  student    Students @relation(fields: [student_id], references: [id])
+  student_id Int
+  admin      Users    @relation(fields: [admin_id], references: [id])
+  admin_id   Int
+
+  code        String
+  percentage       Decimal @default(0) @db.Decimal(9, 2)
+  withdrawal_info  String?
+  remarks          String?
+
+  status Int     @default(2) //[0 - cancel, 1 - proccessed, 2 - pending]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Affilate_withdraws {
+  id Int @id @default(autoincrement())
+
+  student    Students @relation(fields: [student_id], references: [id])
+  student_id Int
+  admin      Users    @relation(fields: [admin_id], references: [id])
+  admin_id   Int
+
+  withdraw_amount  String
+  withdrawal_info  String?
+  remarks          String?
+
+  status Int     @default(1) //[0 - decline, 1 - pending, 2 - approved]
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
 }
