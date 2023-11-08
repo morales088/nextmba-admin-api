@@ -14,9 +14,9 @@ export class StudentCoursesRepository extends AbstractRepository<Student_courses
     return 'Student_courses'; // Specify the Prisma model name for entity
   }
 
-  //   async find(): Promise<Student_courses> {
-  //     return this.prisma[this.modelName].findMany({ where: { status: 1 } });
-  //   }
+  async find(): Promise<Student_courses> {
+    return this.prisma[this.modelName].findMany({ where: { status: 1 }, include: { course: true } });
+  }
 
   async insert(data: Partial<Student_courses>): Promise<Student_courses> {
     const existingStudent = await this.prisma[this.modelName].findFirst({
@@ -27,7 +27,13 @@ export class StudentCoursesRepository extends AbstractRepository<Student_courses
       throw new BadRequestException('Student course already exists.');
     }
 
-    return this.prisma[this.modelName].create({ data: data });
+    const courseExist = await this.prisma.courses.findMany({ where: { id:data.course_id, status: 1 }});
+    if (courseExist.length === 0) {
+      throw new BadRequestException('Course dont exists.');
+    }
+
+    const studCourse = await this.prisma[this.modelName].create({ data: data });
+    return await this.findById(studCourse.id)
   }
 
   async updateStudentCourse(id: number, data: UpdateStudentDto): Promise<Student_courses> {
@@ -44,7 +50,7 @@ export class StudentCoursesRepository extends AbstractRepository<Student_courses
   }
 
   async findById(id: number) {
-    return this.prisma[this.modelName].findUnique({ where: { id: id } });
+    return this.prisma[this.modelName].findUnique({ where: { id: id }, include: { course: true } });
   }
 
   async findByStudentId(id: number) {

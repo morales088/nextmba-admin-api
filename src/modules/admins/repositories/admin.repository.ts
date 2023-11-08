@@ -13,6 +13,10 @@ export class AdminRepository extends AbstractRepository<Users> {
     return 'Users'; // Specify the Prisma model name for entity
   }
 
+  async find(id: number) {
+    return this.prisma[this.modelName].findFirst({ where: { id : id} });
+  }
+
   async findAllAdmin() {
     return this.prisma[this.modelName].findMany({
       select: {

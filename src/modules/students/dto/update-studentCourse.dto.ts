@@ -15,6 +15,11 @@ import {
 export class UpdateStudentCourseDto {
   @IsOptional()
   @IsNumber()
+  @IsIn([1, 2, 3]) // [1 - paid, 2 - manually added, 3 - gifted]
+  course_type: number;
+
+  @IsOptional()
+  @IsNumber()
   module_quantity: number;
 
   @IsOptional()
