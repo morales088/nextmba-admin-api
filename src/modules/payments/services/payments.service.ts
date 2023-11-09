@@ -77,20 +77,20 @@ export class PaymentsService {
     } else if (affiliateCount >= proAffiliate) {
       commission_percentage = proPercentage;
     }
-    console.log(affiliate.id)
+    
     await this.paymentAffiliateRepository.update(affiliate.id, { percentage: commission_percentage });
 
-    // const paymentData = {
-    //   ...data,
-    //   from_student_id : affiliate.student_id,
-    //   commission_percentage : commission_percentage
-    // };
+    const paymentData = {
+      ...data,
+      from_student_id : affiliate.student_id,
+      commission_percentage : commission_percentage
+    };
 
-    // // insert data to payment table and return payment_id
-    // const createPayment = await this.paymentRepository.insert(studentId, product.id, paymentData)
+    // insert data to payment table and return payment_id
+    const createPayment = await this.paymentRepository.insert(studentId, product.id, paymentData)
 
-    // //return payment details
-    // return createPayment;
+    //return payment details
+    return createPayment;
   }
 
   //   async updateModule(id: number, data) {
