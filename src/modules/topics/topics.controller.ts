@@ -41,18 +41,18 @@ export class TopicsController {
   }
 
   @Post('/')
-  @UseInterceptors(FileInterceptor('file_cover'))
+  @UseInterceptors(FileInterceptor('topic_cover'))
   async createTopic(
     @Body() createTopicDto: CreateTopicDto,
     @UploadedFile()
-    file_cover: Express.Multer.File
+    topic_cover: Express.Multer.File
   ) {
     const topicData = {
       ...createTopicDto,
     };
-    if (file_cover) {
+    if (topic_cover) {
       const path = 'images/topics_cover';
-      const fileUrl = await this.awsS3Service.upload(path, file_cover);
+      const fileUrl = await this.awsS3Service.upload(path, topic_cover);
       topicData.cover_photo = fileUrl;
     }
 
@@ -60,21 +60,21 @@ export class TopicsController {
   }
 
   @Put('/:topicId')
-  @UseInterceptors(FileInterceptor('file_cover'))
+  @UseInterceptors(FileInterceptor('topic_cover'))
   async updateTopic(
     @Param('topicId') topicId: number,
     @Request() req: any,
     @Body() updateTopicDto: UpdateTopicDto,
     @UploadedFile()
-    file_cover: Express.Multer.File
+    topic_cover: Express.Multer.File
   ) {
     const topicData = {
       ...updateTopicDto,
     };
 
-    if (file_cover) {
+    if (topic_cover) {
       const path = 'images/topics_cover';
-      const fileUrl = await this.awsS3Service.upload(path, file_cover);
+      const fileUrl = await this.awsS3Service.upload(path, topic_cover);
       topicData.cover_photo = fileUrl;
     }
     return await this.topicsService.updateTopic(topicId, topicData);
