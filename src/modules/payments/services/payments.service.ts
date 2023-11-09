@@ -25,6 +25,7 @@ export class PaymentsService {
 
     // get product details
     const product = await this.productRepository.findByCode(data.product_code);
+    if(!product) return {message: "Invalid Product Code."}
 
     // check if email has account and return student_id
     let studentId: number;
@@ -57,8 +58,6 @@ export class PaymentsService {
 
     // insert data to payment table and return payment_id
     const createPayment = await this.paymentRepository.insert(studentId, product.id, data)
-
-    // product code access and insert to product items
 
     //return payment details
 

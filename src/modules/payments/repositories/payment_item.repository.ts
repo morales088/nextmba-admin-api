@@ -22,15 +22,19 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
       where: { code: productCode, status: 1 },
       include: { product_items: true },
     });
-    
+
     try {
       for (const product_item of product.product_items) {
         // check student course
         const studentCourse = await this.prisma.student_courses.findFirst({
           where: { student_id: studentId, course_id: product_item.course_id, status: 1 },
         });
+        // if student has course or not expired
+        const hasStudCourse = studentCourse && studentCourse.expiration_date > new Date();
+        console.log(1, studentCourse);
+        console.log(2, hasStudCourse);
 
-        const giftable = studentCourse ? product_item.quantity : product_item.quantity - 1;
+        const giftable = hasStudCourse ? product_item.quantity : product_item.quantity - 1;
 
         // insert payment items
         const itemData = {
@@ -39,7 +43,7 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
           quantity: product_item.quantity,
           giftable: giftable,
         };
-        
+
         await this.prisma[this.modelName].create({ data: itemData });
 
         // insert student course
@@ -53,8 +57,24 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
           starting_date: startingDate,
           expiration_date: expirationDate,
         };
-        
+        // add student course for first time enrollee
         if (!studentCourse) await this.prisma.student_courses.create({ data: studentCourseData });
+
+        // update student course to expired course
+        if (hasStudCourse) {
+          let newExpDate = new Date(studentCourse.expiration_date)
+          newExpDate.setFullYear(newExpDate.getFullYear() + 1);
+
+          const modulePerCourse = parseInt(process.env.MODULE_PER_COURSE)
+          const newModuleQuantity = studentCourse.module_quantity + modulePerCourse;
+
+          const newStudentCourseData = {
+            expiration_date: newExpDate,
+            module_quantity: newModuleQuantity
+          };
+
+          await this.prisma.student_courses.update({ where: { id: studentCourse.id }, data: newStudentCourseData });
+        }
       }
     } catch (error) {
       return { success: false, error: error.message };
