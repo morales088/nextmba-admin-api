@@ -17,6 +17,7 @@ import { PaymentsModule } from './modules/payments/payments.module';
 import { StudentsModule } from './modules/students/students.module';
 import { AwsService } from './common/aws/aws.service';
 import { AwsS3Service } from './common/aws/aws_s3.service';
+import { AffiliatesModule } from './modules/affiliates/affiliates.module';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -52,6 +53,7 @@ dotenv.config();
     ProductsModule,
     PaymentsModule,
     StudentsModule,
+    AffiliatesModule,
   ],
   controllers: [],
   providers: [],

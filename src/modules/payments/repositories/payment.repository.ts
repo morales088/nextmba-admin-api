@@ -69,4 +69,8 @@ export class PaymentRepository extends AbstractRepository<Payments> {
 
     return payments;
   }
+
+  async findByFromStudId(studentId: number): Promise<Payments> {
+    return this.prisma[this.modelName].findMany({ where: { from_student_id : studentId, status: 1 } });
+  }
 }
