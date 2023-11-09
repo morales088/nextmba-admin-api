@@ -3,6 +3,7 @@ import { PaymentRepository } from '../repositories/payment.repository';
 import { StudentRepository } from 'src/modules/students/repositories/student.repository';
 import { StudentsService } from 'src/modules/students/services/students.service';
 import { ProductRepository } from 'src/modules/products/repositories/product.repository';
+import { PaymentAffiliateRepository } from '../repositories/payment_affiliate.repository';
 
 @Injectable()
 export class PaymentsService {
@@ -10,6 +11,7 @@ export class PaymentsService {
     private readonly paymentRepository: PaymentRepository,
     private readonly studentRepository: StudentRepository,
     private readonly productRepository: ProductRepository,
+    private readonly paymentAffiliateRepository: PaymentAffiliateRepository,
     private readonly studentsService: StudentsService
   ) {}
 
@@ -22,9 +24,9 @@ export class PaymentsService {
   }
 
   async createPayment(data) {
-
     // get product details
     const product = await this.productRepository.findByCode(data.product_code);
+    if(!product) return {message: "Invalid Product Code."}
 
     // check if email has account and return student_id
     let studentId: number;
@@ -54,15 +56,16 @@ export class PaymentsService {
 
       studentId = createStudent.id;
     }
+    
+    // get affiliate infos
+    const paymentAffiliate = await this.paymentAffiliateRepository.findPerCode(data.affiliate_code)
+    console.log(paymentAffiliate)
 
-    // insert data to payment table and return payment_id
-    const createPayment = await this.paymentRepository.insert(studentId, product.id, data)
+    // // insert data to payment table and return payment_id
+    // const createPayment = await this.paymentRepository.insert(studentId, product.id, data)
 
-    // product code access and insert to product items
-
-    //return payment details
-
-    return createPayment;
+    // //return payment details
+    // return createPayment;
   }
 
   //   async updateModule(id: number, data) {
