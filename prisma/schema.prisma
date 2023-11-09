@@ -313,7 +313,7 @@ model Affilate_withdraws {
   admin      Users    @relation(fields: [admin_id], references: [id])
   admin_id   Int
 
-  withdraw_amount  String
+  withdraw_amount  Decimal @default(0) @db.Decimal(9, 2)
   withdrawal_info  String?
   remarks          String?
 

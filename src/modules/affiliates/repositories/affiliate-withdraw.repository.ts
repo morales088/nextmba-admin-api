@@ -20,24 +20,24 @@ export class AffiliateWithdrawRepository extends AbstractRepository<Affilate_wit
 
   async updateAffiliateWithdraw(id: number, data: UpdateAffiliateWithdrawDto): Promise<Affilate_withdraws> {
     const affiliateWithdraw = await this.findById(id);
-    
+
     if (!affiliateWithdraw) {
       throw new BadRequestException('Affiliate Withdraw does not exist.');
     }
-    
+
     return this.prisma[this.modelName].update({
-      where: { id : id },
+      where: { id: id },
       data: data,
     });
   }
 
-  async pendingWithdraws(){
+  async pendingWithdraws() {
     return this.prisma[this.modelName].findMany({ where: { status: 1 } }); //[0 - decline, 1 - pending, 2 - approved]
   }
-  
-  async approvedWithdraws(){
-    return this.prisma[this.modelName].findMany({ where: { status: 2 } }); //[0 - decline, 1 - pending, 2 - approved]
+
+  async approvedWithdraws() {
+    return this.prisma[this.modelName].findMany({
+      where: { status: 2 }
+    }); //[0 - decline, 1 - pending, 2 - approved]
   }
-
-
 }

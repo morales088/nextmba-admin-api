@@ -29,7 +29,12 @@ export class AffiliatesService {
     const withdraws = await this.affiliateWithdrawRepository.find();
     const pending = await this.affiliateWithdrawRepository.pendingWithdraws();
     const approved = await this.affiliateWithdrawRepository.approvedWithdraws();
-    return { withdraws, pending: pending.length, approved: approved.length };
+    let paid = 0;
+    approved.map((approve) => {
+      paid = paid + approve.withdraw_amount;
+    });
+
+    return { withdraws, pending: pending.length, approved: approved.length, paid: 0 };
   }
 
   async updateAffiliateWithdraw(id: number, data) {
