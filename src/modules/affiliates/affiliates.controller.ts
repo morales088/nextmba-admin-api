@@ -14,6 +14,11 @@ export class AffiliatesController {
     return await this.affiliatesService.getAffiliates();
   }
 
+  @Get('withdraws')
+  async getAffiliateWithdraws() {
+    return await this.affiliatesService.getAffiliateWithdraws();
+  }
+
   @Get('/:affiliateId')
   async getAffiliate(@Param('affiliateId') affiliateId: number) {
     return await this.affiliatesService.getAffiliate(affiliateId);
@@ -26,12 +31,6 @@ export class AffiliatesController {
     @Body() updateAffiliateDto: UpdateAffiliateDto
   ) {
     return await this.affiliatesService.updateAffiliate(affiliateId, updateAffiliateDto);
-  }
-  
-
-  @Get('/withdraws')
-  async getAffiliateWithdraws() {
-    return await this.affiliatesService.getAffiliateWithdraws();
   }
 
   @Get('/withdraws/:affiliateWithdrawId')
