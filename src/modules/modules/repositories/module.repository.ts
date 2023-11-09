@@ -15,7 +15,7 @@ export class ModuleRepository extends AbstractRepository<Modules> {
   }
 
   async find(): Promise<Modules> {
-    return this.prisma[this.modelName].findMany({ where: { status: { notIn: 0 } } });
+    return this.prisma[this.modelName].findMany({ where: { status: { notIn: [0] } } });
   }
 
   async insert(data: Partial<Modules>): Promise<Modules> {
