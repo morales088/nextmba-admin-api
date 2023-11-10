@@ -15,7 +15,7 @@ export class AffiliateRepository extends AbstractRepository<Affiliates> {
   }
 
   async find(): Promise<Affiliates> {
-    return this.prisma[this.modelName].findMany({ where: { status: 1 } });
+    return this.prisma[this.modelName].findMany();
   }
 
   async updateAffiliate(id: number, data: UpdateAffiliateDto): Promise<Affiliates> {

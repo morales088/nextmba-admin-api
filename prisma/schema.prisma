@@ -292,8 +292,8 @@ model Affiliates {
 
   student    Students @relation(fields: [student_id], references: [id])
   student_id Int
-  admin      Users    @relation(fields: [admin_id], references: [id])
-  admin_id   Int
+  admin      Users?    @relation(fields: [admin_id], references: [id])
+  admin_id   Int?
 
   code        String
   percentage       Decimal @default(0) @db.Decimal(9, 2)
@@ -310,8 +310,8 @@ model Affilate_withdraws {
 
   student    Students @relation(fields: [student_id], references: [id])
   student_id Int
-  admin      Users    @relation(fields: [admin_id], references: [id])
-  admin_id   Int
+  admin      Users?    @relation(fields: [admin_id], references: [id])
+  admin_id   Int?
 
   withdraw_amount  Decimal @default(0) @db.Decimal(9, 2)
   withdrawal_info  String?
