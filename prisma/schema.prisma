@@ -265,10 +265,11 @@ model Payments {
   commission_status     Int     @default(0) //[0 - unpaid, 1 - paid]
   remarks               String?
 
-  status        Int             @default(1)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime?       @updatedAt
-  payment_items Payment_items[]
+  status              Int                   @default(1)
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime?             @updatedAt
+  payment_items       Payment_items[]
+  withdrawal_payments Withdrawal_payments[]
 }
 
 model Payment_items {
@@ -292,15 +293,15 @@ model Affiliates {
 
   student    Students @relation(fields: [student_id], references: [id])
   student_id Int
-  admin      Users?    @relation(fields: [admin_id], references: [id])
+  admin      Users?   @relation(fields: [admin_id], references: [id])
   admin_id   Int?
 
-  code        String
-  percentage       Decimal @default(0) @db.Decimal(9, 2)
-  withdrawal_info  String?
-  remarks          String?
+  code            String
+  percentage      Decimal @default(0) @db.Decimal(9, 2)
+  withdrawal_info String?
+  remarks         String?
 
-  status Int     @default(2) //[0 - cancel, 1 - proccessed, 2 - pending]
+  status    Int       @default(2) //[0 - cancel, 1 - proccessed, 2 - pending]
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
 }
@@ -310,14 +311,28 @@ model Affilate_withdraws {
 
   student    Students @relation(fields: [student_id], references: [id])
   student_id Int
-  admin      Users?    @relation(fields: [admin_id], references: [id])
+  admin      Users?   @relation(fields: [admin_id], references: [id])
   admin_id   Int?
 
-  withdraw_amount  Decimal @default(0) @db.Decimal(9, 2)
-  withdrawal_info  String?
-  remarks          String?
+  withdraw_amount Decimal @default(0) @db.Decimal(9, 2)
+  withdrawal_info String?
+  remarks         String?
 
-  status Int     @default(1) //[0 - decline, 1 - pending, 2 - approved]
+  status              Int                   @default(1) //[0 - decline, 1 - pending, 2 - approved]
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime?             @updatedAt
+  withdrawal_payments Withdrawal_payments[]
+}
+
+model Withdrawal_payments {
+  id Int @id @default(autoincrement())
+
+  affilate_withdraws Affilate_withdraws @relation(fields: [withdrawal_id], references: [id])
+  withdrawal_id      Int
+  payment            Payments           @relation(fields: [payment_id], references: [id])
+  payment_id         Int
+
+  status    Int       @default(1) //[0 - decline, 1 - pending, 2 - approved]
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
 }
