@@ -15,16 +15,23 @@ export class ModuleRepository extends AbstractRepository<Modules> {
   }
 
   async find(): Promise<Modules> {
-    return this.prisma[this.modelName].findMany({ where: { status: { notIn: [0] } } });
+    return this.prisma[this.modelName].findMany({
+      where: { status: { notIn: [0] } },
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
+    });
   }
 
   async insert(data: Partial<Modules>): Promise<Modules> {
-    const course = await this.prisma.courses.findUnique({ where: { id : data.course_id } });
-    
+    const course = await this.prisma.courses.findUnique({ where: { id: data.course_id } });
+
     if (!course) {
       throw new BadRequestException('Course does not exist.');
     }
-    
+
     return this.prisma[this.modelName].create({ data });
   }
 
@@ -33,9 +40,9 @@ export class ModuleRepository extends AbstractRepository<Modules> {
     if (!module) {
       throw new BadRequestException('Module does not exist.');
     }
-    
+
     return this.prisma[this.modelName].update({
-      where: { id : id },
+      where: { id: id },
       data: data,
     });
   }

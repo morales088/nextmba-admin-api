@@ -15,41 +15,47 @@ export class MediaRepository extends AbstractRepository<Medias> {
   }
 
   async find(): Promise<Medias> {
-    return this.prisma[this.modelName].findMany({ where: { status: 1 } });
+    return this.prisma[this.modelName].findMany({
+      where: { status: 1 },
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
+    });
   }
 
   async insert(data: Partial<Medias>): Promise<Medias> {
-    
-    const module = await this.prisma.modules.findUnique({ where: { id : data.module_id } });
-    
+    const module = await this.prisma.modules.findUnique({ where: { id: data.module_id } });
+
     if (!module) {
       throw new BadRequestException('Module does not exist.');
     }
-    
-    const topic = await this.prisma.topics.findUnique({ where: { id : data.topic_id } });
-    
+
+    const topic = await this.prisma.topics.findUnique({ where: { id: data.topic_id } });
+
     if (!topic) {
       throw new BadRequestException('Topic does not exist.');
     }
-    
+
     return this.prisma[this.modelName].create({ data });
   }
 
   async updateMedia(id: number, data: UpdateMediaDto): Promise<Medias> {
     const media = await this.findById(id);
-    
+
     if (!media) {
       throw new BadRequestException('Media does not exist.');
     }
-    
-    const topic = await this.prisma.topics.findUnique({ where: { id : data.topic_id } });
+
+    const topic = await this.prisma.topics.findUnique({ where: { id: data.topic_id } });
 
     if (!topic) {
       throw new BadRequestException('Topic does not exist.');
     }
-    
+
     return this.prisma[this.modelName].update({
-      where: { id : id },
+      where: { id: id },
       data: data,
     });
   }
@@ -57,8 +63,11 @@ export class MediaRepository extends AbstractRepository<Medias> {
   async findByModuleId(moduleId: number) {
     return await this.prisma[this.modelName].findMany({
       where: { module_id: moduleId, status: 1 },
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
     });
   }
-
-
 }

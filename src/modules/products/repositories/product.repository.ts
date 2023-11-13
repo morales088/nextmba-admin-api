@@ -20,7 +20,15 @@ export class ProductRepository extends AbstractRepository<Products> {
   }
 
   async find(): Promise<Products> {
-    return this.prisma[this.modelName].findMany({ where: { status: 1 }, include: { product_items: true } });
+    return this.prisma[this.modelName].findMany({
+      where: { status: 1 },
+      include: { product_items: true },
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
+    });
   }
 
   async insert(data: CreateProductDto): Promise<Products> {
@@ -77,7 +85,7 @@ export class ProductRepository extends AbstractRepository<Products> {
         const productItem = await this.prisma.product_items.findFirst({
           where: { product_id: id, course_id: item.course_id },
         });
-        
+
         if (productItem !== null) {
           await this.productItemRepository.update(productItem.id, item);
         } else {
@@ -87,7 +95,6 @@ export class ProductRepository extends AbstractRepository<Products> {
           };
           await this.productItemRepository.insert(itemData);
         }
-
       }
     }
     return this.prisma[this.modelName].findUnique({

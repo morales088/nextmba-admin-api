@@ -18,7 +18,14 @@ export class PaymentAffiliateRepository extends AbstractRepository<Affiliates> {
   }
 
   async find(): Promise<Affiliates> {
-    return this.prisma[this.modelName].findMany({ where: { status: 1 } });
+    return this.prisma[this.modelName].findMany({
+      where: { status: 1 },
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
+    });
   }
 
   async findPerCode(code: string): Promise<Affiliates> {
@@ -26,15 +33,14 @@ export class PaymentAffiliateRepository extends AbstractRepository<Affiliates> {
   }
 
   async update(id: number, data): Promise<Affiliates> {
-    
-    const affiliate = await this.prisma[this.modelName].findUnique({ where: { id : id } });
+    const affiliate = await this.prisma[this.modelName].findUnique({ where: { id: id } });
 
     if (!affiliate) {
       throw new BadRequestException('affiliate does not exist.');
     }
-    
+
     return this.prisma[this.modelName].update({
-      where: { id : id },
+      where: { id: id },
       data: data,
     });
   }
