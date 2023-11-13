@@ -1,4 +1,5 @@
-import { IsBoolean, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsBoolean, IsDate, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateTopicDto {
   @IsNotEmpty()
@@ -18,6 +19,16 @@ export class CreateTopicDto {
   @IsOptional()
   @IsString()
   cover_photo: string;
+
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate()
+  start_time: Date;
+
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate()
+  end_time: Date;
   
   @IsOptional()
   @IsIn([1, 2]) // [1 - main lecture, 2 - assignment]

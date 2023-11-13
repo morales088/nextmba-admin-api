@@ -106,12 +106,14 @@ model Topics {
   speaker    Speakers @relation(fields: [speaker_id], references: [id])
   speaker_id Int
 
-  name        String  @db.VarChar(255)
+  name        String    @db.VarChar(255)
   description String?
   cover_photo String?
-  type        Int     @default(1) //[1 - main lecture, 2 - assignment]
-  position    Int     @default(1)
-  publish     Int     @default(0) //publish to library when replay is available
+  start_time  DateTime?
+  end_time    DateTime?
+  type        Int       @default(1) //[1 - main lecture, 2 - assignment]
+  position    Int       @default(1)
+  publish     Int       @default(0) //publish to library when replay is available
 
   status    Int       @default(1)
   createdAt DateTime  @default(now())
