@@ -12,6 +12,7 @@ import { ProductItemRepository } from '../products/repositories/product_item.rep
 import { ApiKeyGuard } from 'src/common/guards/api-key.guard';
 import { PaymentApiController } from './payment_api.controller';
 import { StudentCoursesRepository } from '../students/repositories/student_courses.repository';
+import { SendMailService } from 'src/common/utils/send-mail.service';
 import { PaymentAffiliateRepository } from './repositories/payment_affiliate.repository';
 
 @Module({
@@ -26,6 +27,7 @@ import { PaymentAffiliateRepository } from './repositories/payment_affiliate.rep
     ProductItemRepository,
     StudentsService,
     HashService,
+    SendMailService,
     ApiKeyGuard,
     StudentCoursesRepository,
     PaymentAffiliateRepository
