@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PaymentRepository } from '../repositories/payment.repository';
 import { StudentRepository } from 'src/modules/students/repositories/student.repository';
 import { StudentsService } from 'src/modules/students/services/students.service';

@@ -18,6 +18,7 @@ import { StudentsModule } from './modules/students/students.module';
 import { AwsService } from './common/aws/aws.service';
 import { AwsS3Service } from './common/aws/aws_s3.service';
 import { AffiliatesModule } from './modules/affiliates/affiliates.module';
+import { SendMailService } from './common/utils/send-mail.service';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -56,6 +57,6 @@ dotenv.config();
     AffiliatesModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [SendMailService],
 })
 export class AppModule {}
