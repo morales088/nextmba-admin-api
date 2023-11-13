@@ -15,7 +15,14 @@ export class CourseRepository extends AbstractRepository<Courses> {
   }
 
   async find(): Promise<Courses> {
-    return this.prisma[this.modelName].findMany({ where: { status: 1 } });
+    return this.prisma[this.modelName].findMany({
+      where: { status: 1 },
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
+    });
   }
 
   async insert(data: Partial<Courses>): Promise<Courses> {
@@ -24,18 +31,18 @@ export class CourseRepository extends AbstractRepository<Courses> {
 
   async updateCourse(id: number, data: UpdateCourseDto): Promise<Courses> {
     const course = await this.findById(id);
-    
+
     if (!course) {
       throw new BadRequestException('Course does not exist.');
     }
-    
+
     return this.prisma[this.modelName].update({
-      where: { id : id },
+      where: { id: id },
       data: data,
     });
   }
 
   async findById(id: number) {
-    return this.prisma[this.modelName].findUnique({ where: { id : id } });
+    return this.prisma[this.modelName].findUnique({ where: { id: id } });
   }
 }

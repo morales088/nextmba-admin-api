@@ -15,29 +15,35 @@ export class FileRepository extends AbstractRepository<Files> {
   }
 
   async find(): Promise<Files> {
-    return this.prisma[this.modelName].findMany({ where: { status: 1 } });
+    return this.prisma[this.modelName].findMany({
+      where: { status: 1 },
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
+    });
   }
 
   async insert(data: Partial<Files>): Promise<Files> {
-    
-    const topic = await this.prisma.topics.findUnique({ where: { id : data.topic_id } });
-    
+    const topic = await this.prisma.topics.findUnique({ where: { id: data.topic_id } });
+
     if (!topic) {
       throw new BadRequestException('Topic does not exist.');
     }
-    
+
     return this.prisma[this.modelName].create({ data });
   }
 
   async updateFile(id: number, data: UpdateFileDto): Promise<Files> {
     const file = await this.findById(id);
-    
+
     if (!file) {
       throw new BadRequestException('file does not exist.');
     }
-    
+
     return this.prisma[this.modelName].update({
-      where: { id : id },
+      where: { id: id },
       data: data,
     });
   }
@@ -45,7 +51,11 @@ export class FileRepository extends AbstractRepository<Files> {
   async findByModuleId(moduleId: number) {
     return await this.prisma[this.modelName].findMany({
       where: { module_id: moduleId, status: 1 },
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
     });
   }
-
 }

@@ -15,7 +15,14 @@ export class TranslationRepository extends AbstractRepository<Translations> {
   }
 
   async find(): Promise<Translations> {
-    return this.prisma[this.modelName].findMany({ where: { status: 1 } });
+    return this.prisma[this.modelName].findMany({
+      where: { status: 1 },
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
+    });
   }
 
   async insert(data: Partial<Translations>): Promise<Translations> {
@@ -44,6 +51,11 @@ export class TranslationRepository extends AbstractRepository<Translations> {
   async findByModuleId(moduleId: number) {
     return await this.prisma[this.modelName].findMany({
       where: { module_id: moduleId, status: 1 },
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
     });
   }
 }

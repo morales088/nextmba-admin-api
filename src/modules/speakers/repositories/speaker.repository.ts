@@ -15,26 +15,30 @@ export class SpeakerRepository extends AbstractRepository<Speakers> {
   }
 
   async find(): Promise<Speakers> {
-    return this.prisma[this.modelName].findMany({ where: { status: 1 } });
+    return this.prisma[this.modelName].findMany({
+      where: { status: 1 },
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
+    });
   }
 
   async insert(data: Partial<Speakers>): Promise<Speakers> {
-    
     return this.prisma[this.modelName].create({ data });
   }
 
   async updateSpeaker(id: number, data: UpdateSpeakerDto): Promise<Speakers> {
     const speaker = await this.findById(id);
-    
+
     if (!speaker) {
       throw new BadRequestException('Speaker does not exist.');
     }
-    
+
     return this.prisma[this.modelName].update({
-      where: { id : id },
+      where: { id: id },
       data: data,
     });
   }
-
-
 }

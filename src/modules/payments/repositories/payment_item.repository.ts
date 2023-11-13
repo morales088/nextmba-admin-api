@@ -14,7 +14,14 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
   }
 
   async find(id: number): Promise<Payment_items> {
-    return this.prisma[this.modelName].findMany({ where: { payment_id: id, status: 1 } });
+    return this.prisma[this.modelName].findMany({
+      where: { payment_id: id, status: 1 },
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
+    });
   }
 
   async insert(studentId: number, paymentId: number, productCode: string): Promise<any> {
@@ -62,15 +69,15 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
 
         // update student course to expired course
         if (hasStudCourse) {
-          let newExpDate = new Date(studentCourse.expiration_date)
+          let newExpDate = new Date(studentCourse.expiration_date);
           newExpDate.setFullYear(newExpDate.getFullYear() + 1);
 
-          const modulePerCourse = parseInt(process.env.MODULE_PER_COURSE)
+          const modulePerCourse = parseInt(process.env.MODULE_PER_COURSE);
           const newModuleQuantity = studentCourse.module_quantity + modulePerCourse;
 
           const newStudentCourseData = {
             expiration_date: newExpDate,
-            module_quantity: newModuleQuantity
+            module_quantity: newModuleQuantity,
           };
 
           await this.prisma.student_courses.update({ where: { id: studentCourse.id }, data: newStudentCourseData });

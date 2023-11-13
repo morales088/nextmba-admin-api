@@ -15,21 +15,25 @@ export class AffiliateRepository extends AbstractRepository<Affiliates> {
   }
 
   async find(): Promise<Affiliates> {
-    return this.prisma[this.modelName].findMany();
+    return this.prisma[this.modelName].findMany({
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
+    });
   }
 
   async updateAffiliate(id: number, data: UpdateAffiliateDto): Promise<Affiliates> {
     const affiliate = await this.findById(id);
-    
+
     if (!affiliate) {
       throw new BadRequestException('affiliate does not exist.');
     }
-    
+
     return this.prisma[this.modelName].update({
-      where: { id : id },
+      where: { id: id },
       data: data,
     });
   }
-
-
 }

@@ -18,7 +18,15 @@ export class PaymentRepository extends AbstractRepository<Payments> {
   }
 
   async find(): Promise<Payments> {
-    return this.prisma[this.modelName].findMany({ where: { status: 1 }, include: { payment_items: true } });
+    return this.prisma[this.modelName].findMany({
+      where: { status: 1 },
+      include: { payment_items: true },
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
+    });
   }
 
   async insert(studentId: number, productId: number, data: Partial<Payments>): Promise<any> {
@@ -66,11 +74,17 @@ export class PaymentRepository extends AbstractRepository<Payments> {
       payment.product = product;
     }
 
-
     return payments;
   }
 
   async findByFromStudId(studentId: number): Promise<Payments> {
-    return this.prisma[this.modelName].findMany({ where: { from_student_id : studentId, status: 1 } });
+    return this.prisma[this.modelName].findMany({
+      where: { from_student_id: studentId, status: 1 },
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
+    });
   }
 }
