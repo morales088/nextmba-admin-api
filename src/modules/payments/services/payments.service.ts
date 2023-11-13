@@ -4,6 +4,7 @@ import { StudentRepository } from 'src/modules/students/repositories/student.rep
 import { StudentsService } from 'src/modules/students/services/students.service';
 import { ProductRepository } from 'src/modules/products/repositories/product.repository';
 import { PaymentAffiliateRepository } from '../repositories/payment_affiliate.repository';
+import { SendMailService } from 'src/common/utils/send-mail.service';
 
 @Injectable()
 export class PaymentsService {
@@ -12,7 +13,8 @@ export class PaymentsService {
     private readonly studentRepository: StudentRepository,
     private readonly productRepository: ProductRepository,
     private readonly paymentAffiliateRepository: PaymentAffiliateRepository,
-    private readonly studentsService: StudentsService
+    private readonly studentsService: StudentsService,
+    private readonly sendMailService: SendMailService,
   ) {}
 
   async getPayment(id: number) {
@@ -88,6 +90,11 @@ export class PaymentsService {
 
     // insert data to payment table and return payment_id
     const createPayment = await this.paymentRepository.insert(studentId, product.id, paymentData)
+
+    // email payment information
+    if (createPayment) {
+      this.sendMailService.emailPaymentInformation(createPayment);
+    }
 
     //return payment details
     return createPayment;
