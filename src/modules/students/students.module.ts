@@ -7,6 +7,7 @@ import { HashService } from 'src/common/utils/hash.service';
 import { PaymentRepository } from '../payments/repositories/payment.repository';
 import { PaymentItemRepository } from '../payments/repositories/payment_item.repository';
 import { StudentCoursesRepository } from './repositories/student_courses.repository';
+import { SendMailService } from 'src/common/utils/send-mail.service';
 
 @Module({
   imports: [PrismaModule],
@@ -15,6 +16,7 @@ import { StudentCoursesRepository } from './repositories/student_courses.reposit
     StudentsService,
     StudentRepository,
     HashService,
+    SendMailService,
     PaymentRepository,
     PaymentItemRepository,
     StudentCoursesRepository,

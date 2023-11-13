@@ -3,14 +3,16 @@ import { StudentRepository } from '../repositories/student.repository';
 import { HashService } from 'src/common/utils/hash.service';
 import { PaymentRepository } from 'src/modules/payments/repositories/payment.repository';
 import { StudentCoursesRepository } from '../repositories/student_courses.repository';
+import { SendMailService } from 'src/common/utils/send-mail.service';
 
 @Injectable()
 export class StudentsService {
   constructor(
     private readonly hashService: HashService,
+    private readonly sendMailService: SendMailService,
     private readonly studentRepository: StudentRepository,
     private readonly paymentRepository: PaymentRepository,
-    private readonly studentCoursesRepository: StudentCoursesRepository,
+    private readonly studentCoursesRepository: StudentCoursesRepository
   ) {}
 
   async getStudent(id: number) {
@@ -30,7 +32,14 @@ export class StudentsService {
       password: hashedPassword,
     };
 
-    return this.studentRepository.insert(studentData);
+    const createdStudent = await this.studentRepository.insert(studentData);
+
+    // send email credential if student is created
+    if (createdStudent) {
+      this.sendMailService.emailLoginCredentials(createdStudent.email, password);
+    }
+
+    return createdStudent;
   }
 
   async updateStudent(id: number, data) {
@@ -64,7 +73,7 @@ export class StudentsService {
 
     return this.studentCoursesRepository.insert(studentCourseData);
   }
-  
+
   async updateStudentCourse(id: number, data) {
     return this.studentCoursesRepository.updateStudentCourse(id, data);
   }
