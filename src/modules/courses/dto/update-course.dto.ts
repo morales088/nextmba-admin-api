@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import { Transform } from 'class-transformer';
 import { IsDecimal, IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateCourseDto {
@@ -33,7 +34,7 @@ export class UpdateCourseDto {
   is_displayed: number;
 
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1]) // 0 - delete, 1 - active
   status: number;
 }

@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsDate,
   IsDateString,
@@ -14,7 +14,7 @@ import {
 
 export class UpdateStudentCourseDto {
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([1, 2, 3]) // [1 - paid, 2 - manually added, 3 - gifted]
   course_type: number;
 
@@ -33,7 +33,7 @@ export class UpdateStudentCourseDto {
   expiration_date: Date;
 
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1]) // 0 - delete, 1 - active
   status: number;
 }

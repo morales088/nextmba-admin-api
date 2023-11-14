@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsBoolean, IsDate, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateTopicDto {
@@ -31,6 +31,7 @@ export class CreateTopicDto {
   end_time: Date;
   
   @IsOptional()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([1, 2]) // [1 - main lecture, 2 - assignment]
   type: number;
   
@@ -39,8 +40,8 @@ export class CreateTopicDto {
   position: number;
 
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1])
-  publish: number;
+  publish: number
 
 }

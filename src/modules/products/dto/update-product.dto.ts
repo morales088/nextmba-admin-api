@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsDecimal, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 export class UpdateProductDto {
@@ -27,7 +27,7 @@ export class UpdateProductDto {
   product_items: ItemsDTO[];
 
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1]) // 0 - delete, 1 - active
   status: number;
 }
@@ -40,7 +40,7 @@ export class ItemsDTO {
   quantity: number;
 
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1]) // 0 - delete, 1 - active
   status: number;
 }

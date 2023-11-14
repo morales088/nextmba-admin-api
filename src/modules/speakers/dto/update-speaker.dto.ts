@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import { IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateSpeakerDto {
@@ -22,7 +23,7 @@ export class UpdateSpeakerDto {
   profile: string;
 
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1]) // 0 - delete, 1 - active
   status: number;
 }

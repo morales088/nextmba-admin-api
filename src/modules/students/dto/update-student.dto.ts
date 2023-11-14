@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsDate, IsDateString, IsDecimal, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, isNumber } from 'class-validator';
 
 export class UpdateStudentDto {
@@ -42,7 +42,7 @@ export class UpdateStudentDto {
   account_type: number;
 
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1]) // [0 - not, 1 - partner]
   affiliate_access: number;
 
@@ -63,7 +63,7 @@ export class UpdateStudentDto {
   telegram: string;
 
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1]) // 0 - delete, 1 - active
   status: number;
 }

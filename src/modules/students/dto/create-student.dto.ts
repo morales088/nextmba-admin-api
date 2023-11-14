@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsDate, IsDateString, IsDecimal, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, MinLength, isNumber } from 'class-validator';
 
 export class CreateStudentDto {
@@ -49,12 +49,12 @@ export class CreateStudentDto {
   profile_picture: string;
 
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([1, 2, 3]) // [1 - trial, 2 - regular, 3 - pro]
   account_type: number;
 
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1]) // [0 - not, 1 - partner]
   affiliate_access: number;
 

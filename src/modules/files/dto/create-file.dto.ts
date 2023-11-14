@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import { IsBoolean, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateFileDto {
@@ -12,6 +13,7 @@ export class CreateFileDto {
   name: string;
 
   @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([1, 2]) // [1 - materials, 2 - assignment]
   type: number;
 

@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import { IsBoolean, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateFileDto {
@@ -12,6 +13,7 @@ export class UpdateFileDto {
   name: string;
 
   @IsOptional()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([1, 2]) // [1 - materials, 2 - assignment]
   type: number;
 
@@ -20,7 +22,7 @@ export class UpdateFileDto {
   file_link: string;
   
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1]) // 0 - delete, 1 - active
   status: number;
 

@@ -1,3 +1,4 @@
+import { Transform } from "class-transformer"
 import { IsEmail, IsIn, IsNotEmpty, IsOptional, IsString, MinLength } from "class-validator"
 
 export class CreateAdminDTO {
@@ -18,11 +19,13 @@ export class CreateAdminDTO {
 
   @IsOptional()
   @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([1, 2])
   role: number
 
   @IsOptional()
   @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1])
   status: number; // 1 - active, 0 - deactivated
 }
@@ -34,6 +37,7 @@ export class UpdateAdminDTO {
 
   @IsOptional()
   @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1])
   status: number; // 1 - active, 0 - deactivated
 }

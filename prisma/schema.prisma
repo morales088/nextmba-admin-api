@@ -152,7 +152,7 @@ model Students {
   // chat_moderator       Boolean   @default(false) //[false - not, true - moderator]
   // forgot_password_code String
   library_access   Int       @default(0)
-  account_type     Int       @default(1) //[1 - trial, 2 - regular, 3 - pro]
+  account_type     Int       @default(1) //[1 - basic, 2 - pro]
   affiliate_access Int       @default(0) //[0 - not, 1 - partner]
   website   String?
   linkendIn String?

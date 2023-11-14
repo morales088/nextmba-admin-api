@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import { Transform } from 'class-transformer';
 import { IsBoolean, IsDecimal, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateAffiliateWithdrawDto {
@@ -12,7 +13,7 @@ export class UpdateAffiliateWithdrawDto {
   remarks: string;
   
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1, 2]) //[0 - decline, 1 - proccessed, 2 - pending]
   status: number;
 

@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsDate, IsDateString, IsDecimal, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreatePaymentDto {
@@ -72,7 +72,7 @@ export class CreatePaymentDto {
   commission_percentage: Prisma.Decimal;
 
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1]) //[0 - unpaid, 1 - paid]
   commission_status: number;
 
