@@ -32,7 +32,7 @@ export class UpdateTopicDto {
   type: number;
 
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
   position: number;
 
   @IsOptional()

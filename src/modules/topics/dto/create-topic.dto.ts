@@ -36,7 +36,7 @@ export class CreateTopicDto {
   type: number;
   
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
   position: number;
 
   @IsOptional()
