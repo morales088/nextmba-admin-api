@@ -87,4 +87,32 @@ export class PaymentRepository extends AbstractRepository<Payments> {
       ],
     });
   }
+
+  async getGiftable(studentId: number) {
+    const giftableDate = new Date(process.env.GIFTABLE_DATE);
+
+    const gifts = await this.prisma[this.modelName].findMany({
+      where: { student_id: studentId, status: 1, createdAt: { gte: giftableDate.toISOString() } },
+      include: {
+        payment_items: true,
+      },
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
+    });
+
+    let courses = []
+    for (const gift of gifts) {
+      for (const item of gift.payment_items) {
+        const course = await this.prisma.courses.findUnique({ where: { id: item.course_id } });
+        item.course_name = course.name;
+        item.owner = gift.email;
+        courses.push(item)
+      }
+    }
+
+    return courses;
+  }
 }

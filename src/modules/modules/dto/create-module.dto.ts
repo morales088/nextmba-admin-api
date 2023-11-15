@@ -34,4 +34,8 @@ export class CreateModuleDto {
   @IsOptional()
   @IsBoolean()
   display_topic: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  display_speaker: boolean;
 }
