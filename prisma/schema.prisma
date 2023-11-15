@@ -52,23 +52,24 @@ model Courses {
 }
 
 model Modules {
-  id            Int            @id @default(autoincrement())
-  course        Courses        @relation(fields: [course_id], references: [id])
-  course_id     Int
-  name          String         @db.VarChar(255)
-  description   String?
-  zoom_link     String?
-  external_link String?
-  start_date    DateTime
-  end_date      DateTime
-  display_topic Boolean        @default(false)
-  status        Int            @default(1)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime?      @updatedAt
-  translations  Translations[]
-  topics        Topics[]
-  medias        Medias[]
-  files         Files[]
+  id              Int            @id @default(autoincrement())
+  course          Courses        @relation(fields: [course_id], references: [id])
+  course_id       Int
+  name            String         @db.VarChar(255)
+  description     String?
+  zoom_link       String?
+  external_link   String?
+  start_date      DateTime
+  end_date        DateTime
+  display_topic   Boolean        @default(false)
+  display_speaker Boolean        @default(false)
+  status          Int            @default(1)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime?      @updatedAt
+  translations    Translations[]
+  topics          Topics[]
+  medias          Medias[]
+  files           Files[]
 }
 
 model Speakers {
@@ -167,7 +168,7 @@ model Students {
   account_type       Int                  @default(1) //[1 - basic, 2 - pro]
   affiliate_access   Int                  @default(0) //[0 - not, 1 - partner]
   website            String?
-  linkendIn          String?
+  linkedIn           String?
   instagram          String?
   telegram           String?
   status             Int                  @default(1)

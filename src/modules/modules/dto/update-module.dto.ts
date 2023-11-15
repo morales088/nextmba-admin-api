@@ -33,6 +33,10 @@ export class UpdateModuleDto {
   display_topic: boolean;
 
   @IsOptional()
+  @IsBoolean()
+  display_speaker: boolean;
+
+  @IsOptional()
   @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1, 2, 3, 4, 5]) // [0 - delete, 1 - draft, 2 - offline, 3 - live, 4 - pending replay, 5 - replay]
   status: number;

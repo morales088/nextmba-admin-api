@@ -52,7 +52,7 @@ export class UpdateStudentDto {
 
   @IsOptional()
   @IsString()
-  linkendIn: string;
+  linkedIn: string;
 
   @IsOptional()
   @IsString()
