@@ -37,6 +37,12 @@ export class UpdateStudentDto {
   profile_picture: string;
 
   @IsOptional()
+  chat_moderator: boolean;
+
+  @IsOptional()
+  chat_access: boolean;
+
+  @IsOptional()
   @IsNumber()
   @IsIn([1, 2, 3]) // [1 - trial, 2 - regular, 3 - pro]
   account_type: number;
