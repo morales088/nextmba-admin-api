@@ -3,6 +3,7 @@ import { IsBoolean, IsDate, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } f
 
 export class UpdateTopicDto {
   @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
   speaker_id: number;
 
   @IsOptional()

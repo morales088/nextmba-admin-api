@@ -3,9 +3,11 @@ import { IsBoolean, IsDate, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } f
 
 export class CreateTopicDto {
   @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
   module_id: number;
 
   @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
   speaker_id: number;
 
   @IsNotEmpty()
