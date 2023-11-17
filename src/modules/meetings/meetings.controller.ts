@@ -28,6 +28,7 @@ export class MeetingsController {
   async createMeeting(@Body() createMeetingDto: CreateMeetingDto, @Res() res: Response) {
     const meeting = {
       ...createMeetingDto,
+      type: 2,
     };
 
     // if module has live id
@@ -36,10 +37,10 @@ export class MeetingsController {
     if (!!module.live_link) return res.status(HttpStatus.BAD_REQUEST).json({ message: 'This module has live id.' });
 
     try {
-      const startMeeting = await this.zoomService.createMeeting(meeting.title, 2);
+      const startMeeting = await this.zoomService.createMeeting(meeting);
       const moduleData = { live_link: startMeeting.id.toString() };
       await this.meetingsService.updateModule(meeting.module_id, moduleData);
-      return res.status(HttpStatus.OK).json(startMeeting)
+      return res.status(HttpStatus.OK).json(startMeeting);
     } catch (error) {
       console.error('Error creating meeting:', error.response?.data || error.message);
       throw new Error('Failed to create meeting');
@@ -47,19 +48,18 @@ export class MeetingsController {
   }
 
   @Delete('/:moduleId')
-  async deleteMeeting(
-    @Param('moduleId') moduleId: number,@Res() res: Response) {
-
+  async deleteMeeting(@Param('moduleId') moduleId: number, @Res() res: Response) {
     // if module has live id
     const module = await this.meetingsService.getModule(moduleId);
 
-    if (!(!!module.live_link)) return res.status(HttpStatus.BAD_REQUEST).json({ message: 'This module dont have live id.' });
+    if (!!!module.live_link)
+      return res.status(HttpStatus.BAD_REQUEST).json({ message: 'This module dont have live id.' });
 
     try {
       await this.zoomService.deleteMeeting(module.live_link);
       const moduleData = { live_link: null };
       await this.meetingsService.updateModule(moduleId, moduleData);
-      return res.status(HttpStatus.OK).json({message: "Meeting deletion success."})
+      return res.status(HttpStatus.OK).json({ message: 'Meeting deletion success.' });
     } catch (error) {
       console.error('Error deleting meeting:', error.response?.data || error.message);
       throw new Error('Failed to delete meeting');

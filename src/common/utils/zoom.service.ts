@@ -20,18 +20,17 @@ export class ZoomService {
     const response = await axios.post(url, null, {
       params: data,
     });
-    
+
     return response.data.access_token;
   }
 
-  
-  async createMeeting(topic: string, type = 1, startTime = '' ): Promise<any> {
+  async createMeeting(meetingData): Promise<any> {
     const url = this.baseUrl + 'users/me/meetings';
     const data = {
-      topic,
-      type: type, // 1 for instant meeting
+      topic: meetingData.topic,
+      type: meetingData.type, // 1 for instant meeting
       timezone: 'UTC',
-      start_time : startTime
+      start_time: meetingData.start_time || '',
     };
 
     const response = await axios.post(url, data, {
@@ -51,7 +50,7 @@ export class ZoomService {
         Authorization: `Bearer ${await this.getZoomAccessToken()}`,
       },
     });
-    
+
     return response.data;
   }
 
@@ -63,7 +62,7 @@ export class ZoomService {
         Authorization: `Bearer ${await this.getZoomAccessToken()}`,
       },
     });
-    
+
     return response.data;
   }
 }

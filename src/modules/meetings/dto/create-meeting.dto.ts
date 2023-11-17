@@ -12,4 +12,8 @@ export class CreateMeetingDto {
     message: 'Maximum of 200 character.',
   })
   title: string;
+
+  @IsOptional()
+  @IsString()
+  start_date: string;
 }
