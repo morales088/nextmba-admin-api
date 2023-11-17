@@ -37,8 +37,9 @@ export class UpdateTopicDto {
   position: number;
 
   @IsOptional()
-  @IsBoolean()
-  publish: number;
+  @Transform(({ value }) => parseInt(value))
+  @IsIn([0, 1])
+  publish: number
 
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
