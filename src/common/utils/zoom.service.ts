@@ -27,7 +27,7 @@ export class ZoomService {
   async createMeeting(meetingData): Promise<any> {
     const url = this.baseUrl + 'users/me/meetings';
     const data = {
-      topic: meetingData.topic,
+      topic: meetingData.title,
       type: meetingData.type, // 1 for instant meeting
       timezone: 'UTC',
       start_time: meetingData.start_time || '',
