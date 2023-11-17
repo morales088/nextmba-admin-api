@@ -16,9 +16,11 @@ export class MeetingsController {
   async getMeetings() {
 
     try {
-      const startMeeting = await this.zoomService.getMeetings();
+      const meetings = await this.zoomService.getMeetings();
+      return meetings
     } catch (error) {
-      throw new Error(error);
+      console.error('Error fetching meetings:', error.response?.data || error.message);
+      throw new Error('Failed to fetch meetings');
     }
   }
 
@@ -29,10 +31,18 @@ export class MeetingsController {
       ...createMeetingDto,
     };
 
-    try {
-      const startMeeting = await this.zoomService.createMeeting(meeting.title);
-    } catch (error) {
-      throw new Error(error);
-    }
+    // if module has zoom id
+
+    const module = await this.meetingsService.getModule(meeting.module_id)
+    return module;
+
+
+    // try {
+    //   const startMeeting = await this.zoomService.createMeeting(meeting.title, 2);
+    //   return startMeeting;
+    // } catch (error) {
+    //   console.error('Error creating meeting:', error.response?.data || error.message);
+    //   throw new Error('Failed to create meeting');
+    // }
   }
 }

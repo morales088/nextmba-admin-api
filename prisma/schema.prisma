@@ -57,7 +57,7 @@ model Modules {
   course_id       Int
   name            String         @db.VarChar(255)
   description     String?
-  zoom_link       String?
+  live_link       String?
   external_link   String?
   start_date      DateTime
   end_date        DateTime
