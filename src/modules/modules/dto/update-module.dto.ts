@@ -14,7 +14,7 @@ export class UpdateModuleDto {
 
   @IsOptional()
   @IsString()
-  zoom_link: string;
+  live_link: string;
 
   @IsOptional()
   @IsString()

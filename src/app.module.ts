@@ -20,6 +20,7 @@ import { AwsS3Service } from './common/aws/aws_s3.service';
 import { AffiliatesModule } from './modules/affiliates/affiliates.module';
 import { SendMailService } from './common/utils/send-mail.service';
 import { GiftsModule } from './modules/gifts/gifts.module';
+import { MeetingsModule } from './modules/meetings/meetings.module';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -57,6 +58,7 @@ dotenv.config();
     StudentsModule,
     AffiliatesModule,
     GiftsModule,
+    MeetingsModule,
   ],
   controllers: [],
   providers: [SendMailService],
