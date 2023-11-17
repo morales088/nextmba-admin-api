@@ -3,12 +3,13 @@ import { ModuleRepository } from 'src/modules/modules/repositories/module.reposi
 
 @Injectable()
 export class MeetingsService {
-    
-    constructor(
-        private readonly moduleRepository: ModuleRepository
-      ) {}
-      
-    async getModule(id:number) {
-        return this.moduleRepository.findById(id);
-      }
+  constructor(private readonly moduleRepository: ModuleRepository) {}
+
+  async getModule(id: number) {
+    return this.moduleRepository.findById(id);
+  }
+
+  async updateModule(id: number, data) {
+    return this.moduleRepository.updateModule(id, data);
+  }
 }

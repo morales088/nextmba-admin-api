@@ -54,4 +54,16 @@ export class ZoomService {
     
     return response.data;
   }
+
+  async deleteMeeting(meetingId: string) {
+    const url = this.baseUrl + `/meetings/${meetingId}`;
+
+    const response = await axios.delete(url, {
+      headers: {
+        Authorization: `Bearer ${await this.getZoomAccessToken()}`,
+      },
+    });
+    
+    return response.data;
+  }
 }
