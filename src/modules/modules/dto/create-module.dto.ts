@@ -21,6 +21,10 @@ export class CreateModuleDto {
   @IsString()
   external_link: string;
 
+  @IsOptional()
+  @IsString()
+  host_email: string;
+
   @IsNotEmpty()
   @Type(() => Date)
   @IsDate()

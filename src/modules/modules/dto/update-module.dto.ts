@@ -21,6 +21,10 @@ export class UpdateModuleDto {
   external_link: string;
 
   @IsOptional()
+  @IsString()
+  host_email: string;
+  
+  @IsOptional()
   @Type(() => Date)
   start_date: Date;
 

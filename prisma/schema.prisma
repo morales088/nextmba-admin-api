@@ -59,6 +59,7 @@ model Modules {
   description     String?
   live_link       String?
   external_link   String?
+  host_email      String?
   start_date      DateTime
   end_date        DateTime
   display_topic   Boolean        @default(false)
