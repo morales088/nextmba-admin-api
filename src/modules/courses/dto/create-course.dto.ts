@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import { Transform } from 'class-transformer';
 import { IsDecimal, IsNotEmpty, IsOptional, IsString, isNumber } from 'class-validator';
 
 export class CreateCourseDto {
@@ -27,8 +28,10 @@ export class CreateCourseDto {
   telegram_link: string;
 
   @IsOptional()
+  @Transform(({ value }) => parseInt(value))
   paid: number;
 
   @IsOptional()
+  @Transform(({ value }) => parseInt(value))
   is_displayed: number;
 }
