@@ -8,20 +8,18 @@ export class AwsS3Service {
   constructor(private readonly awsService: AwsService) {}
 
   async uploadSmallFile(path: string, file: Express.Multer.File): Promise<string> {
+    const s3 = this.awsService.getS3Instance();
+    const params: S3.Params = {
+      Bucket: process.env.AWS_BUCKET,
+      Key: `${path}/${Date.now().toString()}${extname(file.originalname)}`,
+      Body: file.buffer,
+    };
 
-      const s3 = this.awsService.getS3Instance();
-      const params: S3.Params = {
-        Bucket: process.env.AWS_BUCKET,
-        Key: `${path}/${Date.now().toString()}${extname(file.originalname)}`,
-        Body: file.buffer,
-      };
-
-      const response = await s3.upload(params).promise();
-      return response.Location;
-      
+    const response = await s3.upload(params).promise();
+    return response.Location;
   }
 
-  async uploadBigfile(path:string, file: Express.Multer.File) {
+  async uploadBigfile(path: string, file: Express.Multer.File) {
     const fileName = `${path}/${Date.now().toString()}-${file.originalname}`;
     const uploadId = await this.initiateMultipartUpload(fileName);
     const parts: AWS.S3.CompletedPart[] = [];
@@ -84,22 +82,26 @@ export class AwsS3Service {
     const response = await s3.completeMultipartUpload(params).promise();
     return response.Location;
   }
-  
+
   async upload(path: string, file: Express.Multer.File): Promise<string> {
     let fileUrl;
-    if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/jpg' || file.mimetype === 'image/png'){
-    
+    if (
+      file.mimetype === 'image/jpeg' ||
+      file.mimetype === 'image/jpg' ||
+      file.mimetype === 'image/png' ||
+      file.mimetype === 'image/gif' ||
+      file.mimetype === 'image/webp' ||
+      file.mimetype === 'application/pdf'
+    ) {
       if (file.size > 100000000) {
         // more than 100mb
         fileUrl = await this.uploadBigfile(path, file);
       } else {
         fileUrl = await this.uploadSmallFile(path, file);
       }
-
-    }else{
-      throw new Error('Upload jpeg/jpg/png file.');
+    } else {
+      throw new Error('Upload jpeg/jpg/png/gif/webp/pdf file.');
     }
-    return fileUrl;  
-}
-
+    return fileUrl;
+  }
 }
