@@ -74,7 +74,7 @@ export class CreateStudentDto {
 
   @IsOptional()
   @IsString()
-  linkendIn: string;
+  linkedIn: string;
 
   @IsOptional()
   @IsString()
