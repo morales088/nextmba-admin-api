@@ -26,7 +26,7 @@ export class FileRepository extends AbstractRepository<Files> {
   }
 
   async insert(data: Partial<Files>): Promise<Files> {
-    const topic = await this.prisma.topics.findUnique({ where: { id: data.topic_id } });
+    const topic = await this.prisma.topics.findFirst({ where: { id: data.topic_id } });
 
     if (!topic) {
       throw new BadRequestException('Topic does not exist.');

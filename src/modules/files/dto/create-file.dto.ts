@@ -3,9 +3,11 @@ import { IsBoolean, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'cla
 
 export class CreateFileDto {
   @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
   topic_id: number;
 
   @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
   module_id: number;
 
   @IsNotEmpty()
