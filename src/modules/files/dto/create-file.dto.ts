@@ -17,7 +17,7 @@ export class CreateFileDto {
   @IsIn([1, 2]) // [1 - materials, 2 - assignment]
   type: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   file_link: string;
 
