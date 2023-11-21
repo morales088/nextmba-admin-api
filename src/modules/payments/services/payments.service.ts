@@ -79,15 +79,9 @@ export class PaymentsService {
 
         const beginnerPercentage = parseFloat(process.env.beginnerCommissionPercent);
         const partnerPercentage = parseFloat(process.env.partnerCommissionPercent);
-        const proPercentage = parseFloat(process.env.proCommissionPercent);
-        // const vipPercentage = parseFloat(process.env.vipCommissionPercent);
 
         let commission_percentage = beginnerPercentage;
-        if (affiliateCount >= proAffiliate) {
-          commission_percentage = proPercentage;
-        } else if (affiliateCount >= partnerAffiliate) {
-          commission_percentage = partnerPercentage;
-        }
+        if (affiliateCount >= partnerAffiliate) commission_percentage = partnerPercentage;
 
         await this.paymentAffiliateRepository.update(affiliate.id, { percentage: commission_percentage });
 
