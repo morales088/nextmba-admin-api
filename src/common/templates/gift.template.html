@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Password Reset</title>
+    <title>Gift Information</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -43,14 +43,17 @@
   <body>
     <div class="container">
       <div class="header">
-        <h2>Password Reset</h2>
+        <h2>Gift Information</h2>
       </div>
       <div class="content">
-        <p>Dear User,</p>
-        <p>We have received a request to reset your password for your account. Please click the button below to proceed:</p>
-        <p><a href="{{ resetUrl }}" target="_blank" class="button">Reset Password</a></p>
-        <p>If you did not initiate this request, please ignore this email.</p>
-        <p>Thank you,</p>
+        <p>Hi ${{ recipient }},</p>
+        <p>You've been gifted access to ${{ courseName }}</p>
+        <p>Access Details:</p>
+        <ul>
+          <li><strong>Link:</strong> ${{ link }}</li>
+        </ul>
+        <p>Start learning and enjoy the journey!</p>
+        <p>Sincerely,</p>
         <p>NEXT MBA</p>
       </div>
     </div>

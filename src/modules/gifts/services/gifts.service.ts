@@ -6,6 +6,7 @@ import { CreateGiftDto } from '../dto/gift.dto';
 import { StudentsService } from 'src/modules/students/services/students.service';
 import { StudentCoursesRepository } from 'src/modules/students/repositories/student_courses.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
+import { SendMailService } from 'src/common/utils/send-mail.service';
 
 @Injectable()
 export class GiftsService {
@@ -15,7 +16,8 @@ export class GiftsService {
     private readonly paymentRepository: PaymentRepository,
     private readonly studentRepository: StudentRepository,
     private readonly studentsService: StudentsService,
-    private readonly studentCoursesRepository: StudentCoursesRepository
+    private readonly studentCoursesRepository: StudentCoursesRepository,
+    private readonly sendMailService: SendMailService,
   ) {}
 
   async getGiftable(studentId: number) {
@@ -36,7 +38,7 @@ export class GiftsService {
     const paymentItem = paymentItems.find(
       (res) => res.payment_id === data.payment_id && res.course_id === data.course_id
     );
-    
+    console.log(paymentItem)
     if (!paymentItem || paymentItem.giftable < 1 || studentCourse)
       return { message: 'zero courses available / recipient already has this course / course expired' };
 
@@ -47,7 +49,7 @@ export class GiftsService {
         studentId = findStudent.id;
       } else {
         // create student
-        const name = data.recipient.split('@')[0];
+        var name = data.recipient.split('@')[0];
         const studentData = {
           name: name,
           email: data.recipient,
@@ -73,16 +75,20 @@ export class GiftsService {
         course_id: data.course_id,
         recipient: data.recipient,
       };
-      await this.giftRepository.insert(giftData);
+      const gift = await this.giftRepository.insert(giftData);
 
       // deduct course to payment
       await this.prisma.payment_items.update({
         where: { id: paymentItem.id },
         data: { giftable: --paymentItem.giftable },
       });
-    });
 
-    // send email notification
+      // send gift email notification
+      if (gift) {
+        this.sendMailService.emailGiftInformation(data.recipient, name, paymentItem.course_name);
+      }
+
+    });
 
     return { message: 'Gift successfully sent.' };
   }

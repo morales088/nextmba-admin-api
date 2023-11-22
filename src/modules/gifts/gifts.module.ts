@@ -23,7 +23,7 @@ import { StudentCoursesRepository } from '../students/repositories/student_cours
     StudentsService,
     HashService,
     SendMailService,
-    StudentCoursesRepository
+    StudentCoursesRepository,
   ],
 })
 export class GiftsModule {}
