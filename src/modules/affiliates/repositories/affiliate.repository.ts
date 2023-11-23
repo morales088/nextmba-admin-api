@@ -16,6 +16,7 @@ export class AffiliateRepository extends AbstractRepository<Affiliates> {
 
   async find(): Promise<Affiliates> {
     return this.prisma[this.modelName].findMany({
+      include: { student: true },
       orderBy: [
         {
           id: 'asc',

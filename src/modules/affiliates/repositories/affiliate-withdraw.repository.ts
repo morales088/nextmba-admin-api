@@ -40,4 +40,41 @@ export class AffiliateWithdrawRepository extends AbstractRepository<Affilate_wit
       where: { status: 2 }
     }); //[0 - decline, 1 - pending, 2 - approved]
   }
+
+  async getWithdrawalInfo(studentId: number) {
+    // total commission
+    const commissions = await this.prisma.payments.findMany({
+      where: {
+        from_student_id: studentId,
+        status: 1,
+      },
+    });
+
+    let total_commission: number = 0;
+    for (const commision of commissions) {
+      const commissionPrice = commision.price as unknown as string;
+      const commissionPercentage = commision.commission_percentage as unknown as string;
+      total_commission += parseFloat(commissionPrice) * parseFloat(commissionPercentage);
+    }
+
+    // paid commision
+    const paidCommitions = await this.prisma.payments.findMany({
+      where: {
+        from_student_id: studentId,
+        commission_status: 1,
+        status: 1,
+      },
+    });
+
+    let paid_commission: number = 0;
+    for (const paidCommission of paidCommitions) {
+      const commissionPrice = paidCommission.price as unknown as string;
+      const commissionPercentage = paidCommission.commission_percentage as unknown as string;
+      paid_commission += parseFloat(commissionPrice) * parseFloat(commissionPercentage);
+    }
+
+    const currentBalance = total_commission - paid_commission;
+
+    return { total_commission, paid_commission, currentBalance };
+  }
 }
