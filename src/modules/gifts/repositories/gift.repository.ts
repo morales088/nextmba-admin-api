@@ -17,15 +17,9 @@ export class GiftRepository extends AbstractRepository<Gifts> {
     return this.prisma[this.modelName].findMany({ where: { status: 1 } });
   }
 
-//   async insert(data: Partial<Students>): Promise<Students> {
-//     const existingStudent = await this.prisma[this.modelName].findUnique({ where: { email: data.email } });
-
-//     if (existingStudent) {
-//       throw new BadRequestException('Student already exists.');
-//     }
-
-//     return this.prisma[this.modelName].create({ data: data });
-//   }
+  async insert(data: Partial<Gifts>): Promise<Gifts> {
+    return this.prisma[this.modelName].create({ data: data });
+  }
 
 //   async updateStudent(id: number, data: UpdateStudentDto): Promise<Students> {
 //     const student = await this.findById(id);
