@@ -25,6 +25,7 @@ export class GiftsService {
     for (const item of paymentItem) {
       const gift = await this.giftRepository.getGift(item.payment_id, item.course_id);
       console.log(gift);
+      item.recipient = gift
     }
 
     return paymentItem;
