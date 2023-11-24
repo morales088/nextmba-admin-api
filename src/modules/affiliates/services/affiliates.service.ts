@@ -10,7 +10,9 @@ export class AffiliatesService {
   ) {}
 
   async getAffiliate(id: number) {
-    return this.affiliateRepository.findById(id);
+    const result = await this.affiliateRepository.findById(id);
+    result.withdrawInfo = await this.affiliateWithdrawRepository.getWithdrawalInfo(result.student_id)
+    return result
   }
 
   async getAffiliates() {
