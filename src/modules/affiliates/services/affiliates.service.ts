@@ -14,7 +14,15 @@ export class AffiliatesService {
   }
 
   async getAffiliates() {
-    return await this.affiliateRepository.find();
+    const results = await this.affiliateRepository.find();
+    const affiliates = results as unknown as {
+      student_id: number;
+      withdrawInfo: Object;
+    }[]
+    for(const affiliate of affiliates){
+      affiliate.withdrawInfo = await this.affiliateWithdrawRepository.getWithdrawalInfo(affiliate.student_id)
+    }
+    return affiliates
   }
 
   async updateAffiliate(id: number, data) {

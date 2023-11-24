@@ -21,21 +21,23 @@ export class GiftRepository extends AbstractRepository<Gifts> {
     return this.prisma[this.modelName].create({ data: data });
   }
 
-//   async updateStudent(id: number, data: UpdateStudentDto): Promise<Students> {
-//     const student = await this.findById(id);
+  //   async updateStudent(id: number, data: UpdateStudentDto): Promise<Students> {
+  //     const student = await this.findById(id);
 
-//     if (!student) {
-//       throw new BadRequestException('Student does not exist.');
-//     }
+  //     if (!student) {
+  //       throw new BadRequestException('Student does not exist.');
+  //     }
 
-//     return this.prisma[this.modelName].update({
-//       where: { id: id },
-//       data: data,
-//     });
-//   }
+  //     return this.prisma[this.modelName].update({
+  //       where: { id: id },
+  //       data: data,
+  //     });
+  //   }
 
   async getGift(paymentId: number, courseId: number) {
-    return this.prisma[this.modelName].findFirst({ where: { payment_id: paymentId, course_id: courseId, status : 1 } });
+    return this.prisma[this.modelName].findMany({
+      select: { recipient: true },
+      where: { payment_id: paymentId, course_id: courseId, status: 1 },
+    });
   }
-  
 }
