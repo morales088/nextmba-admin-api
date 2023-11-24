@@ -35,6 +35,7 @@ export class AffiliateRepository extends AbstractRepository<Affiliates> {
     return this.prisma[this.modelName].update({
       where: { id: id },
       data: data,
+      include: {student:true},
     });
   }
 }
