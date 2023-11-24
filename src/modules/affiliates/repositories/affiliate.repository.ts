@@ -25,6 +25,13 @@ export class AffiliateRepository extends AbstractRepository<Affiliates> {
     });
   }
 
+  async findById(id: number) {
+    return this.prisma[this.modelName].findFirst({
+      include: { student: true },
+      where: { id },
+    });
+  }
+
   async updateAffiliate(id: number, data: UpdateAffiliateDto): Promise<Affiliates> {
     const affiliate = await this.findById(id);
 
@@ -35,7 +42,7 @@ export class AffiliateRepository extends AbstractRepository<Affiliates> {
     return this.prisma[this.modelName].update({
       where: { id: id },
       data: data,
-      include: {student:true},
+      include: { student: true },
     });
   }
 }
