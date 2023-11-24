@@ -43,7 +43,16 @@ export class StudentsService {
   }
 
   async updateStudent(id: number, data) {
-    return this.studentRepository.updateStudent(id, data);
+    const studentData = {
+      ...data,
+    };
+
+    if (data.password) {
+      const hashedPassword = await this.hashService.hashPassword(data.password);
+      studentData.password = hashedPassword
+    }
+
+    return this.studentRepository.updateStudent(id, studentData);
   }
 
   generateRandomString(length: number): string {

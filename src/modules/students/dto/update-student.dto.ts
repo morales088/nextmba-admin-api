@@ -1,11 +1,18 @@
 import { Prisma } from '@prisma/client';
 import { Transform, Type } from 'class-transformer';
-import { IsDate, IsDateString, IsDecimal, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, isNumber } from 'class-validator';
+import { IsDate, IsDateString, IsDecimal, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, MinLength, isNumber } from 'class-validator';
 
 export class UpdateStudentDto {
   @IsOptional()
   @IsString()
   name: string;
+
+  @IsOptional()
+  @MinLength(8, {
+    message: 'Password must be at least 8 characters long.',
+  })
+  @IsString()
+  password: string;
 
   @IsOptional()
   @IsString()
