@@ -72,7 +72,7 @@ export class PaymentsService {
         // count affiliate on payments
         const affiliatePayment = await this.paymentRepository.findByFromStudId(affiliate.student_id);
         let affiliateCount = (affiliatePayment as unknown as object[]).length;
-        ++affiliateCount;
+        // ++affiliateCount;
 
         const partnerAffiliate = parseInt(process.env.partnerAffiliate_count);
         const proAffiliate = parseInt(process.env.proAffiliate_count);

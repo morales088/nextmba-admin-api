@@ -15,7 +15,7 @@ export class StudentRepository extends AbstractRepository<Students> {
   }
 
   async find(): Promise<Students> {
-    return this.prisma[this.modelName].findMany({ where: { status: 1 } });
+    return this.prisma[this.modelName].findMany({ where: {  } });
   }
 
   async insert(data: Partial<Students>): Promise<Students> {

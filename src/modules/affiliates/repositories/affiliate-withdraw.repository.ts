@@ -15,7 +15,15 @@ export class AffiliateWithdrawRepository extends AbstractRepository<Affilate_wit
   }
 
   async find(): Promise<Affilate_withdraws> {
-    return this.prisma[this.modelName].findMany({ where: { status: 1 }, include: { student: true } });
+    return this.prisma[this.modelName].findMany({
+      where: {},
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
+      include: { student: true },
+    });
   }
 
   async updateAffiliateWithdraw(id: number, data: UpdateAffiliateWithdrawDto): Promise<Affilate_withdraws> {
@@ -28,7 +36,7 @@ export class AffiliateWithdrawRepository extends AbstractRepository<Affilate_wit
     return this.prisma[this.modelName].update({
       where: { id: id },
       data: data,
-      include: {student:true},
+      include: { student: true },
     });
   }
 
@@ -78,7 +86,7 @@ export class AffiliateWithdrawRepository extends AbstractRepository<Affilate_wit
 
     return { total_commission, paid_commission, currentBalance };
   }
-  
+
   async findById(id: number) {
     return this.prisma[this.modelName].findFirst({ where: { id }, include: { student: true } });
   }
