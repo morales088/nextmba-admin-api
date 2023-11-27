@@ -28,7 +28,8 @@ export class PaymentsService {
   }
 
   async createPayment(data) {
-    const payment = this.prisma.$transaction(async (prisma) => {
+    // const payment = this.prisma.$transaction(async (prisma) => {
+
       // get product details
       const product = await this.productRepository.findByCode(data.product_code);
       if (!product) return { message: 'Invalid Product Code.' };
@@ -91,16 +92,16 @@ export class PaymentsService {
       // insert data to payment table and return payment_id
       const createPayment = await this.paymentRepository.insert(studentId, product.id, paymentData);
 
-      return createPayment;
-    });
+    //   return createPayment;
+    // });
 
     // email payment information
-    if (payment) {
-      this.sendMailService.emailPaymentInformation(payment);
+    if (createPayment) {
+      this.sendMailService.emailPaymentInformation(createPayment);
     }
 
     //return payment details
-    return payment;
+    return createPayment;
   }
 
   //   async updateModule(id: number, data) {

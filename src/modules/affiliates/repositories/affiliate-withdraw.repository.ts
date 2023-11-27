@@ -32,6 +32,18 @@ export class AffiliateWithdrawRepository extends AbstractRepository<Affilate_wit
     if (!affiliateWithdraw) {
       throw new BadRequestException('Affiliate Withdraw does not exist.');
     }
+    
+    // update commission_status on payment
+    const status = data.status === 2 ? 1 : 0
+    const affliatePayment = await this.prisma.withdrawal_payments.findMany({
+      where: {withdrawal_id : id},
+    });
+    for(const data of affliatePayment){
+       await this.prisma.payments.update({
+          where: { id: data.id },
+          data: {commission_status : status},
+        });
+    }
 
     return this.prisma[this.modelName].update({
       where: { id: id },
