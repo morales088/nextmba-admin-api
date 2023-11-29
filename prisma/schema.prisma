@@ -228,9 +228,9 @@ model Payments {
   id                    Int                   @id @default(autoincrement())
   student               Students              @relation(fields: [student_id], references: [id])
   student_id            Int
-  product               Products?              @relation(fields: [product_id], references: [id])
-  product_id            Int?
-  product_code          String?                @db.VarChar(255)
+  product               Products?             @relation(fields: [product_id], references: [id])
+  product_id            Int?                  @default(0)
+  product_code          String?               @db.VarChar(255)
   reference_id          String?
   price                 Decimal               @db.Decimal(9, 2)
   payment_method        Int                   @default(1) //1 - paid, 2 - manual
