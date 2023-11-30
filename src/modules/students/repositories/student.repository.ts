@@ -15,7 +15,31 @@ export class StudentRepository extends AbstractRepository<Students> {
   }
 
   async find(): Promise<Students> {
-    return this.prisma[this.modelName].findMany({ where: {  } });
+    return this.prisma[this.modelName].findMany({ where: { status: 1 } });
+  }
+  async students(search: string = null, pageNumber: number = 1, perPage: number = 10): Promise<Students> {
+    const skipAmount = (pageNumber - 1) * perPage;
+    const searchData = search ?? ""
+    return this.prisma[this.modelName].findMany({
+      where: {
+        OR: [
+          {
+            email: {
+              startsWith: searchData,
+            },
+          },
+          { email: { endsWith: searchData } },
+          {
+            name: {
+              startsWith: searchData,
+            },
+          },
+          { name: { endsWith: searchData } },
+        ],
+      },
+      skip: skipAmount,
+      take: perPage,
+    });
   }
 
   async insert(data: Partial<Students>): Promise<Students> {

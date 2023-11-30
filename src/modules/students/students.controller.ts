@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, Request, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { StudentsService } from './services/students.service';
 import { CreateStudentDto } from './dto/create-student.dto';
@@ -17,8 +17,13 @@ export class StudentsController {
     }
   
     @Get('/')
-    async getStudents() {
-      return await this.studentsService.getStudents();
+    async getStudents(
+      @Query('search') search?: string,
+      @Query('page_number') page_number?: number,
+      @Query('per_page') per_page?: number) {
+        const pageNumber = page_number ? page_number : 1;
+        const perPage = per_page ? per_page : 10;
+      return await this.studentsService.getStudents(search, pageNumber, perPage);
     }
   
     @Post('/')
