@@ -29,10 +29,27 @@ export class PaymentRepository extends AbstractRepository<Payments> {
     });
   }
 
-  async payments(pageNumber: number = 1, perPage: number = 10): Promise<Payments> {
+  async payments(search: string = null, pageNumber: number = 1, perPage: number = 10): Promise<Payments> {
     const skipAmount = (pageNumber - 1) * perPage;
+    const searchData = search ?? '';
     return this.prisma[this.modelName].findMany({
-      where: { status: 1 },
+      where: {
+        OR: [
+          {
+            email: {
+              startsWith: searchData,
+            },
+          },
+          { email: { endsWith: searchData } },
+          // {
+          //   name: {
+          //     startsWith: searchData,
+          //   },
+          // },
+          // { name: { endsWith: searchData } },
+        ],
+        status: 1,
+      },
       include: { payment_items: true },
       orderBy: [
         {

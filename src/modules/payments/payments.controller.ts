@@ -16,12 +16,12 @@ export class PaymentsController {
 
   @Get('/')
   async getModules(
-    // @Query('search') search?: string,
+    @Query('search') search?: string,
     @Query('page_number') page_number?: number,
     @Query('per_page') per_page?: number) {
       const pageNumber = page_number ? page_number : 1;
       const perPage = per_page ? per_page : 10;
-    return await this.paymentsService.getPayments(pageNumber, perPage);
+    return await this.paymentsService.getPayments(search, pageNumber, perPage);
   }
 
   @Post('/manual')

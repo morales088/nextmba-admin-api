@@ -23,74 +23,74 @@ export class PaymentsService {
     return this.paymentRepository.findById(id);
   }
 
-  async getPayments(page: number, per_page: number) {
-    return this.paymentRepository.payments(page, per_page);
+  async getPayments(search: string, page: number, per_page: number) {
+    return this.paymentRepository.payments(search, page, per_page);
   }
 
   async createPayment(data) {
     // const payment = this.prisma.$transaction(async (prisma) => {
 
-      // get product details
-      const product = await this.productRepository.findByCode(data.product_code);
-      if (!product) return { message: 'Invalid Product Code.' };
+    // get product details
+    const product = await this.productRepository.findByCode(data.product_code);
+    if (!product) return { message: 'Invalid Product Code.' };
 
-      // check if email has account and return student_id
-      let studentId: number;
-      const findStudent = await this.studentRepository.findByEmail(data.email);
-      if (findStudent) {
-        if (product.library_access === true || product.pro_access === true) {
-          const updateStudent = {
-            library_access: product.library_access === true ? 1 : 0,
-            account_type: product.pro_access === true ? 3 : findStudent.account_type,
-          };
-
-          this.studentsService.updateStudent(findStudent.id, updateStudent);
-        }
-
-        studentId = findStudent.id;
-      } else {
-        // create student
-        const studentData = {
-          name: data.name,
-          email: data.email,
+    // check if email has account and return student_id
+    let studentId: number;
+    const findStudent = await this.studentRepository.findByEmail(data.email);
+    if (findStudent) {
+      if (product.library_access === true || product.pro_access === true) {
+        const updateStudent = {
           library_access: product.library_access === true ? 1 : 0,
-          account_type: product.pro_access === true ? 2 : 1,
+          account_type: product.pro_access === true ? 3 : findStudent.account_type,
         };
 
-        const createStudent = await this.studentsService.createStudent(studentData);
-
-        studentId = createStudent.id;
+        this.studentsService.updateStudent(findStudent.id, updateStudent);
       }
 
-      const paymentData = {
-        ...data,
+      studentId = findStudent.id;
+    } else {
+      // create student
+      const studentData = {
+        name: data.name,
+        email: data.email,
+        library_access: product.library_access === true ? 1 : 0,
+        account_type: product.pro_access === true ? 2 : 1,
       };
 
-      // get affiliate infos
-      const affiliate = await this.paymentAffiliateRepository.findPerCode(data.affiliate_code);
-      if (affiliate) {
-        // ALLABOUT AFFILIATES
-        // count affiliate on payments
-        const affiliatePayment = await this.paymentRepository.findByFromStudId(affiliate.student_id);
-        let affiliateCount = (affiliatePayment as unknown as object[]).length;
-        // ++affiliateCount;
+      const createStudent = await this.studentsService.createStudent(studentData);
 
-        const partnerAffiliate = parseInt(process.env.partnerAffiliate_count);
-        const proAffiliate = parseInt(process.env.proAffiliate_count);
+      studentId = createStudent.id;
+    }
 
-        const beginnerPercentage = parseFloat(process.env.beginnerCommissionPercent);
-        const partnerPercentage = parseFloat(process.env.partnerCommissionPercent);
+    const paymentData = {
+      ...data,
+    };
 
-        let commission_percentage = beginnerPercentage;
-        if (affiliateCount >= partnerAffiliate) commission_percentage = partnerPercentage;
+    // get affiliate infos
+    const affiliate = await this.paymentAffiliateRepository.findPerCode(data.affiliate_code);
+    if (affiliate) {
+      // ALLABOUT AFFILIATES
+      // count affiliate on payments
+      const affiliatePayment = await this.paymentRepository.findByFromStudId(affiliate.student_id);
+      let affiliateCount = (affiliatePayment as unknown as object[]).length;
+      // ++affiliateCount;
 
-        await this.paymentAffiliateRepository.update(affiliate.id, { percentage: commission_percentage });
+      const partnerAffiliate = parseInt(process.env.partnerAffiliate_count);
+      const proAffiliate = parseInt(process.env.proAffiliate_count);
 
-        paymentData.from_student_id = affiliate.student_id;
-        paymentData.commission_percentage = commission_percentage;
-      }
-      // insert data to payment table and return payment_id
-      const createPayment = await this.paymentRepository.insert(studentId, product.id, paymentData);
+      const beginnerPercentage = parseFloat(process.env.beginnerCommissionPercent);
+      const partnerPercentage = parseFloat(process.env.partnerCommissionPercent);
+
+      let commission_percentage = beginnerPercentage;
+      if (affiliateCount >= partnerAffiliate) commission_percentage = partnerPercentage;
+
+      await this.paymentAffiliateRepository.update(affiliate.id, { percentage: commission_percentage });
+
+      paymentData.from_student_id = affiliate.student_id;
+      paymentData.commission_percentage = commission_percentage;
+    }
+    // insert data to payment table and return payment_id
+    const createPayment = await this.paymentRepository.insert(studentId, product.id, paymentData);
 
     //   return createPayment;
     // });
