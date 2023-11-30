@@ -26,15 +26,19 @@ export class StudentRepository extends AbstractRepository<Students> {
           {
             email: {
               startsWith: searchData,
+              mode: 'insensitive',
             },
           },
-          { email: { endsWith: searchData } },
+          { email: { endsWith: searchData, 
+            mode: 'insensitive', } },
           {
             name: {
               startsWith: searchData,
+              mode: 'insensitive',
             },
           },
-          { name: { endsWith: searchData } },
+          { name: { endsWith: searchData,
+            mode: 'insensitive', } },
         ],
       },
       skip: skipAmount,

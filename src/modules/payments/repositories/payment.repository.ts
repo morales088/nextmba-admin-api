@@ -38,9 +38,10 @@ export class PaymentRepository extends AbstractRepository<Payments> {
           {
             email: {
               startsWith: searchData,
+              mode: 'insensitive',
             },
           },
-          { email: { endsWith: searchData } },
+          { email: { endsWith: searchData, mode: 'insensitive' } },
           // {
           //   name: {
           //     startsWith: searchData,
