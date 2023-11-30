@@ -29,6 +29,21 @@ export class PaymentRepository extends AbstractRepository<Payments> {
     });
   }
 
+  async payments(pageNumber: number = 1, perPage: number = 10): Promise<Payments> {
+    const skipAmount = (pageNumber - 1) * perPage;
+    return this.prisma[this.modelName].findMany({
+      where: { status: 1 },
+      include: { payment_items: true },
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
+      skip: skipAmount,
+      take: perPage,
+    });
+  }
+
   async insert(studentId: number, productId: number, data: Partial<Payments>): Promise<any> {
     // insert payment
     const paymentData = {
@@ -103,13 +118,13 @@ export class PaymentRepository extends AbstractRepository<Payments> {
       ],
     });
 
-    let courses = []
+    let courses = [];
     for (const gift of gifts) {
       for (const item of gift.payment_items) {
         const course = await this.prisma.courses.findUnique({ where: { id: item.course_id } });
         item.course_name = course.name;
         item.owner = gift.email;
-        courses.push(item)
+        courses.push(item);
       }
     }
 

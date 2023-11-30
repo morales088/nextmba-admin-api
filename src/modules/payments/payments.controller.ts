@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { PaymentsService } from './services/payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
@@ -15,8 +15,13 @@ export class PaymentsController {
   }
 
   @Get('/')
-  async getModules() {
-    return await this.paymentsService.getPayments();
+  async getModules(
+    // @Query('search') search?: string,
+    @Query('page_number') page_number?: number,
+    @Query('per_page') per_page?: number) {
+      const pageNumber = page_number ? page_number : 1;
+      const perPage = per_page ? per_page : 10;
+    return await this.paymentsService.getPayments(pageNumber, perPage);
   }
 
   @Post('/manual')

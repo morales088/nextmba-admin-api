@@ -34,7 +34,7 @@ export class CreateTopicDto {
   
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
-  @IsIn([1, 2]) // [1 - main lecture, 2 - assignment]
+  @IsIn([1, 2, 3]) // [1 - main lecture, 2 - assignment, 3 - theoritical]
   type: number;
   
   @IsOptional()
