@@ -10,12 +10,12 @@ export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
   @Get('/:paymentId')
-  async getModule(@Param('paymentId') paymentId: number) {
+  async getPayment(@Param('paymentId') paymentId: number) {
     return await this.paymentsService.getPayment(paymentId);
   }
 
   @Get('/')
-  async getModules(
+  async getPayments(
     @Query('search') search?: string,
     @Query('page_number') page_number?: number,
     @Query('per_page') per_page?: number) {
@@ -25,7 +25,7 @@ export class PaymentsController {
   }
 
   @Post('/manual')
-  async createModule(@Body() createPaymentDto: CreatePaymentDto) {
+  async createPayment(@Body() createPaymentDto: CreatePaymentDto) {
     const paymentData = {
       ...createPaymentDto,
       payment_method : 2

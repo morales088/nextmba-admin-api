@@ -51,7 +51,7 @@ export class PaymentRepository extends AbstractRepository<Payments> {
         ],
         status: 1,
       },
-      include: { payment_items: true },
+      include: { payment_items: true, product: true },
       orderBy: [
         {
           id: 'asc',
@@ -92,7 +92,7 @@ export class PaymentRepository extends AbstractRepository<Payments> {
   //   }
 
   async findById(id: number) {
-    return this.prisma[this.modelName].findUnique({ where: { id: id }, include: { payment_items: true } });
+    return this.prisma[this.modelName].findUnique({ where: { id: id }, include: { payment_items: true, product: true } });
   }
 
   async findByStudentId(id: number) {
