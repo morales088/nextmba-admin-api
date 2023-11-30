@@ -15,7 +15,12 @@ export class StudentRepository extends AbstractRepository<Students> {
   }
 
   async find(): Promise<Students> {
-    return this.prisma[this.modelName].findMany({ where: { status: 1 } });
+    return this.prisma[this.modelName].findMany({ where: { status: 1 },
+      orderBy: [
+        {
+          id: 'desc',
+        },
+      ], });
   }
   async students(search: string = null, pageNumber: number = 1, perPage: number = 10): Promise<Students> {
     const skipAmount = (pageNumber - 1) * perPage;
