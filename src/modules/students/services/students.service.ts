@@ -19,8 +19,8 @@ export class StudentsService {
     return this.studentRepository.findById(id);
   }
 
-  async getStudents(search : string, page: number, per_page: number) {
-    return this.studentRepository.students(search, page, per_page);
+  async getStudents(admin, search : string, page: number, per_page: number) {
+    return this.studentRepository.students(admin, search, page, per_page);
   }
 
   async createStudent(data) {
