@@ -164,7 +164,7 @@ model Students {
   language           String               @default("en") // en - english, es - espanish
   last_login         DateTime?
   profile_picture    String?
-  chat_moderator     Boolean              @default(false) //[false - not, true - moderator]
+  chat_moderator     Boolean              @default(false)
   chat_access        Boolean              @default(true) //[false - no access, true - has access]	
   // forgot_password_code String
   library_access     Int                  @default(0)
