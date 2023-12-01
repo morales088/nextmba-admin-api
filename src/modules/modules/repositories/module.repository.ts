@@ -19,7 +19,7 @@ export class ModuleRepository extends AbstractRepository<Modules> {
       where: { status: { notIn: [0] } },
       orderBy: [
         {
-          id: 'asc',
+          start_date: 'desc',
         },
       ],
     });
