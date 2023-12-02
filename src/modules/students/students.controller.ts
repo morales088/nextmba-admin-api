@@ -76,4 +76,9 @@ export class StudentsController {
   ) {
     return await this.studentsService.updateStudentCourse(studCourseId, updateStudentCourseDto);
   }
+  
+  @Post('/email-credentials')
+  async emailCredentials() {
+    return await this.studentsService.emailStudents();
+  }
 }

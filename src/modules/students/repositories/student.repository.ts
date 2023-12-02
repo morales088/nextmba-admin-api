@@ -89,7 +89,7 @@ export class StudentRepository extends AbstractRepository<Students> {
     return this.prisma[this.modelName].create({ data: data });
   }
 
-  async updateStudent(id: number, data: UpdateStudentDto): Promise<Students> {
+  async updateStudent(id: number, data): Promise<Students> {
     const student = await this.findById(id);
 
     if (!student) {
