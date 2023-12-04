@@ -10,10 +10,12 @@ export class SendMailService {
   async emailLoginCredentials(email: string, password: string) {
     const emailTemplate = fs.readFileSync('src/common/templates/credential.template.html', 'utf-8');
     const template = handlebars.compile(emailTemplate);
+    const link = process.env.STUDENT_ROUTE
 
     const templateData = {
       username: email,
       password: password,
+      link: link,
     };
 
     const emailContent = template(templateData);

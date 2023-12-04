@@ -22,11 +22,13 @@ export class StudentRepository extends AbstractRepository<Students> {
         },
       ], });
   }
-  async students(search: string = null, pageNumber: number = 1, perPage: number = 10): Promise<Students> {
+  async students(admin,search: string = null, pageNumber: number = 1, perPage: number = 10): Promise<Students> {
     const skipAmount = (pageNumber - 1) * perPage;
     const searchData = search ?? ""
-    return this.prisma[this.modelName].findMany({
-      where: {
+
+    let whereCondition = {}
+    if(admin.role === 2){
+      whereCondition = {
         OR: [
           {
             email: {
@@ -45,7 +47,33 @@ export class StudentRepository extends AbstractRepository<Students> {
           { name: { endsWith: searchData,
             mode: 'insensitive', } },
         ],
-      },
+        created_by : admin.id
+      }
+    } else{
+      whereCondition = {
+        OR: [
+          {
+            email: {
+              startsWith: searchData,
+              mode: 'insensitive',
+            },
+          },
+          { email: { endsWith: searchData, 
+            mode: 'insensitive', } },
+          {
+            name: {
+              startsWith: searchData,
+              mode: 'insensitive',
+            },
+          },
+          { name: { endsWith: searchData,
+            mode: 'insensitive', } },
+        ],
+      }
+    }
+
+    return this.prisma[this.modelName].findMany({
+      where: whereCondition,
       skip: skipAmount,
       take: perPage,
     });
@@ -61,7 +89,7 @@ export class StudentRepository extends AbstractRepository<Students> {
     return this.prisma[this.modelName].create({ data: data });
   }
 
-  async updateStudent(id: number, data: UpdateStudentDto): Promise<Students> {
+  async updateStudent(id: number, data): Promise<Students> {
     const student = await this.findById(id);
 
     if (!student) {

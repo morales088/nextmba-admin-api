@@ -45,4 +45,7 @@ export class CreateTopicDto {
   @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1])
   publish: number;
+
+  @IsOptional()
+  hide_recordings: boolean;
 }

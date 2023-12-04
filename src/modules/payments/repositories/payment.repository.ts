@@ -29,11 +29,27 @@ export class PaymentRepository extends AbstractRepository<Payments> {
     });
   }
 
-  async payments(search: string = null, pageNumber: number = 1, perPage: number = 10): Promise<Payments> {
+  async payments(user, search: string = null, pageNumber: number = 1, perPage: number = 10): Promise<Payments> {
     const skipAmount = (pageNumber - 1) * perPage;
     const searchData = search ?? '';
-    return this.prisma[this.modelName].findMany({
-      where: {
+
+    let whereCondition = {}
+    if(user.role === 2){
+      whereCondition = {
+        OR: [
+          {
+            email: {
+              startsWith: searchData,
+              mode: 'insensitive',
+            },
+          },
+          { email: { endsWith: searchData, mode: 'insensitive' } },
+        ],
+        status: 1,
+        created_by : user.id,
+      }
+    } else{
+      whereCondition = {
         OR: [
           {
             email: {
@@ -50,7 +66,11 @@ export class PaymentRepository extends AbstractRepository<Payments> {
           // { name: { endsWith: searchData } },
         ],
         status: 1,
-      },
+      }
+    }
+
+    return this.prisma[this.modelName].findMany({
+      where: whereCondition,
       include: { payment_items: true, product: true },
       orderBy: [
         {

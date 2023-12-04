@@ -19,8 +19,8 @@ export class StudentsService {
     return this.studentRepository.findById(id);
   }
 
-  async getStudents(search : string, page: number, per_page: number) {
-    return this.studentRepository.students(search, page, per_page);
+  async getStudents(admin, search: string, page: number, per_page: number) {
+    return this.studentRepository.students(admin, search, page, per_page);
   }
 
   async createStudent(data) {
@@ -49,7 +49,7 @@ export class StudentsService {
 
     if (data.password) {
       const hashedPassword = await this.hashService.hashPassword(data.password);
-      studentData.password = hashedPassword
+      studentData.password = hashedPassword;
     }
 
     return this.studentRepository.updateStudent(id, studentData);
@@ -85,5 +85,32 @@ export class StudentsService {
 
   async updateStudentCourse(id: number, data) {
     return this.studentCoursesRepository.updateStudentCourse(id, data);
+  }
+
+  async emailStudents() {
+    const result = await this.studentRepository.find();
+    const students = result as unknown as {id :number, email: string; email_sent: boolean }[];
+
+    for (const student of students) {
+      if (student.email_sent === false) {
+        const password = this.generateRandomString(8);
+        const hashedPassword = await this.hashService.hashPassword(password);
+
+        const studentData = {
+          password: hashedPassword,
+          // email_sent: true,
+        };
+
+        // //update student
+        await this.studentRepository.updateStudent(student.id, studentData);
+
+        // // send email credential to student
+        await this.sendMailService.emailLoginCredentials(student.email, password);
+        console.log(student.id, password, studentData)
+      }
+    }
+
+    return { message : "Credentiats successfully sent to students"}
+
   }
 }
