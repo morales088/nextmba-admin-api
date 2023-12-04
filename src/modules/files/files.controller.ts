@@ -72,7 +72,7 @@ export class FilesController {
     const fileData = {
       ...updateFileDto,
     };
-
+    
     if (file) {
       const path = 'files';
       const fileUrl = await this.awsS3Service.upload(path, file);
