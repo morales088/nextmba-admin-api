@@ -2,8 +2,9 @@ import { Transform } from 'class-transformer';
 import { IsBoolean, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateFileDto {
-//   @IsNotEmpty()
-//   topic_id: number;
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  topic_id: number;
 
   // @IsNotEmpty()
   // module_id: number;
