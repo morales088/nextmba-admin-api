@@ -26,7 +26,7 @@ export class StudentsController {
     const admin = req.user;
     const pageNumber = page_number ? page_number : 1;
     const perPage = per_page ? per_page : 10;
-    return await this.studentsService.getStudents(admin,search, pageNumber, perPage);
+    return await this.studentsService.getStudents(admin, search, pageNumber, perPage);
   }
 
   @Post('/')
@@ -76,7 +76,7 @@ export class StudentsController {
   ) {
     return await this.studentsService.updateStudentCourse(studCourseId, updateStudentCourseDto);
   }
-  
+
   @Post('/email-credentials')
   async emailCredentials() {
     return await this.studentsService.emailStudents();

@@ -32,7 +32,7 @@ export class StudentRepository extends AbstractRepository<Students> {
         OR: [
           {
             email: {
-              startsWith: searchData,
+              contains: searchData,
               mode: 'insensitive',
             },
           },
@@ -40,7 +40,7 @@ export class StudentRepository extends AbstractRepository<Students> {
             mode: 'insensitive', } },
           {
             name: {
-              startsWith: searchData,
+              contains: searchData,
               mode: 'insensitive',
             },
           },
@@ -54,7 +54,7 @@ export class StudentRepository extends AbstractRepository<Students> {
         OR: [
           {
             email: {
-              startsWith: searchData,
+              contains: searchData,
               mode: 'insensitive',
             },
           },
@@ -62,7 +62,7 @@ export class StudentRepository extends AbstractRepository<Students> {
             mode: 'insensitive', } },
           {
             name: {
-              startsWith: searchData,
+              contains: searchData,
               mode: 'insensitive',
             },
           },

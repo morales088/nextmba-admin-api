@@ -39,11 +39,10 @@ export class PaymentRepository extends AbstractRepository<Payments> {
         OR: [
           {
             email: {
-              startsWith: searchData,
+              contains: searchData,
               mode: 'insensitive',
             },
           },
-          { email: { endsWith: searchData, mode: 'insensitive' } },
         ],
         status: 1,
         created_by : user.id,
@@ -53,7 +52,7 @@ export class PaymentRepository extends AbstractRepository<Payments> {
         OR: [
           {
             email: {
-              startsWith: searchData,
+              contains: searchData,
               mode: 'insensitive',
             },
           },
