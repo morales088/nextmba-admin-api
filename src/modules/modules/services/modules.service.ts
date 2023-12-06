@@ -11,8 +11,8 @@ export class ModulesService {
       return this.moduleRepository.findById(id);
     }
     
-  async getModules() {
-    return this.moduleRepository.find();
+  async getModules(filterData: object, page: number, per_page: number) {
+    return this.moduleRepository.modules(filterData, page, per_page);
   }
     
   async createModules(data) {

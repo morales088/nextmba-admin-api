@@ -7,6 +7,7 @@ import {
   ParseFilePipe,
   Post,
   Put,
+  Query,
   Request,
   UploadedFile,
   UseGuards,
@@ -33,8 +34,23 @@ export class ModulesController {
   }
 
   @Get('/')
-  async getModules() {
-    return await this.modulesService.getModules();
+  async getModules(
+    @Query('search') search?: string,
+    @Query('course') course?: number,
+    @Query('status') status?: number,
+    @Query('page_number') page_number?: number,
+    @Query('per_page') per_page?: number
+  ) {
+    const pageNumber = page_number ? page_number : 1;
+    const perPage = per_page ? per_page : 10;
+
+    const filterData = {
+      search,
+      course,
+      status,
+    };
+    console.log(filterData)
+    return await this.modulesService.getModules(filterData, pageNumber, perPage);
   }
 
   @Post('/')
@@ -60,9 +76,7 @@ export class ModulesController {
   async uploadFile(
     @UploadedFile(
       new ParseFilePipe({
-        validators: [
-          new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
-        ],
+        validators: [new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' })],
       })
     )
     file: Express.Multer.File

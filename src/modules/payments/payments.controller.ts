@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, Request, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { PaymentsService } from './services/payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
+import { UpdatePaymentDto } from './dto/update-payment.dto';
 
 @Controller('payments')
 @UseGuards(AuthGuard('jwt'))
@@ -35,13 +36,15 @@ export class PaymentsController {
 
     return await this.paymentsService.createPayment(paymentData);
   }
-
-//   @Put('/:moduleId')
-//   async updateModule(
-//     @Param('moduleId') moduleId: number,
-//     @Request() req: any,
-//     @Body() updateModuleDto: UpdateModuleDto
-//   ) {
-//     return await this.modulesService.updateModule(moduleId, updateModuleDto);
-//   }
+  
+  @Put('/manual/:paymentId')
+  async updatePayment(
+    @Param('paymentId') paymentId: number,
+    @Body() updatePaymentDto: UpdatePaymentDto
+  ) {
+    const paymentData = {
+      ...updatePaymentDto,
+    };
+    return await this.paymentsService.updatePayment(paymentId, paymentData);
+  }
 }

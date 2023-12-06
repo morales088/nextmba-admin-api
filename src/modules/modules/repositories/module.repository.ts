@@ -25,6 +25,40 @@ export class ModuleRepository extends AbstractRepository<Modules> {
     });
   }
 
+  async modules(filterData, pageNumber: number = 1, perPage: number = 10): Promise<Modules> {
+    const skipAmount = (pageNumber - 1) * perPage;
+    const searchData = filterData.search ?? '';
+
+    let whereCondition = {
+      status: {},
+      // search name on module
+      OR: [
+        {
+          name: {
+            contains: searchData,
+            mode: 'insensitive',
+          },
+        },
+      ],
+      course: {  },
+    };
+
+    if (filterData.status) whereCondition.status = { in: [filterData.status] };
+    if (filterData.course) whereCondition.course = { id: filterData.course };
+
+    return this.prisma[this.modelName].findMany({
+      where: whereCondition,
+      orderBy: [
+        {
+          start_date: 'desc',
+        },
+      ],
+      include: { course: true },
+      skip: skipAmount,
+      take: perPage,
+    });
+  }
+
   async insert(data: Partial<Modules>): Promise<Modules> {
     const course = await this.prisma.courses.findUnique({ where: { id: data.course_id } });
 
