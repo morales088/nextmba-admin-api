@@ -99,7 +99,7 @@ export class StudentsService {
 
           const studentData = {
             password: hashedPassword,
-            // email_sent: true,
+            email_sent: true,
           };
 
           // send email credential to student
