@@ -104,7 +104,7 @@ export class PaymentsService {
     return createPayment;
   }
 
-  //   async updateModule(id: number, data) {
-  //     return this.moduleRepository.updateModule(id, data);
-  //   }
+    async updatePayment(id: number, data) {
+      return this.paymentRepository.update(id, data);
+    }
 }

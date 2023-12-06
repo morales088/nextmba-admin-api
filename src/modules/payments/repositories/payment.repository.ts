@@ -33,8 +33,8 @@ export class PaymentRepository extends AbstractRepository<Payments> {
     const skipAmount = (pageNumber - 1) * perPage;
     const searchData = search ?? '';
 
-    let whereCondition = {}
-    if(user.role === 2){
+    let whereCondition = {};
+    if (user.role === 2) {
       whereCondition = {
         OR: [
           {
@@ -45,9 +45,9 @@ export class PaymentRepository extends AbstractRepository<Payments> {
           },
         ],
         status: 1,
-        created_by : user.id,
-      }
-    } else{
+        created_by: user.id,
+      };
+    } else {
       whereCondition = {
         OR: [
           {
@@ -65,7 +65,7 @@ export class PaymentRepository extends AbstractRepository<Payments> {
           // { name: { endsWith: searchData } },
         ],
         status: 1,
-      }
+      };
     }
 
     return this.prisma[this.modelName].findMany({
@@ -97,21 +97,24 @@ export class PaymentRepository extends AbstractRepository<Payments> {
     return await this.findById(createPayment.id);
   }
 
-  //   async update(id: number, data): Promise<Payments> {
-  //     const payment = await this.findById(id);
+  async update(id: number, data): Promise<Payments> {
+    const payment = await this.findById(id);
 
-  //     if (!payment) {
-  //       throw new BadRequestException('payment does not exist.');
-  //     }
+    if (!payment) {
+      throw new BadRequestException('payment does not exist.');
+    }
 
-  //     return this.prisma[this.modelName].update({
-  //       where: { id : id },
-  //       data: data,
-  //     });
-  //   }
+    return this.prisma[this.modelName].update({
+      where: { id: id },
+      data: data,
+    });
+  }
 
   async findById(id: number) {
-    return this.prisma[this.modelName].findUnique({ where: { id: id }, include: { payment_items: true, product: true } });
+    return this.prisma[this.modelName].findUnique({
+      where: { id: id },
+      include: { payment_items: true, product: true },
+    });
   }
 
   async findByStudentId(id: number) {
