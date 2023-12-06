@@ -79,4 +79,9 @@ export class CreatePaymentDto {
   @IsOptional()
   @IsString()
   remarks: string;
+
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  @IsIn([0, 1, 2]) //[0 - Void, 1 - Paid, 2 - Refunded]
+  status: number;
 }

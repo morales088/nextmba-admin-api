@@ -21,12 +21,26 @@ export class StudentsController {
     @Request() req: any,
     @Query('search') search?: string,
     @Query('page_number') page_number?: number,
-    @Query('per_page') per_page?: number
+    @Query('per_page') per_page?: number,
+    @Query('course_id') course_id?: number,
+    @Query('country') country?: string,
+    @Query('company') company?: string,
+    @Query('phone') phone?: string,
+    @Query('position') position?: string,
+    @Query('account_type') account_type?: number,
   ) {
     const admin = req.user;
     const pageNumber = page_number ? page_number : 1;
     const perPage = per_page ? per_page : 10;
-    return await this.studentsService.getStudents(admin, search, pageNumber, perPage);
+    const filters = {
+      course_id,
+      country,
+      company,
+      phone,
+      position,
+      account_type,
+    }
+    return await this.studentsService.getStudents(admin, search, filters, pageNumber, perPage);
   }
 
   @Post('/')
