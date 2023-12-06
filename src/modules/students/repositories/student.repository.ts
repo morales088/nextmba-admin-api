@@ -83,6 +83,11 @@ export class StudentRepository extends AbstractRepository<Students> {
     return this.prisma[this.modelName].findMany({
       where: whereCondition,
       // include: { student_courses: { where: { status: 1 } } },
+      orderBy: [
+        {
+          id: 'desc',
+        },
+      ],
       skip: skipAmount,
       take: perPage,
     });

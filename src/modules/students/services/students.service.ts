@@ -105,7 +105,7 @@ export class StudentsService {
         await this.studentRepository.updateStudent(student.id, studentData);
 
         // // send email credential to student
-        await this.sendMailService.emailLoginCredentials(student.email, password);
+        // await this.sendMailService.emailLoginCredentials(student.email, password);
         console.log(student.id, password, studentData)
       }
     }
