@@ -19,8 +19,8 @@ export class StudentsService {
     return this.studentRepository.findById(id);
   }
 
-  async getStudents(admin, search: string, page: number, per_page: number) {
-    return this.studentRepository.students(admin, search, page, per_page);
+  async getStudents(admin, search: string, filters, page: number, per_page: number) {
+    return this.studentRepository.students(admin, search, filters, page, per_page);
   }
 
   async createStudent(data) {
@@ -89,28 +89,33 @@ export class StudentsService {
 
   async emailStudents() {
     const result = await this.studentRepository.find();
-    const students = result as unknown as {id :number, email: string; email_sent: boolean }[];
+    const students = result as unknown as { id: number; email: string; email_sent: boolean }[];
 
-    for (const student of students) {
-      if (student.email_sent === false) {
-        const password = this.generateRandomString(8);
-        const hashedPassword = await this.hashService.hashPassword(password);
+    try {
+      for (const student of students) {
+        if (student.email_sent === false) {
+          const password = this.generateRandomString(8);
+          const hashedPassword = await this.hashService.hashPassword(password);
 
-        const studentData = {
-          password: hashedPassword,
-          // email_sent: true,
-        };
+          const studentData = {
+            password: hashedPassword,
+            email_sent: true,
+          };
 
-        // //update student
-        await this.studentRepository.updateStudent(student.id, studentData);
+          // send email credential to student
+          console.error("sending credential to:", student.email);
+          await this.sendMailService.emailLoginCredentials(student.email, password);
+          // console.log(student.id, password, studentData);
 
-        // // send email credential to student
-        await this.sendMailService.emailLoginCredentials(student.email, password);
-        console.log(student.id, password, studentData)
+          //update student
+          await this.studentRepository.updateStudent(student.id, studentData);
+        }
       }
+    } catch (error) {
+      console.error("Error:", error);
+    }finally {
+      return { message: 'Credentiats successfully sent to students' };
     }
-
-    return { message : "Credentiats successfully sent to students"}
 
   }
 }

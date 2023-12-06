@@ -249,7 +249,7 @@ model Payments {
   from_student_id       Int?                  @default(0)
   affiliate_code        String?
   commission_percentage Decimal               @default(0) @db.Decimal(9, 2)
-  commission_status     Int                   @default(0) //[0 - unpaid, 1 - paid]
+  commission_status     Int                   @default(0) //[0 - Void, 1 - Paid, 2 - Refunded]
   remarks               String?
   status                Int                   @default(1)
   createdAt             DateTime              @default(now())

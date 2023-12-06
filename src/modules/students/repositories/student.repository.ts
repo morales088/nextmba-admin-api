@@ -15,65 +15,79 @@ export class StudentRepository extends AbstractRepository<Students> {
   }
 
   async find(): Promise<Students> {
-    return this.prisma[this.modelName].findMany({ where: { status: 1 },
+    return this.prisma[this.modelName].findMany({
+      where: { status: 1 },
       orderBy: [
         {
           id: 'desc',
         },
-      ], });
+      ],
+    });
   }
-  async students(admin,search: string = null, pageNumber: number = 1, perPage: number = 10): Promise<Students> {
+  async students(
+    admin,
+    search: string = null,
+    filters,
+    pageNumber: number = 1,
+    perPage: number = 10
+  ): Promise<Students> {
     const skipAmount = (pageNumber - 1) * perPage;
-    const searchData = search ?? ""
+    const searchData = search ?? '';
 
-    let whereCondition = {}
-    if(admin.role === 2){
-      whereCondition = {
-        OR: [
-          {
-            email: {
-              contains: searchData,
-              mode: 'insensitive',
-            },
+    let whereCondition = {
+      OR: [
+        {
+          email: {
+            contains: searchData,
+            mode: 'insensitive',
           },
-          { email: { endsWith: searchData, 
-            mode: 'insensitive', } },
-          {
-            name: {
-              contains: searchData,
-              mode: 'insensitive',
-            },
+        },
+        {
+          name: {
+            contains: searchData,
+            mode: 'insensitive',
           },
-          { name: { endsWith: searchData,
-            mode: 'insensitive', } },
-        ],
-        created_by : admin.id
-      }
-    } else{
-      whereCondition = {
-        OR: [
-          {
-            email: {
-              contains: searchData,
-              mode: 'insensitive',
-            },
+        },
+        {
+          country: {
+            contains: filters.country,
+            mode: 'insensitive',
           },
-          { email: { endsWith: searchData, 
-            mode: 'insensitive', } },
-          {
-            name: {
-              contains: searchData,
-              mode: 'insensitive',
-            },
+        },
+        {
+          company: {
+            contains: filters.company,
+            mode: 'insensitive',
           },
-          { name: { endsWith: searchData,
-            mode: 'insensitive', } },
-        ],
-      }
-    }
+        },
+        {
+          phone: {
+            contains: filters.phone,
+            mode: 'insensitive',
+          },
+        },
+        {
+          position: {
+            contains: filters.position,
+            mode: 'insensitive',
+          },
+        },
+      ],
+      created_by: {},
+      student_courses: {},
+    };
+
+    if (filters.course_id) whereCondition.student_courses = { some: { course_id: filters.course_id } };
+    if (admin.role === 2) whereCondition.created_by = { in: [admin.id] };
 
     return this.prisma[this.modelName].findMany({
       where: whereCondition,
+      // include: { student_courses: { where: { status: 1 } } },
+      orderBy: [
+        {
+          id: 'desc',
+        },
+      ],
       skip: skipAmount,
       take: perPage,
     });

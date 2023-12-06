@@ -33,47 +33,26 @@ export class PaymentRepository extends AbstractRepository<Payments> {
     const skipAmount = (pageNumber - 1) * perPage;
     const searchData = search ?? '';
 
-    let whereCondition = {};
-    if (user.role === 2) {
-      whereCondition = {
-        OR: [
-          {
-            email: {
-              contains: searchData,
-              mode: 'insensitive',
-            },
+    let whereCondition = {
+      OR: [
+        {
+          email: {
+            contains: searchData,
+            mode: 'insensitive',
           },
-        ],
-        status: 1,
-        created_by: user.id,
-      };
-    } else {
-      whereCondition = {
-        OR: [
-          {
-            email: {
-              contains: searchData,
-              mode: 'insensitive',
-            },
-          },
-          { email: { endsWith: searchData, mode: 'insensitive' } },
-          // {
-          //   name: {
-          //     startsWith: searchData,
-          //   },
-          // },
-          // { name: { endsWith: searchData } },
-        ],
-        status: 1,
-      };
-    }
+        },
+        { email: { endsWith: searchData, mode: 'insensitive' } },
+      ],
+      created_by: {},
+    };
+    if (user.role === 2) whereCondition.created_by = { in: [user.id] };
 
     return this.prisma[this.modelName].findMany({
       where: whereCondition,
       include: { payment_items: true, product: true },
       orderBy: [
         {
-          id: 'asc',
+          id: 'desc',
         },
       ],
       skip: skipAmount,
