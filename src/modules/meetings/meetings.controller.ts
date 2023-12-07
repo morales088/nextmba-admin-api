@@ -38,7 +38,8 @@ export class MeetingsController {
 
     try {
       const startMeeting = await this.zoomService.createMeeting(meeting);
-      const moduleData = { live_link: startMeeting.id.toString() };
+      // const moduleData = { live_link: startMeeting.id.toString() };
+      const moduleData = { live_link: startMeeting.join_url.toString() };
       await this.meetingsService.updateModule(meeting.module_id, moduleData);
       return res.status(HttpStatus.OK).json(startMeeting);
     } catch (error) {
