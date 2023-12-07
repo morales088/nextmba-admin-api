@@ -28,9 +28,11 @@ export class UpdateCourseDto {
   telegram_link: string;
 
   @IsOptional()
+  @Transform(({ value }) => parseInt(value))
   paid: number;
 
   @IsOptional()
+  @Transform(({ value }) => parseInt(value))
   is_displayed: number;
 
   @IsOptional()
