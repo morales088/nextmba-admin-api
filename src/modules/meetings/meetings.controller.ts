@@ -39,7 +39,10 @@ export class MeetingsController {
     try {
       const startMeeting = await this.zoomService.createMeeting(meeting);
       // const moduleData = { live_link: startMeeting.id.toString() };
-      const moduleData = { live_link: startMeeting.join_url.toString() };
+      const moduleData = { 
+        live_link: startMeeting.start_url.toString(), 
+        live_id: startMeeting.id.toString() 
+      };
       await this.meetingsService.updateModule(meeting.module_id, moduleData);
       return res.status(HttpStatus.OK).json(startMeeting);
     } catch (error) {
@@ -53,12 +56,11 @@ export class MeetingsController {
     // if module has live id
     const module = await this.meetingsService.getModule(moduleId);
 
-    if (!!!module.live_link)
-      return res.status(HttpStatus.BAD_REQUEST).json({ message: 'This module dont have live id.' });
+    if (!!!module.live_id)return res.status(HttpStatus.BAD_REQUEST).json({ message: 'This module dont have live id.' });
 
     try {
-      await this.zoomService.deleteMeeting(module.live_link);
-      const moduleData = { live_link: null };
+      await this.zoomService.deleteMeeting(module.live_id);
+      const moduleData = { live_id: null };
       await this.meetingsService.updateModule(moduleId, moduleData);
       return res.status(HttpStatus.OK).json({ message: 'Meeting deletion success.' });
     } catch (error) {

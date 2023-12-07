@@ -66,8 +66,7 @@ export class UserService {
 
   async updateUser(id: number, data: Partial<Users>) {
     const updateData = {
-      name: data.name,
-      email: data.email,
+      ...data
     };
     return this.userRepository.update(id, updateData);
   }

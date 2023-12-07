@@ -77,12 +77,14 @@ export class StudentRepository extends AbstractRepository<Students> {
       student_courses: {},
     };
 
-    if (filters.course_id) whereCondition.student_courses = { some: { course_id: filters.course_id } };
+    if (filters.enrolled_to) whereCondition.student_courses = { some: { course_id: filters.enrolled_to } };
+    if (filters.not_enrolled_to)
+      whereCondition.student_courses = { some: {}, none: { course_id: filters.not_enrolled_to } };
     if (admin.role === 2) whereCondition.created_by = { in: [admin.id] };
 
     return this.prisma[this.modelName].findMany({
       where: whereCondition,
-      // include: { student_courses: { where: { status: 1 } } },
+      include: { student_courses: { where: { status: 1 } } },
       orderBy: [
         {
           id: 'desc',

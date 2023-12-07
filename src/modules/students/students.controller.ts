@@ -22,7 +22,8 @@ export class StudentsController {
     @Query('search') search?: string,
     @Query('page_number') page_number?: number,
     @Query('per_page') per_page?: number,
-    @Query('course_id') course_id?: number,
+    @Query('enrolled_to') enrolled_to?: number,
+    @Query('not_enrolled_to') not_enrolled_to?: number,
     @Query('country') country?: string,
     @Query('company') company?: string,
     @Query('phone') phone?: string,
@@ -33,7 +34,8 @@ export class StudentsController {
     const pageNumber = page_number ? page_number : 1;
     const perPage = per_page ? per_page : 10;
     const filters = {
-      course_id,
+      enrolled_to,
+      not_enrolled_to,
       country,
       company,
       phone,
