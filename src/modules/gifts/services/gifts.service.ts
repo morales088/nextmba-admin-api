@@ -41,7 +41,7 @@ export class GiftsService {
     );
     console.log(paymentItem)
     if (!paymentItem || paymentItem.giftable < 1 || studentCourse)
-      return { message: 'zero courses available / recipient already has this course / course expired' };
+    return { code: 422,message: 'zero courses available / recipient already has this course / course expired' };
 
     const gift = this.prisma.$transaction(async (prisma) => {
       // check if email has account and return student_id
@@ -91,6 +91,6 @@ export class GiftsService {
 
     });
 
-    return { message: 'Gift successfully sent.' };
+    return {  code: 200, message: 'Gift successfully sent.' };
   }
 }
