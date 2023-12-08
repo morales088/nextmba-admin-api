@@ -47,5 +47,6 @@ export class CreateTopicDto {
   publish: number;
 
   @IsOptional()
+  @Transform(({ value }) => value === 'true')
   hide_recordings: boolean;
 }
