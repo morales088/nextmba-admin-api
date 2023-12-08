@@ -38,13 +38,13 @@ export class StudentRepository extends AbstractRepository<Students> {
       OR: [
         {
           email: {
-            contains: searchData,
+            startsWith: searchData,
             mode: 'insensitive',
           },
         },
         {
           name: {
-            contains: searchData,
+            startsWith: searchData,
             mode: 'insensitive',
           },
         },
