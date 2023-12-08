@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GiftsService } from './services/gifts.service';
 import { CreateGiftDto } from './dto/gift.dto';
+import { Response } from 'express';
 
 @Controller('gifts')
 @UseGuards(AuthGuard('jwt'))
@@ -14,7 +15,9 @@ export class GiftsController {
     }
   
     @Post('/send')
-    async sendCourse(@Body() createGiftDto: CreateGiftDto) {
-      return await this.giftsService.sendCourse(createGiftDto);
+    async sendCourse(@Res() res: Response, @Body() createGiftDto: CreateGiftDto) {
+      const {code, message} = await this.giftsService.sendCourse(createGiftDto);
+      
+      return res.status(code).json({ message });
     }
 }
