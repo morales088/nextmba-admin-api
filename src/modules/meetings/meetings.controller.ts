@@ -56,11 +56,11 @@ export class MeetingsController {
     // if module has live id
     const module = await this.meetingsService.getModule(moduleId);
 
-    if (!!!module.live_id)return res.status(HttpStatus.BAD_REQUEST).json({ message: 'This module dont have live id.' });
+    if (!!!module.live_id && !!!module.live_id)return res.status(HttpStatus.BAD_REQUEST).json({ message: 'This module dont have live id.' });
 
     try {
       await this.zoomService.deleteMeeting(module.live_id);
-      const moduleData = { live_id: null };
+      const moduleData = { live_link: null, live_id: null };
       await this.meetingsService.updateModule(moduleId, moduleData);
       return res.status(HttpStatus.OK).json({ message: 'Meeting deletion success.' });
     } catch (error) {
