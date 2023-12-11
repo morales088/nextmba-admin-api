@@ -126,7 +126,11 @@ export class PaymentRepository extends AbstractRepository<Payments> {
     const giftableDate = new Date(process.env.GIFTABLE_DATE);
 
     const gifts = await this.prisma[this.modelName].findMany({
-      where: { student_id: studentId, status: 1, createdAt: { gte: giftableDate.toISOString() } },
+      where: {
+        student_id: studentId,
+        status: 1,
+        // createdAt: { gte: giftableDate.toISOString() },
+      },
       include: {
         payment_items: true,
       },
