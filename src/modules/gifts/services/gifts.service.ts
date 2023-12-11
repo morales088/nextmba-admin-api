@@ -32,6 +32,7 @@ export class GiftsService {
   }
 
   async sendCourse(data: CreateGiftDto) {
+    const giftableDate = new Date(process.env.GIFTABLE_DATE);
     const findStudent = await this.studentRepository.findByEmail(data.recipient);
     const studentCourse = findStudent?.student_courses?.find((res) => res.course_id === data.course_id);
 
@@ -39,8 +40,8 @@ export class GiftsService {
     const paymentItem = paymentItems.find(
       (res) => res.payment_id === data.payment_id && res.course_id === data.course_id
     );
-    console.log(paymentItem)
-    if (!paymentItem || paymentItem.giftable < 1 || studentCourse)
+    
+    if (!paymentItem || paymentItem.giftable < 1 || studentCourse || paymentItem.createdAt <= giftableDate)
     return { code: 422,message: 'zero courses available / recipient already has this course / course expired' };
 
     const gift = this.prisma.$transaction(async (prisma) => {
