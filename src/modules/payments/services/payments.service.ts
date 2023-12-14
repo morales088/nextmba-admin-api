@@ -97,7 +97,11 @@ export class PaymentsService {
 
     // email payment information
     if (createPayment) {
-      this.sendMailService.emailPaymentInformation(createPayment);
+      const emailData = {
+        ...createPayment,
+        productName: product.name
+      }
+      this.sendMailService.emailPaymentInformation(emailData);
     }
 
     //return payment details

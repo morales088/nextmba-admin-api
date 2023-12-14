@@ -79,4 +79,11 @@ export class StudentCoursesRepository extends AbstractRepository<Student_courses
 
     return studCourses;
   }
+  
+  async activeCourses() {
+    return this.prisma.courses.findMany({
+      where: { is_displayed: 1, paid: 1, status: 1 },
+      orderBy: { id: 'asc' },
+    });
+  }
 }
