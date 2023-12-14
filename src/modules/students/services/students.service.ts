@@ -47,6 +47,32 @@ export class StudentsService {
       ...data,
     };
 
+    // insert student course if pro
+    if (data.account_type === 2) {
+      const courses = await this.studentCoursesRepository.activeCourses();
+      const studCourses = await this.studentCoursesRepository.findByStudentId(id);
+
+      for (const course of courses) {
+        const checkCourse = studCourses.find((studCourse) => studCourse.course_id === course.id);
+        if (checkCourse === undefined) {
+          const startingDate = new Date();
+          const expirationDate = new Date();
+          expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+          const modulePerCourse = parseInt(process.env.MODULE_PER_COURSE);
+
+          const studCourseData = {
+            student_id: id,
+            course_id: course.id,
+            course_type: 2,
+            module_quantity: modulePerCourse,
+            starting_date: startingDate,
+            expiration_date: expirationDate,
+          };
+          await this.createStudentCourse(studCourseData);
+        }
+      }
+    }
+
     if (data.password) {
       const hashedPassword = await this.hashService.hashPassword(data.password);
       studentData.password = hashedPassword;
@@ -103,7 +129,7 @@ export class StudentsService {
           };
 
           // send email credential to student
-          console.error("sending credential to:", student.email);
+          console.error('sending credential to:', student.email);
           await this.sendMailService.emailLoginCredentials(student.email, password);
           // console.log(student.id, password, studentData);
 
@@ -112,10 +138,9 @@ export class StudentsService {
         }
       }
     } catch (error) {
-      console.error("Error:", error);
-    }finally {
+      console.error('Error:', error);
+    } finally {
       return { message: 'Credentiats successfully sent to students' };
     }
-
   }
 }

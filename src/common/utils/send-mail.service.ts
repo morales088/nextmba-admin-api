@@ -34,7 +34,10 @@ export class SendMailService {
     const template = handlebars.compile(emailTemplate);
 
     const templateData = {
-      productCode: paymentInfo.product_code,
+      // productCode: paymentInfo.product_code,
+      name:paymentInfo.name,
+      productName: paymentInfo.productName,
+      country: paymentInfo.country,
       paymentAmount: paymentInfo.price,
       paymentDate: paymentInfo.createdAt,
     };
