@@ -104,7 +104,8 @@ export class StudentRepository extends AbstractRepository<Students> {
     if (filters.enrolled_to) whereCondition.student_courses = { some: { course_id: filters.enrolled_to } };
     if (filters.not_enrolled_to)
       whereCondition.student_courses = { some: {}, none: { course_id: filters.not_enrolled_to } };
-    if (admin.role === 2) whereCondition.created_by = { in: [admin.id] };
+
+    if (admin.role === 2) whereCondition.created_by = { in: [admin.userId] };
 
     return this.prisma[this.modelName].findMany({
       where: whereCondition,

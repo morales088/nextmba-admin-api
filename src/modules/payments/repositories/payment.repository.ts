@@ -45,7 +45,7 @@ export class PaymentRepository extends AbstractRepository<Payments> {
       ],
       created_by: {},
     };
-    if (user.role === 2) whereCondition.created_by = { in: [user.id] };
+    if (user.role === 2) whereCondition.created_by = { in: [user.userId] };
 
     return this.prisma[this.modelName].findMany({
       where: whereCondition,
