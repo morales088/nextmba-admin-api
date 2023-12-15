@@ -139,6 +139,7 @@ export class StudentsService {
       }
     } catch (error) {
       console.error('Error:', error);
+      return { error };
     } finally {
       return { message: 'Credentiats successfully sent to students' };
     }
