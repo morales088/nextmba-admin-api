@@ -68,6 +68,11 @@ export class UserService {
     const updateData = {
       ...data
     };
+    
+    if (data.password) {
+      const hashedPassword = await this.hashService.hashPassword(data.password);
+      updateData.password = hashedPassword;
+    }
     return this.userRepository.update(id, updateData);
   }
 
