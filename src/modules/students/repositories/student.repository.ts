@@ -24,6 +24,18 @@ export class StudentRepository extends AbstractRepository<Students> {
       ],
     });
   }
+
+  async studentEmail(): Promise<Students> {
+    return this.prisma[this.modelName].findMany({
+      where: { email_sent: false, status: 1 },
+      orderBy: [
+        {
+          id: 'desc',
+        },
+      ],
+    });
+  }
+
   async students(
     admin,
     search: string = null,

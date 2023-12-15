@@ -114,9 +114,9 @@ export class StudentsService {
   }
 
   async emailStudents() {
-    const result = await this.studentRepository.find();
+    const result = await this.studentRepository.studentEmail();
     const students = result as unknown as { id: number; email: string; email_sent: boolean }[];
-
+    
     try {
       for (const student of students) {
         if (student.email_sent === false) {
