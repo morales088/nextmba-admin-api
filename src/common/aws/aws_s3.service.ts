@@ -91,7 +91,8 @@ export class AwsS3Service {
       file.mimetype === 'image/png' ||
       file.mimetype === 'image/gif' ||
       file.mimetype === 'image/webp' ||
-      file.mimetype === 'application/pdf'
+      file.mimetype === 'application/pdf' ||
+      file.mimetype === 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
     ) {
       if (file.size > 100000000) {
         // more than 100mb
