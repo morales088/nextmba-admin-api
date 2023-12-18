@@ -8,6 +8,10 @@ export class UpdateStudentDto {
   name: string;
 
   @IsOptional()
+  @IsString()
+  email: string;
+
+  @IsOptional()
   @MinLength(8, {
     message: 'Password must be at least 8 characters long.',
   })
