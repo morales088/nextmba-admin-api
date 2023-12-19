@@ -68,7 +68,7 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
         if (!studentCourse) await this.prisma.student_courses.create({ data: studentCourseData });
 
         // update student course to expired course
-        if (hasStudCourse) {
+        if (!hasStudCourse) {
           let newExpDate = new Date(studentCourse.expiration_date);
           newExpDate.setFullYear(newExpDate.getFullYear() + 1);
 
