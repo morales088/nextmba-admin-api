@@ -27,7 +27,7 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
   async insert(studentId: number, paymentId: number, productCode: string): Promise<any> {
     const product = await this.prisma.products.findFirst({
       where: { code: productCode, status: 1 },
-      include: { product_items: true },
+      include: { product_items: { where: { status: 1 } } },
     });
 
     try {
