@@ -77,8 +77,8 @@ model Modules {
 model Speakers {
   id          Int       @id @default(autoincrement())
   name        String    @db.VarChar(255)
-  email       String    @unique
-  password    String
+  email       String?   @db.VarChar(255)
+  password    String?   @db.VarChar(255)
   language    String    @default("en") // en - english, es - espanish
   position    String?
   company     String?
