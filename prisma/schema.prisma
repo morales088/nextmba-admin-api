@@ -52,26 +52,27 @@ model Courses {
 }
 
 model Modules {
-  id              Int            @id @default(autoincrement())
-  course          Courses        @relation(fields: [course_id], references: [id])
-  course_id       Int
-  name            String         @db.VarChar(255)
-  description     String?
-  live_link       String?
-  live_id       String?
-  external_link   String?
-  host_email      String?
-  start_date      DateTime
-  end_date        DateTime
-  display_topic   Boolean        @default(false)
-  display_speaker Boolean        @default(false)
-  status          Int            @default(1) // [1 - draft, 2 - offline, 3 - live, 4 - pending replay, 5 - replay]
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime?      @updatedAt
-  translations    Translations[]
-  topics          Topics[]
-  medias          Medias[]
-  files           Files[]
+  id                  Int            @id @default(autoincrement())
+  course              Courses        @relation(fields: [course_id], references: [id])
+  course_id           Int
+  name                String         @db.VarChar(255)
+  description         String?
+  custom_course_title String?
+  live_link           String?
+  live_id             String?
+  external_link       String?
+  host_email          String?
+  start_date          DateTime
+  end_date            DateTime
+  display_topic       Boolean        @default(false)
+  display_speaker     Boolean        @default(false)
+  status              Int            @default(1) // [1 - draft, 2 - offline, 3 - live, 4 - pending replay, 5 - replay]
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime?      @updatedAt
+  translations        Translations[]
+  topics              Topics[]
+  medias              Medias[]
+  files               Files[]
 }
 
 model Speakers {

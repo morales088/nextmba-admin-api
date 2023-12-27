@@ -3,6 +3,8 @@ import { Transform, Type } from 'class-transformer';
 import { IsBoolean, IsDateString, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, isNumber } from 'class-validator';
 
 export class UpdateModuleDto {
+  @IsOptional()
+  course_id: number;
 
   @IsOptional()
   @IsString()
@@ -11,6 +13,10 @@ export class UpdateModuleDto {
   @IsOptional()
   @IsString()
   description: string;
+
+  @IsOptional()
+  @IsString()
+  custom_course_title: string;
 
   @IsOptional()
   @IsString()

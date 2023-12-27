@@ -15,6 +15,10 @@ export class CreateModuleDto {
 
   @IsOptional()
   @IsString()
+  custom_course_title: string;
+
+  @IsOptional()
+  @IsString()
   live_link: string;
 
   @IsOptional()
