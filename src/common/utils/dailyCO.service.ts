@@ -13,6 +13,11 @@ export class DailycoService {
         {
           name: roomName,
           // privacy: 'private',
+          "properties": {
+            "enable_chat" : true,
+            "enable_emoji_reactions" : true,
+            "enable_advanced_chat" : true
+          }
         },
         {
           headers: {
