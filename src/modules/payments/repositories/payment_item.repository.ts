@@ -54,8 +54,15 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
         await this.prisma[this.modelName].create({ data: itemData });
 
         // insert student course
+        // const startingDate = new Date();
+        // const expirationDate = new Date();
+        // expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+
         const startingDate = new Date();
-        const expirationDate = new Date();
+        startingDate.setMonth(startingDate.getMonth() + 1);
+        startingDate.setDate(1);
+
+        const expirationDate = startingDate;
         expirationDate.setFullYear(expirationDate.getFullYear() + 1);
 
         const studentCourseData = {
