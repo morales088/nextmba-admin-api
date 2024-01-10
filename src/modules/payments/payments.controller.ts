@@ -33,7 +33,6 @@ export class PaymentsController {
       ...createPaymentDto,
       payment_method : 2
     };
-
     return await this.paymentsService.createPayment(paymentData);
   }
   
