@@ -78,6 +78,9 @@ model Modules {
 model Speakers {
   id          Int       @id @default(autoincrement())
   name        String    @db.VarChar(255)
+  email       String?   @default("")
+  password    String?   @default("")
+  language    String    @default("en") // en - english, es - espanish
   position    String?
   company     String?
   description String?
@@ -107,15 +110,16 @@ model Topics {
   speaker    Speakers @relation(fields: [speaker_id], references: [id])
   speaker_id Int
 
-  name            String    @db.VarChar(255)
-  description     String?
-  cover_photo     String?
-  start_time      DateTime?
-  end_time        DateTime?
-  type            Int       @default(1) //[1 - main lecture, 2 - assignment]
-  position        Int       @default(1)
-  publish         Int       @default(0) //publish to library when replay is available
-  hide_recordings Boolean   @default(false)
+  name             String    @db.VarChar(255)
+  description      String?
+  cover_photo      String?
+  start_time       DateTime?
+  end_time         DateTime?
+  type             Int       @default(1) //[1 - main lecture, 2 - assignment]
+  position         Int       @default(1)
+  publish          Int       @default(0) //publish to library when replay is available
+  featured_lecture Boolean   @default(false)
+  hide_recordings  Boolean   @default(false)
 
   status    Int       @default(1)
   createdAt DateTime  @default(now())

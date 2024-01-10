@@ -48,5 +48,9 @@ export class CreateTopicDto {
 
   @IsOptional()
   @Transform(({ value }) => value === 'true')
+  featured_lecture: boolean;
+
+  @IsOptional()
+  @Transform(({ value }) => value === 'true')
   hide_recordings: boolean;
 }
