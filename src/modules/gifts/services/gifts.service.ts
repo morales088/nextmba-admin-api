@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { GiftRepository } from '../repositories/gift.repository';
 import { PaymentRepository } from 'src/modules/payments/repositories/payment.repository';
 import { StudentRepository } from 'src/modules/students/repositories/student.repository';
-import { CreateGiftDto } from '../dto/gift.dto';
+import { CreateGiftDto } from '../dto/create-gift.dto';
 import { StudentsService } from 'src/modules/students/services/students.service';
 import { StudentCoursesRepository } from 'src/modules/students/repositories/student_courses.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
@@ -93,5 +93,9 @@ export class GiftsService {
     });
 
     return {  code: 200, message: 'Gift successfully sent.' };
+  }
+  
+  async updateGift(id: number, data) {
+    return this.giftRepository.updateGift(id, data);
   }
 }
