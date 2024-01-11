@@ -30,7 +30,7 @@ export class GiftsService {
       // add owner email if course is first avail
       if(!courseIds.includes(item.course_id)){
         courseIds.push(item.course_id)
-        gift.push(item.owner)
+        gift.unshift({recipient : item.owner})
         item.recipient = gift
 
         item.gift_quantity = item.giftable
