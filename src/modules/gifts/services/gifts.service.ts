@@ -22,10 +22,20 @@ export class GiftsService {
 
   async getGiftable(studentId: number) {
     const paymentItem = await this.paymentRepository.getGiftable(studentId);
+    
+    let courseIds = []
     for (const item of paymentItem) {
       const gift = await this.giftRepository.getGift(item.payment_id, item.course_id);
-      console.log(gift);
+      
+      // add owner email if course is first avail
+      if(!courseIds.includes(item.course_id)){
+        courseIds.push(item.course_id)
+        gift.push(item.owner)
+      }
+
       item.recipient = gift
+
+      item.gift_quantity = item.giftable + (item.recipient).length
     }
 
     return paymentItem;

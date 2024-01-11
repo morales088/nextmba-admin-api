@@ -129,7 +129,7 @@ export class PaymentRepository extends AbstractRepository<Payments> {
       where: {
         student_id: studentId,
         status: 1,
-        // createdAt: { gte: giftableDate.toISOString() },
+        createdAt: { gte: giftableDate.toISOString() },
       },
       include: {
         payment_items: true,
@@ -140,7 +140,7 @@ export class PaymentRepository extends AbstractRepository<Payments> {
         },
       ],
     });
-
+    
     let courses = [];
     for (const gift of gifts) {
       for (const item of gift.payment_items) {
