@@ -6,7 +6,7 @@ import { Response } from 'express';
 import { UpdateGiftDto } from './dto/update-gift.dto';
 
 @Controller('gifts')
-// @UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'))
 export class GiftsController {
   constructor(private readonly giftsService: GiftsService) {}
 
@@ -22,8 +22,8 @@ export class GiftsController {
     return res.status(code).json({ message });
   }
 
-  @Put('/:giftId')
-  async updateGift(@Param('giftId') giftId: number, @Body() updateGiftDto: UpdateGiftDto) {
-    return await this.giftsService.updateGift(giftId, updateGiftDto);
+  @Put('/:itemId')
+  async updateGift(@Param('itemId') itemId: number, @Body() updateGiftDto: UpdateGiftDto) {
+    return await this.giftsService.updateGift(itemId, updateGiftDto);
   }
 }

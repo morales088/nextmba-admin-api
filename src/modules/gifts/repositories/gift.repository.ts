@@ -48,11 +48,11 @@ export class GiftRepository extends AbstractRepository<Gifts> {
     if (!gift || gift.status != 1) {
       throw new BadRequestException('Gift does not exist.');
     }
-    
+
     // update payment's giftable
     // const { gift_id, ...itemsData } = data; // remove gift_id items to array
-    const updateGiftable = await this.prisma.payment_items.updateMany({
-      where: { payment_id: gift.payment_id, course_id: gift.course_id },
+    const updateGiftable = await this.prisma.payment_items.update({
+      where: { id },
       data: { giftable: data.quantity },
     });
 
