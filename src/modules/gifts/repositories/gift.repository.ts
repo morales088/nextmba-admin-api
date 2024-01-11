@@ -43,11 +43,11 @@ export class GiftRepository extends AbstractRepository<Gifts> {
   }
 
   async updateGift(id: number, data: UpdateGiftDto): Promise<any> {
-    const gift = await this.findById(id);
+    // const gift = await this.findById(id);
     
-    if (!gift || gift.status != 1) {
-      throw new BadRequestException('Gift does not exist.');
-    }
+    // if (!gift || gift.status != 1) {
+    //   throw new BadRequestException('Gift does not exist.');
+    // }
 
     // update payment's giftable
     // const { gift_id, ...itemsData } = data; // remove gift_id items to array
