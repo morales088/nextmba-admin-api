@@ -44,7 +44,7 @@ export class GiftRepository extends AbstractRepository<Gifts> {
 
   async updateGift(id: number, data: UpdateGiftDto): Promise<any> {
     // const gift = await this.findById(id);
-    
+
     // if (!gift || gift.status != 1) {
     //   throw new BadRequestException('Gift does not exist.');
     // }
@@ -52,7 +52,7 @@ export class GiftRepository extends AbstractRepository<Gifts> {
     // update payment's giftable
     // const { gift_id, ...itemsData } = data; // remove gift_id items to array
     const updateGiftable = await this.prisma.payment_items.update({
-      where: { id },
+      where: { id: id },
       data: { giftable: data.quantity },
     });
 
