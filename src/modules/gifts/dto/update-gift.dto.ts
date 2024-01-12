@@ -6,4 +6,12 @@ export class UpdateGiftDto {
     @IsNotEmpty()
     @Transform(({ value }) => parseInt(value))
     quantity: number;
+
+    @IsNotEmpty()
+    @Transform(({ value }) => parseInt(value))
+    student_id: number;
+
+    @IsNotEmpty()
+    @Transform(({ value }) => parseInt(value))
+    payment_id: number;
 }
