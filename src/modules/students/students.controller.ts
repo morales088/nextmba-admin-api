@@ -28,7 +28,7 @@ export class StudentsController {
     @Query('company') company?: string,
     @Query('phone') phone?: string,
     @Query('position') position?: string,
-    @Query('account_type') account_type?: number,
+    @Query('account_type') account_type?: number
   ) {
     const admin = req.user;
     const pageNumber = page_number ? page_number : 1;
@@ -41,7 +41,7 @@ export class StudentsController {
       phone,
       position,
       account_type,
-    }
+    };
     return await this.studentsService.getStudents(admin, search, filters, pageNumber, perPage);
   }
 
@@ -51,6 +51,7 @@ export class StudentsController {
     const studentData = {
       ...createStudentDto,
       created_by: id,
+      library_access: 1,
     };
 
     return await this.studentsService.createStudent(studentData);
