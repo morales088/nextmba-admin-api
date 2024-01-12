@@ -70,6 +70,7 @@ export class GiftsService {
         const studentData = {
           name: name,
           email: data.recipient,
+          library_access : 1
         };
 
         const createStudent = await this.studentsService.createStudent(studentData);
