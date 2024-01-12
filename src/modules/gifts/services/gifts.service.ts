@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { GiftRepository } from '../repositories/gift.repository';
 import { PaymentRepository } from 'src/modules/payments/repositories/payment.repository';
 import { StudentRepository } from 'src/modules/students/repositories/student.repository';
-import { CreateGiftDto } from '../dto/gift.dto';
+import { CreateGiftDto } from '../dto/create-gift.dto';
 import { StudentsService } from 'src/modules/students/services/students.service';
 import { StudentCoursesRepository } from 'src/modules/students/repositories/student_courses.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
@@ -22,10 +22,25 @@ export class GiftsService {
 
   async getGiftable(studentId: number) {
     const paymentItem = await this.paymentRepository.getGiftable(studentId);
+    
+    let courseIds = []
     for (const item of paymentItem) {
       const gift = await this.giftRepository.getGift(item.payment_id, item.course_id);
-      console.log(gift);
-      item.recipient = gift
+      
+      // add owner email if course is first avail
+      if(!courseIds.includes(item.course_id)){
+        courseIds.push(item.course_id)
+        gift.unshift({recipient : item.owner})
+        item.recipient = gift
+
+        item.gift_quantity = item.giftable
+      }else{
+
+        item.recipient = gift
+        item.gift_quantity = item.giftable - (item.recipient).length
+      }
+      // item.recipient = gift
+
     }
 
     return paymentItem;
@@ -55,6 +70,7 @@ export class GiftsService {
         const studentData = {
           name: name,
           email: data.recipient,
+          library_access : 1
         };
 
         const createStudent = await this.studentsService.createStudent(studentData);
@@ -93,5 +109,9 @@ export class GiftsService {
     });
 
     return {  code: 200, message: 'Gift successfully sent.' };
+  }
+  
+  async updateGift(id: number, data) {
+    return this.giftRepository.updateGift(id, data);
   }
 }

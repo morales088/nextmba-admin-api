@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { AbstractRepository } from 'src/common/repositories/abstract.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { Gifts } from '@prisma/client';
+import { UpdateGiftDto } from '../dto/update-gift.dto';
 
 @Injectable()
 export class GiftRepository extends AbstractRepository<Gifts> {
@@ -39,5 +40,22 @@ export class GiftRepository extends AbstractRepository<Gifts> {
       select: { recipient: true },
       where: { payment_id: paymentId, course_id: courseId, status: 1 },
     });
+  }
+
+  async updateGift(id: number, data: UpdateGiftDto): Promise<any> {
+    // const gift = await this.findById(id);
+
+    // if (!gift || gift.status != 1) {
+    //   throw new BadRequestException('Gift does not exist.');
+    // }
+
+    // update payment's giftable
+    // const { gift_id, ...itemsData } = data; // remove gift_id items to array
+    const updateGiftable = await this.prisma.payment_items.update({
+      where: { id: id },
+      data: { giftable: data.quantity },
+    });
+
+    return { message: 'Gift/giftable quantity successfully changed.' };
   }
 }
