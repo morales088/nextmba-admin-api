@@ -31,16 +31,11 @@ export class GiftsService {
       if(!courseIds.includes(item.course_id)){
         courseIds.push(item.course_id)
         gift.unshift({recipient : item.owner})
-        item.recipient = gift
-
-        item.gift_quantity = item.giftable
-      }else{
-
-        item.recipient = gift
-        item.gift_quantity = item.giftable - (item.recipient).length
       }
-      // item.recipient = gift
+      
+      item.recipient = gift
 
+      item.gift_quantity = item.giftable + (item.recipient).length
     }
 
     return paymentItem;
