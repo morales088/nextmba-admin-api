@@ -40,8 +40,11 @@ export class SendMailService {
       country: paymentInfo.country,
       paymentAmount: paymentInfo.price,
       paymentDate: paymentInfo.createdAt,
+      referenceNumber: paymentInfo.reference_id ?? '',
+      contactNumber: paymentInfo.contact_number ?? '',
+      quantity: 1,
     };
-
+    console.log(templateData);
     const emailContent = template(templateData);
 
     const recipients = [ paymentInfo.email, process.env.PAYMENT_INFO_RECIPIENT]
