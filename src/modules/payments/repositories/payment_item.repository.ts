@@ -60,6 +60,21 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
 
         const startingDate = new Date();
         startingDate.setMonth(startingDate.getMonth() + 1);
+
+        switch (product_item.course_id) {
+          // Marketing course
+          case 1: startingDate.setDate(3); break;
+
+          // Executive Course
+          case 2: startingDate.setDate(5); break;
+
+          // Tracy Mastermind
+          case 6: startingDate.setDate(17); break;
+
+          // Technology Course
+          case 7: startingDate.setDate(10); break;
+
+        }
         startingDate.setDate(1);
 
         const expirationDate = new Date(startingDate)
