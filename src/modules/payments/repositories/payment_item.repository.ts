@@ -75,7 +75,6 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
           case 7: startingDate.setDate(10); break;
 
         }
-        startingDate.setDate(1);
 
         const expirationDate = new Date(startingDate)
         expirationDate.setFullYear(expirationDate.getFullYear() + 1);
