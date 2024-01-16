@@ -30,16 +30,23 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
       include: { product_items: { where: { status: 1 } } },
     });
 
-    try {
-      for (const product_item of product.product_items) {
-        // check student course
+    const productItems = product.product_items as unknown as {
+      product_id: number;
+      course_id: number;
+      quantity: number;
+      status: number;
+    }[];
+    const currentDate = new Date()
+    // try {
+      for (const product_item of productItems) {
+        // check student
         const studentCourse = await this.prisma.student_courses.findFirst({
           where: { student_id: studentId, course_id: product_item.course_id, status: 1 },
         });
+
         // if student has course or not expired
-        const hasStudCourse = studentCourse && studentCourse.expiration_date > new Date();
-        console.log(1, studentCourse);
-        console.log(2, hasStudCourse);
+        // const hasStudCourse = (studentCourse && (studentCourse.expiration_date > currentDate));
+        const hasStudCourse = studentCourse && studentCourse.expiration_date > currentDate ? true : false;
 
         const giftable = hasStudCourse ? product_item.quantity : product_item.quantity - 1;
 
@@ -51,7 +58,9 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
           giftable: giftable,
         };
 
-        await this.prisma[this.modelName].create({ data: itemData });
+        // console.log('itemData:',itemData)
+        const paymentItem = await this.prisma.payment_items.create({ data: itemData });
+        // console.log(1, paymentItem)
 
         // insert student course
         // const startingDate = new Date();
@@ -75,7 +84,7 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
         if (!studentCourse) await this.prisma.student_courses.create({ data: studentCourseData });
 
         // update student course to expired course
-        if (!hasStudCourse) {
+        if (studentCourse && !hasStudCourse) {
           let newExpDate = new Date(studentCourse.expiration_date);
           newExpDate.setFullYear(newExpDate.getFullYear() + 1);
 
@@ -90,9 +99,9 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
           await this.prisma.student_courses.update({ where: { id: studentCourse.id }, data: newStudentCourseData });
         }
       }
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
+    // } catch (error) {
+    //   return { success: false, error: error.message };
+    // }
 
     return 'payment items successfully created';
   }
