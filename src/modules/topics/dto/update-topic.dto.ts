@@ -39,6 +39,10 @@ export class UpdateTopicDto {
 
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
+  library_position: number;
+
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1])
   publish: number
 

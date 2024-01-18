@@ -1,5 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
 generator client {
   provider = "prisma-client-js"
 }
@@ -19,8 +17,8 @@ model Users {
   status             Int                  @default(1)
   createdAt          DateTime             @default(now())
   updatedAt          DateTime?            @updatedAt
-  affiliates         Affiliates[]
   affilate_withdraws Affilate_withdraws[]
+  affiliates         Affiliates[]
 }
 
 model ResetPasswordToken {
@@ -44,43 +42,40 @@ model Courses {
   status          Int               @default(1)
   createdAt       DateTime          @default(now())
   updatedAt       DateTime?         @updatedAt
-  modules         Modules[]
-  student_courses Student_courses[]
-  product_items   Product_items[]
-  payment_items   Payment_items[]
   gifts           Gifts[]
+  modules         Modules[]
+  payment_items   Payment_items[]
+  product_items   Product_items[]
+  student_courses Student_courses[]
 }
 
 model Modules {
   id                  Int            @id @default(autoincrement())
-  course              Courses        @relation(fields: [course_id], references: [id])
   course_id           Int
   name                String         @db.VarChar(255)
   description         String?
-  custom_course_title String?
   live_link           String?
-  live_id             String?
   external_link       String?
   host_email          String?
   start_date          DateTime
   end_date            DateTime
   display_topic       Boolean        @default(false)
   display_speaker     Boolean        @default(false)
-  status              Int            @default(1) // [1 - draft, 2 - offline, 3 - live, 4 - pending replay, 5 - replay]
+  status              Int            @default(1)
   createdAt           DateTime       @default(now())
   updatedAt           DateTime?      @updatedAt
-  translations        Translations[]
-  topics              Topics[]
-  medias              Medias[]
+  live_id             String?
+  custom_course_title String?
   files               Files[]
+  medias              Medias[]
+  course              Courses        @relation(fields: [course_id], references: [id])
+  topics              Topics[]
+  translations        Translations[]
 }
 
 model Speakers {
   id          Int       @id @default(autoincrement())
   name        String    @db.VarChar(255)
-  email       String?   @default("")
-  password    String?   @default("")
-  language    String    @default("en") // en - english, es - espanish
   position    String?
   company     String?
   description String?
@@ -88,73 +83,75 @@ model Speakers {
   status      Int       @default(1)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime? @updatedAt
+  email       String?   @default("")
+  language    String    @default("en")
+  password    String?   @default("")
   topics      Topics[]
 }
 
 model Translations {
   id            Int       @id @default(autoincrement())
   language_code String    @db.VarChar(255)
-  module        Modules   @relation(fields: [module_id], references: [id])
   module_id     Int
   name          String    @db.VarChar(255)
   description   String?
   status        Int       @default(1)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime? @updatedAt
+  module        Modules   @relation(fields: [module_id], references: [id])
 }
 
 model Topics {
-  id         Int      @id @default(autoincrement())
-  module     Modules  @relation(fields: [module_id], references: [id])
-  module_id  Int
-  speaker    Speakers @relation(fields: [speaker_id], references: [id])
-  speaker_id Int
-
+  id               Int       @id @default(autoincrement())
+  module_id        Int
+  speaker_id       Int
   name             String    @db.VarChar(255)
   description      String?
   cover_photo      String?
   start_time       DateTime?
   end_time         DateTime?
-  type             Int       @default(1) //[1 - main lecture, 2 - assignment]
+  type             Int       @default(1)
   position         Int       @default(1)
-  publish          Int       @default(0) //publish to library when replay is available
-  featured_lecture Boolean   @default(false)
+  library_position Int       @default(0)
+  publish          Int       @default(0)
+  status           Int       @default(1)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime? @updatedAt
   hide_recordings  Boolean   @default(false)
-
-  status    Int       @default(1)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
-  files     Files[]
-  medias    Medias[]
+  featured_lecture Boolean   @default(false)
+  files            Files[]
+  medias           Medias[]
+  module           Modules   @relation(fields: [module_id], references: [id])
+  speaker          Speakers  @relation(fields: [speaker_id], references: [id])
 }
 
 model Files {
   id        Int       @id @default(autoincrement())
-  module    Modules   @relation(fields: [module_id], references: [id])
   module_id Int
-  topic     Topics    @relation(fields: [topic_id], references: [id])
   topic_id  Int
   name      String    @db.VarChar(255)
-  type      Int       @default(1) // [1 - materials, 2 - assignment]
+  type      Int       @default(1)
   file_link String?
   status    Int       @default(1)
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
+  module    Modules   @relation(fields: [module_id], references: [id])
+  topic     Topics    @relation(fields: [topic_id], references: [id])
 }
 
 model Medias {
   id            Int       @id @default(autoincrement())
-  module        Modules   @relation(fields: [module_id], references: [id])
   module_id     Int
-  topic         Topics    @relation(fields: [topic_id], references: [id])
   topic_id      Int
   language_code String    @db.VarChar(255)
-  media_type    Int       @default(1) // 1 - livestream, 2 - replay
-  source        Int       @default(1) // [1 - yt, 2 - cf, 3 - vimeo, 4 - zoom]
+  media_type    Int       @default(1)
+  source        Int       @default(1)
   source_code   String    @db.VarChar(255)
   status        Int       @default(1)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime? @updatedAt
+  module        Modules   @relation(fields: [module_id], references: [id])
+  topic         Topics    @relation(fields: [topic_id], references: [id])
 }
 
 model Students {
@@ -167,44 +164,43 @@ model Students {
   industry           String?
   company            String?
   position           String?
-  language           String               @default("en") // en - english, es - espanish
+  language           String               @default("en")
   last_login         DateTime?
   profile_picture    String?
-  chat_moderator     Boolean              @default(false) //[false - not, true - moderator]
-  chat_access        Boolean              @default(true) //[false - no access, true - has access]	
-  // forgot_password_code String
+  chat_moderator     Boolean              @default(false)
+  chat_access        Boolean              @default(true)
   library_access     Int                  @default(0)
-  account_type       Int                  @default(1) //[1 - basic, 2 - pro]
-  affiliate_access   Int                  @default(0) //[0 - not, 1 - partner]
+  account_type       Int                  @default(1)
+  affiliate_access   Int                  @default(0)
   website            String?
   linkedIn           String?
   instagram          String?
   telegram           String?
-  created_by         Int?                 @default(0)
-  email_sent         Boolean              @default(false)
   status             Int                  @default(1)
   createdAt          DateTime             @default(now())
   updatedAt          DateTime?            @updatedAt
-  student_courses    Student_courses[]
-  payments           Payments[]
-  affiliates         Affiliates[]
+  created_by         Int?                 @default(0)
+  email_sent         Boolean              @default(false)
   affilate_withdraws Affilate_withdraws[]
+  affiliates         Affiliates[]
   gifts              Gifts[]
+  payments           Payments[]
+  student_courses    Student_courses[]
 }
 
 model Student_courses {
   id              Int       @id @default(autoincrement())
-  student         Students  @relation(fields: [student_id], references: [id])
   student_id      Int
-  course          Courses   @relation(fields: [course_id], references: [id])
   course_id       Int
-  course_type     Int       @default(1) //[1 - paid, 2 - manually added, 3 - gifted]
+  course_type     Int       @default(1)
   module_quantity Int       @default(12)
   starting_date   DateTime  @default(now())
-  expiration_date DateTime  @default(dbgenerated("NOW() + interval '1 year'"))
+  expiration_date DateTime  @default(dbgenerated("(now() + '1 year'::interval)"))
   status          Int       @default(1)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime? @updatedAt
+  course          Courses   @relation(fields: [course_id], references: [id])
+  student         Students  @relation(fields: [student_id], references: [id])
 }
 
 model Products {
@@ -217,32 +213,30 @@ model Products {
   status         Int             @default(1)
   createdAt      DateTime        @default(now())
   updatedAt      DateTime?       @updatedAt
-  product_items  Product_items[]
   payments       Payments[]
+  product_items  Product_items[]
 }
 
 model Product_items {
   id         Int       @id @default(autoincrement())
-  product    Products  @relation(fields: [product_id], references: [id])
   product_id Int
-  course     Courses   @relation(fields: [course_id], references: [id])
   course_id  Int
   quantity   Int       @default(1)
   status     Int       @default(1)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime? @updatedAt
+  course     Courses   @relation(fields: [course_id], references: [id])
+  product    Products  @relation(fields: [product_id], references: [id])
 }
 
 model Payments {
   id                    Int                   @id @default(autoincrement())
-  student               Students              @relation(fields: [student_id], references: [id])
   student_id            Int
-  product               Products?             @relation(fields: [product_id], references: [id])
   product_id            Int?                  @default(0)
   product_code          String?               @db.VarChar(255)
   reference_id          String?
   price                 Decimal               @db.Decimal(9, 2)
-  payment_method        Int                   @default(1) //1 - paid, 2 - manual
+  payment_method        Int                   @default(1)
   name                  String                @db.VarChar(255)
   email                 String                @db.VarChar(255)
   contact_number        String?
@@ -255,80 +249,82 @@ model Payments {
   from_student_id       Int?                  @default(0)
   affiliate_code        String?
   commission_percentage Decimal               @default(0) @db.Decimal(9, 2)
-  commission_status     Int                   @default(0) //[0 - Void, 1 - Paid, 2 - Refunded]
+  commission_status     Int                   @default(0)
   remarks               String?
   status                Int                   @default(1)
   createdAt             DateTime              @default(now())
   updatedAt             DateTime?             @updatedAt
-  payment_items         Payment_items[]
-  withdrawal_payments   Withdrawal_payments[]
   gifts                 Gifts[]
+  payment_items         Payment_items[]
+  product               Products?             @relation(fields: [product_id], references: [id])
+  student               Students              @relation(fields: [student_id], references: [id])
+  withdrawal_payments   Withdrawal_payments[]
 }
 
 model Payment_items {
   id         Int       @id @default(autoincrement())
-  payment    Payments  @relation(fields: [payment_id], references: [id])
   payment_id Int
-  course     Courses   @relation(fields: [course_id], references: [id])
   course_id  Int
   quantity   Int       @default(1)
   giftable   Int       @default(0)
   status     Int       @default(1)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime? @updatedAt
+  course     Courses   @relation(fields: [course_id], references: [id])
+  payment    Payments  @relation(fields: [payment_id], references: [id])
 }
 
 model Affiliates {
   id              Int       @id @default(autoincrement())
-  student         Students  @relation(fields: [student_id], references: [id])
   student_id      Int
-  admin           Users?    @relation(fields: [admin_id], references: [id])
   admin_id        Int?
   code            String
   percentage      Decimal   @default(0) @db.Decimal(9, 2)
   withdrawal_info String?
   remarks         String?
-  status          Int       @default(2) //[0 - cancel, 1 - proccessed, 2 - pending]
+  status          Int       @default(2)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime? @updatedAt
+  admin           Users?    @relation(fields: [admin_id], references: [id])
+  student         Students  @relation(fields: [student_id], references: [id])
 }
 
 model Affilate_withdraws {
   id                  Int                   @id @default(autoincrement())
-  student             Students              @relation(fields: [student_id], references: [id])
   student_id          Int
-  admin               Users?                @relation(fields: [admin_id], references: [id])
   admin_id            Int?
   withdraw_amount     Decimal               @default(0) @db.Decimal(9, 2)
   withdrawal_info     String?
   remarks             String?
-  status              Int                   @default(1) //[0 - decline, 1 - pending, 2 - approved]
+  status              Int                   @default(1)
   createdAt           DateTime              @default(now())
   updatedAt           DateTime?             @updatedAt
+  admin               Users?                @relation(fields: [admin_id], references: [id])
+  student             Students              @relation(fields: [student_id], references: [id])
   withdrawal_payments Withdrawal_payments[]
 }
 
 model Withdrawal_payments {
   id                 Int                @id @default(autoincrement())
-  affilate_withdraws Affilate_withdraws @relation(fields: [withdrawal_id], references: [id])
   withdrawal_id      Int
-  payment            Payments           @relation(fields: [payment_id], references: [id])
   payment_id         Int
-  status             Int                @default(1) //[0 - decline, 1 - pending, 2 - approved]
+  status             Int                @default(1)
   createdAt          DateTime           @default(now())
   updatedAt          DateTime?          @updatedAt
+  payment            Payments           @relation(fields: [payment_id], references: [id])
+  affilate_withdraws Affilate_withdraws @relation(fields: [withdrawal_id], references: [id])
 }
 
 model Gifts {
   id              Int       @id @default(autoincrement())
-  students        Students  @relation(fields: [from_student_id], references: [id])
   from_student_id Int
-  payment         Payments  @relation(fields: [payment_id], references: [id])
   payment_id      Int
-  course          Courses   @relation(fields: [course_id], references: [id])
   course_id       Int
   recipient       String
-  status          Int       @default(1) // 	[0 - deleted, 1 - active]	
+  status          Int       @default(1)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime? @updatedAt
+  course          Courses   @relation(fields: [course_id], references: [id])
+  students        Students  @relation(fields: [from_student_id], references: [id])
+  payment         Payments  @relation(fields: [payment_id], references: [id])
 }
