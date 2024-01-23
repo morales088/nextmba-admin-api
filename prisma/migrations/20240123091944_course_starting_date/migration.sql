@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Courses" ADD COLUMN     "starting_date" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP;
