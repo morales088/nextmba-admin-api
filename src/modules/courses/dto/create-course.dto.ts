@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
-import { Transform } from 'class-transformer';
-import { IsDecimal, IsNotEmpty, IsOptional, IsString, isNumber } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { IsDate, IsDecimal, IsNotEmpty, IsOptional, IsString, isNumber } from 'class-validator';
 
 export class CreateCourseDto {
   @IsNotEmpty()
@@ -18,6 +18,11 @@ export class CreateCourseDto {
   @IsOptional()
   @IsString()
   course_link: string;
+
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate()
+  starting_date: Date;
   
   @IsDecimal({ decimal_digits: '2' })
   @IsNotEmpty()
