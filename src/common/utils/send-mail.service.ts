@@ -89,9 +89,6 @@ export class SendMailService {
       link: link,
     };
     
-    templateData.courses.forEach(data => {
-      console.log(data.name)
-    });
     const emailContent = template(templateData);
 
     const recipients = [ studentEmail, process.env.PAYMENT_INFO_RECIPIENT]
