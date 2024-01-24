@@ -116,4 +116,5 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
   async findById(id: number) {
     return this.prisma[this.modelName].findUnique({ where: { id: id } });
   }
+
 }

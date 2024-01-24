@@ -113,4 +113,12 @@ export class ProductRepository extends AbstractRepository<Products> {
       include: { product_items: true },
     });
   }
+
+  async coursesPerProduct(code: string) {
+    return this.prisma.$queryRaw`select c.name
+    from "Products" p
+    left join "Product_items" pi ON p.id = pi.product_id
+    left join "Courses" c ON pi.course_id = c.id
+    where p.code = ${code}`;
+  }
 }

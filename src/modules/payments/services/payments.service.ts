@@ -34,81 +34,98 @@ export class PaymentsService {
     const product = await this.productRepository.findByCode(data.product_code);
     if (!product) return { message: 'Invalid Product Code.' };
 
-    // check if email has account and return student_id
-    let studentId: number;
-    const findStudent = await this.studentRepository.findByEmail(data.email);
-    if (findStudent) {
-      if (product.library_access === true || product.pro_access === true) {
-        const updateStudent = {
-          library_access: product.library_access === true ? 1 : 0,
-          account_type: product.pro_access === true ? 3 : findStudent.account_type,
-        };
-
-        this.studentsService.updateStudent(findStudent.id, updateStudent);
-      }
-
-      studentId = findStudent.id;
-    } else {
-      // create student
-      const studentData = {
-        name: data.name,
-        email: data.email,
-        library_access: product.library_access === true ? 1 : 0,
-        account_type: product.pro_access === true ? 2 : 1,
-      };
-
-      const createStudent = await this.studentsService.createStudent(studentData);
-
-      studentId = createStudent.id;
-    }
-
-    const paymentData = {
-      ...data,
+    // email courses info to student
+    const coursesName = await this.productRepository.coursesPerProduct(data.product_code);
+    
+    const emailData = {
+      student: data.email,
+      productName: product.name,
+      courses: coursesName,
     };
+    this.sendMailService.emailCourseInformation(data.email, emailData);
 
-    // get affiliate infos
-    const affiliate = await this.paymentAffiliateRepository.findPerCode(data.affiliate_code);
-    if (affiliate) {
-      // ALLABOUT AFFILIATES
-      // count affiliate on payments
-      const affiliatePayment = await this.paymentRepository.findByFromStudId(affiliate.student_id);
-      let affiliateCount = (affiliatePayment as unknown as object[]).length;
-      // ++affiliateCount;
+    // // check if email has account and return student_id
+    // let studentId: number;
+    // const findStudent = await this.studentRepository.findByEmail(data.email);
+    // if (findStudent) {
+    //   if (product.library_access === true || product.pro_access === true) {
+    //     const updateStudent = {
+    //       library_access: product.library_access === true ? 1 : 0,
+    //       account_type: product.pro_access === true ? 3 : findStudent.account_type,
+    //     };
 
-      const partnerAffiliate = parseInt(process.env.partnerAffiliate_count);
-      const proAffiliate = parseInt(process.env.proAffiliate_count);
+    //     this.studentsService.updateStudent(findStudent.id, updateStudent);
+    //   }
 
-      const beginnerPercentage = parseFloat(process.env.beginnerCommissionPercent);
-      const partnerPercentage = parseFloat(process.env.partnerCommissionPercent);
+    //   // email courses info to student
+    //   const emailData = {
+    //     student: data.email,
+    //     productName: product.name,
+    //   };
+    //   this.sendMailService.emailCourseInformation(data.email, emailData);
 
-      let commission_percentage = beginnerPercentage;
-      if (affiliateCount >= partnerAffiliate) commission_percentage = partnerPercentage;
+    //   studentId = findStudent.id;
+    // } else {
+    //   // create student
+    //   const studentData = {
+    //     name: data.name,
+    //     email: data.email,
+    //     library_access: product.library_access === true ? 1 : 0,
+    //     account_type: product.pro_access === true ? 2 : 1,
+    //   };
 
-      await this.paymentAffiliateRepository.update(affiliate.id, { percentage: commission_percentage });
+    //   const createStudent = await this.studentsService.createStudent(studentData);
 
-      paymentData.from_student_id = affiliate.student_id;
-      paymentData.commission_percentage = commission_percentage;
-    }
-    // insert data to payment table and return payment_id
-    const createPayment = await this.paymentRepository.insert(studentId, product.id, paymentData);
+    //   studentId = createStudent.id;
+    // }
 
-    //   return createPayment;
-    // });
+    // const paymentData = {
+    //   ...data,
+    // };
 
-    // email payment information
-    if (createPayment) {
-      const emailData = {
-        ...createPayment,
-        productName: product.name
-      }
-      this.sendMailService.emailPaymentInformation(emailData);
-    }
+    // // get affiliate infos
+    // const affiliate = await this.paymentAffiliateRepository.findPerCode(data.affiliate_code);
+    // if (affiliate) {
+    //   // ALLABOUT AFFILIATES
+    //   // count affiliate on payments
+    //   const affiliatePayment = await this.paymentRepository.findByFromStudId(affiliate.student_id);
+    //   let affiliateCount = (affiliatePayment as unknown as object[]).length;
+    //   // ++affiliateCount;
 
-    //return payment details
-    return createPayment;
+    //   const partnerAffiliate = parseInt(process.env.partnerAffiliate_count);
+    //   const proAffiliate = parseInt(process.env.proAffiliate_count);
+
+    //   const beginnerPercentage = parseFloat(process.env.beginnerCommissionPercent);
+    //   const partnerPercentage = parseFloat(process.env.partnerCommissionPercent);
+
+    //   let commission_percentage = beginnerPercentage;
+    //   if (affiliateCount >= partnerAffiliate) commission_percentage = partnerPercentage;
+
+    //   await this.paymentAffiliateRepository.update(affiliate.id, { percentage: commission_percentage });
+
+    //   paymentData.from_student_id = affiliate.student_id;
+    //   paymentData.commission_percentage = commission_percentage;
+    // }
+    // // insert data to payment table and return payment_id
+    // const createPayment = await this.paymentRepository.insert(studentId, product.id, paymentData);
+
+    // //   return createPayment;
+    // // });
+
+    // // email payment information
+    // if (createPayment) {
+    //   const emailData = {
+    //     ...createPayment,
+    //     productName: product.name,
+    //   };
+    //   this.sendMailService.emailPaymentInformation(emailData);
+    // }
+
+    // //return payment details
+    // return createPayment;
   }
 
-    async updatePayment(id: number, data) {
-      return this.paymentRepository.update(id, data);
-    }
+  async updatePayment(id: number, data) {
+    return this.paymentRepository.update(id, data);
+  }
 }
