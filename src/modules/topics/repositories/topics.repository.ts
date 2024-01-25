@@ -70,4 +70,14 @@ export class TopicsRepository extends AbstractRepository<Topics> {
       ],
     });
   }
+
+  // get highest topic position per module
+  async libraryPosition(moduleId: number): Promise<Topics> {
+    return await this.prisma[this.modelName].aggregate({
+      where: { module_id: moduleId, status: 1 },
+      _max: {
+        library_position: true,
+      },
+    });
+  }
 }

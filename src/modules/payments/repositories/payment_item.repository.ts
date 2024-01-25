@@ -67,6 +67,11 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
         // const expirationDate = new Date();
         // expirationDate.setFullYear(expirationDate.getFullYear() + 1);
 
+        // const course = await this.prisma.courses.findFirst({
+        //   where: {  id: product_item.course_id },
+        // });
+        // const startingDate = new Date(course.starting_date);
+
         const startingDate = new Date();
         startingDate.setMonth(startingDate.getMonth() + 1);
 
