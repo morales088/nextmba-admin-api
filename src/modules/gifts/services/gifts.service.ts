@@ -17,30 +17,25 @@ export class GiftsService {
     private readonly studentRepository: StudentRepository,
     private readonly studentsService: StudentsService,
     private readonly studentCoursesRepository: StudentCoursesRepository,
-    private readonly sendMailService: SendMailService,
+    private readonly sendMailService: SendMailService
   ) {}
 
   async getGiftable(studentId: number) {
     const paymentItem = await this.paymentRepository.getGiftable(studentId);
-    
-    let courseIds = []
+
+    let courseIds = [];
     for (const item of paymentItem) {
       const gift = await this.giftRepository.getGift(item.payment_id, item.course_id);
-      
+
       // add owner email if course is first avail
-      if(!courseIds.includes(item.course_id)){
-        courseIds.push(item.course_id)
-        gift.unshift({recipient : item.owner})
-        item.recipient = gift
-
-        item.gift_quantity = item.giftable
-      }else{
-
-        item.recipient = gift
-        item.gift_quantity = item.giftable - (item.recipient).length
+      if (!courseIds.includes(item.course_id)) {
+        courseIds.push(item.course_id);
+        gift.unshift({ recipient: item.owner });
       }
-      // item.recipient = gift
 
+      item.recipient = gift;
+
+      item.gift_quantity = item.giftable + item.recipient.length;
     }
 
     return paymentItem;
@@ -55,9 +50,9 @@ export class GiftsService {
     const paymentItem = paymentItems.find(
       (res) => res.payment_id === data.payment_id && res.course_id === data.course_id
     );
-    
+
     if (!paymentItem || paymentItem.giftable < 1 || studentCourse || paymentItem.createdAt <= giftableDate)
-    return { code: 422,message: 'zero courses available / recipient already has this course / course expired' };
+      return { code: 422, message: 'zero courses available / recipient already has this course / course expired' };
 
     const gift = this.prisma.$transaction(async (prisma) => {
       // check if email has account and return student_id
@@ -70,7 +65,7 @@ export class GiftsService {
         const studentData = {
           name: name,
           email: data.recipient,
-          library_access : 1
+          library_access: 1,
         };
 
         const createStudent = await this.studentsService.createStudent(studentData);
@@ -105,13 +100,20 @@ export class GiftsService {
       if (gift) {
         this.sendMailService.emailGiftInformation(data.recipient, name, paymentItem.course_name);
       }
-
     });
 
-    return {  code: 200, message: 'Gift successfully sent.' };
+    return { code: 200, message: 'Gift successfully sent.' };
   }
-  
+
   async updateGift(id: number, data) {
-    return this.giftRepository.updateGift(id, data);
+    // get recipient data
+    const gifts = await this.getGiftable(data.student_id);
+    const recipient = gifts.filter((gift) => gift.payment_id === data.payment_id);
+    const newGiftable = data.quantity - recipient[0].recipient.length;
+    
+    const giftable = {
+      quantity : newGiftable
+    }
+    return this.giftRepository.updateGift(id, giftable);
   }
 }

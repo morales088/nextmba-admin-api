@@ -42,7 +42,7 @@ export class GiftRepository extends AbstractRepository<Gifts> {
     });
   }
 
-  async updateGift(id: number, data: UpdateGiftDto): Promise<any> {
+  async updateGift(id: number, data): Promise<any> {
     // const gift = await this.findById(id);
 
     // if (!gift || gift.status != 1) {

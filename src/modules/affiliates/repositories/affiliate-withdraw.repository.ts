@@ -38,13 +38,14 @@ export class AffiliateWithdrawRepository extends AbstractRepository<Affilate_wit
     const affliatePayment = await this.prisma.withdrawal_payments.findMany({
       where: {withdrawal_id : id},
     });
+    
     for(const data of affliatePayment){
        await this.prisma.payments.update({
-          where: { id: data.id },
+          where: { id: data.payment_id },
           data: {commission_status : status},
         });
     }
-
+    
     return this.prisma[this.modelName].update({
       where: { id: id },
       data: data,
