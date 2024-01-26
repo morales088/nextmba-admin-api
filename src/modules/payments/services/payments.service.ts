@@ -47,6 +47,13 @@ export class PaymentsService {
         this.studentsService.updateStudent(findStudent.id, updateStudent);
       }
 
+      // email courses info to student
+      const emailData = {
+        student: data.email,
+        productName: product.name,
+      };
+      this.sendMailService.emailCourseInformation(data.email, emailData);
+
       studentId = findStudent.id;
     } else {
       // create student
@@ -99,16 +106,26 @@ export class PaymentsService {
     if (createPayment) {
       const emailData = {
         ...createPayment,
-        productName: product.name
-      }
+        productName: product.name,
+      };
       this.sendMailService.emailPaymentInformation(emailData);
     }
+    
+    // email courses info to student
+    const coursesName = await this.productRepository.coursesPerProduct(data.product_code);
+    
+    const emailData = {
+      student: data.name,
+      productName: product.name,
+      courses: coursesName,
+    };
+    this.sendMailService.emailCourseInformation(data.email, emailData);
 
     //return payment details
     return createPayment;
   }
 
-    async updatePayment(id: number, data) {
-      return this.paymentRepository.update(id, data);
-    }
+  async updatePayment(id: number, data) {
+    return this.paymentRepository.update(id, data);
+  }
 }

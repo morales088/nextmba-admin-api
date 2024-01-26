@@ -89,4 +89,26 @@ export class SendMailService {
       html: emailContent,
     });
   }
+
+  async emailCourseInformation(studentEmail:string, courseInfo: any) {
+    const emailTemplate = fs.readFileSync('src/common/templates/course-access.template.html', 'utf-8');
+    const template = handlebars.compile(emailTemplate);
+    const link = process.env.STUDENT_ROUTE
+
+    const templateData = {
+      student: courseInfo.student,
+      courses: courseInfo.courses,
+      link: link,
+    };
+    
+    const emailContent = template(templateData);
+
+    const recipients = [ studentEmail, process.env.PAYMENT_INFO_RECIPIENT]
+
+    await this.mailerService.sendMail({
+      to: recipients,
+      subject: 'Course Information',
+      html: emailContent,
+    });
+  }
 }
