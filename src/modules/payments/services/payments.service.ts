@@ -68,7 +68,7 @@ export class PaymentsService {
 
     // get affiliate infos
     const affiliate = await this.paymentAffiliateRepository.findPerCode(data.affiliate_code);
-    if (affiliate) {
+    if (data.affiliate_code && affiliate) {
       // ALLABOUT AFFILIATES
       // count affiliate on payments
       const affiliatePayment = await this.paymentRepository.findByFromStudId(affiliate.student_id);
