@@ -33,18 +33,30 @@ export class SendMailService {
     const emailTemplate = fs.readFileSync('src/common/templates/payment-information.template.html', 'utf-8');
     const template = handlebars.compile(emailTemplate);
 
+    const options = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      // timeZoneName: 'short',
+    };
+    
+    const formattedDate = paymentInfo.createdAt.toLocaleDateString('en-US', options);
+
     const templateData = {
       // productCode: paymentInfo.product_code,
       name:paymentInfo.name,
       productName: paymentInfo.productName,
       country: paymentInfo.country,
       paymentAmount: paymentInfo.price,
-      paymentDate: paymentInfo.createdAt,
+      paymentDate: formattedDate,
       referenceNumber: paymentInfo.reference_id ?? '',
       contactNumber: paymentInfo.contact_number ?? '',
       quantity: 1,
     };
-    console.log(templateData);
+    
     const emailContent = template(templateData);
 
     const recipients = [ paymentInfo.email, process.env.PAYMENT_INFO_RECIPIENT]
