@@ -38,8 +38,8 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
         });
         // if student has course or not expired
         const hasStudCourse = studentCourse && studentCourse.expiration_date > new Date();
-        console.log(1, studentCourse);
-        console.log(2, hasStudCourse);
+        // console.log(1, studentCourse);
+        // console.log(2, hasStudCourse);
 
         const giftable = hasStudCourse ? product_item.quantity : product_item.quantity - 1;
 
