@@ -47,7 +47,7 @@ export class SendMailService {
 
     const templateData = {
       // productCode: paymentInfo.product_code,
-      name:paymentInfo.name,
+      name: this.capitalizeFirstLetter(paymentInfo.name),
       productName: paymentInfo.productName,
       country: paymentInfo.country,
       paymentAmount: paymentInfo.price,
@@ -110,5 +110,9 @@ export class SendMailService {
       subject: 'Course Information',
       html: emailContent,
     });
+  }
+
+  capitalizeFirstLetter(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
   }
 }
