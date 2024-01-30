@@ -21,7 +21,7 @@ export class UpdateCourseDto {
 
   @IsOptional()
   @IsString()
-  apllied_studies_description: string;
+  applied_studies_description: string;
 
   @IsOptional()
   @Type(() => Date)
