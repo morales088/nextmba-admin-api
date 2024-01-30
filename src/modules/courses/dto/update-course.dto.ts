@@ -20,6 +20,10 @@ export class UpdateCourseDto {
   course_link: string;
 
   @IsOptional()
+  @IsString()
+  apllied_studies_description: string;
+
+  @IsOptional()
   @Type(() => Date)
   @IsDate()
   starting_date: Date;
