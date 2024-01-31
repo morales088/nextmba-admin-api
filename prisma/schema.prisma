@@ -35,7 +35,9 @@ model Courses {
   description                 String?
   cover_photo                 String?
   course_link                 String?
+  applied_study_name          String?
   applied_studies_description String?
+  applied_cover_photo         String?
   starting_date               DateTime?         @default(now())
   price                       Decimal           @db.Decimal(9, 2)
   telegram_link               String?

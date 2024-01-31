@@ -21,7 +21,15 @@ export class UpdateCourseDto {
 
   @IsOptional()
   @IsString()
+  applied_study_name: string;
+
+  @IsOptional()
+  @IsString()
   applied_studies_description: string;
+
+  @IsOptional()
+  @IsString()
+  applied_cover_photo: string;
 
   @IsOptional()
   @Type(() => Date)
