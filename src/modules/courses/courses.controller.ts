@@ -9,6 +9,7 @@ import {
   Put,
   Request,
   UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -16,7 +17,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { CoursesService } from './services/courses.service';
 import { UpdateCourseDto } from './dto/update-course.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { AwsS3Service } from 'src/common/aws/aws_s3.service';
 
 @Controller('courses')
@@ -38,45 +39,60 @@ export class CoursesController {
   }
 
   @Post('/')
-  @UseInterceptors(FileInterceptor('file_cover'))
-  async createCourse(
-    @Body() createCourseDto: CreateCourseDto,
-    @UploadedFile()
-    file_cover: Express.Multer.File
-  ) {
+  @UseInterceptors(AnyFilesInterceptor())
+  async createCourse(@Body() createCourseDto: CreateCourseDto, @UploadedFiles() files: Array<Express.Multer.File>) {
     const courseData = {
       ...createCourseDto,
     };
-    if (file_cover) {
-      const path = 'images/courses_cover';
-      const fileUrl = await this.awsS3Service.upload(path, file_cover);
-      courseData.cover_photo = fileUrl;
+    const images = files as unknown as { fieldname: string }[];
+    for (const image of images) {
+      if (image.fieldname === 'file_cover') {
+        const path = 'images/courses_cover';
+        const picture = image as unknown as Express.Multer.File
+        const fileUrl = await this.awsS3Service.upload(path, picture);
+        courseData.cover_photo = fileUrl;
+      }
+      if (image.fieldname === 'applied_cover') {
+        const path = 'images/applied_cover';
+        const picture = image as unknown as Express.Multer.File
+        const fileUrl = await this.awsS3Service.upload(path, picture);
+        courseData.applied_cover_photo = fileUrl;
+      }
     }
 
     return await this.courseService.createCourse(courseData);
   }
 
   @Put('/:courseId')
-  @UseInterceptors(FileInterceptor('file_cover'))
+  @UseInterceptors(AnyFilesInterceptor())
   async UpdateCourse(
     @Param('courseId') courseId: number,
     @Request() req: any,
     @Body() updateCourseDto: UpdateCourseDto,
-    @UploadedFile()
-    file_cover: Express.Multer.File
+    @UploadedFiles() files: Array<Express.Multer.File>
   ) {
     const details = req.user;
 
     const courseData = {
       ...updateCourseDto,
     };
-
-    if (file_cover) {
-      const path = 'images/courses_cover';
-      const fileUrl = await this.awsS3Service.upload(path, file_cover);
-      courseData.cover_photo = fileUrl;
-    }
     
+    const images = files as unknown as { fieldname: string }[];
+    for (const image of images) {
+      if (image.fieldname === 'file_cover') {
+        const path = 'images/courses_cover';
+        const picture = image as unknown as Express.Multer.File
+        const fileUrl = await this.awsS3Service.upload(path, picture);
+        courseData.cover_photo = fileUrl;
+      }
+      if (image.fieldname === 'applied_cover') {
+        const path = 'images/applied_cover';
+        const picture = image as unknown as Express.Multer.File
+        const fileUrl = await this.awsS3Service.upload(path, picture);
+        courseData.applied_cover_photo = fileUrl;
+      }
+    }
+
     return await this.courseService.updateCourse(courseId, courseData);
   }
 }
