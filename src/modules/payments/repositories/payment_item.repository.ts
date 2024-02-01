@@ -73,7 +73,7 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
         // const startingDate = new Date(course.starting_date);
 
         const startingDate = new Date();
-        startingDate.setMonth(startingDate.getMonth() + 1);
+        // startingDate.setMonth(startingDate.getMonth() + 1);
 
         switch (product_item.course_id) {
           // Marketing course
