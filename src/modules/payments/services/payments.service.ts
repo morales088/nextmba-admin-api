@@ -128,4 +128,7 @@ export class PaymentsService {
   async updatePayment(id: number, data) {
     return this.paymentRepository.update(id, data);
   }
+  async studentPaymentInfo(id: number) {
+    return this.paymentRepository.studentPaymentInfo(id);
+  }
 }

@@ -8,7 +8,7 @@
         font-family: Arial, sans-serif;
         margin: 0;
         padding: 0;
-        background-color: #f5f5f5;
+        /* background-color: #f5f5f5; */
       }
     </style>
   </head>
@@ -25,16 +25,10 @@
               border="0"
               cellpadding="0"
               cellspacing="0"
-              style="
-                border: 1px solid #eaeced;
-                border-radius: 8px;
-                border-collapse: separate !important;
-                overflow: hidden;
-              "
             >
               <tbody>
                 <tr>
-                  <td align="center">
+                  <td align="center" style="padding: 0 10px">
                     <!-- logo -->
                     <table
                       class="ml-default"
@@ -187,10 +181,10 @@
                                       style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; margin-bottom: 2px;"
                                     >
                                       <b>BILL TO</b> <br />
-                                      Cyrine Sidani <br />
-                                      cyrine.sidani@gmail.com <br />
-                                      Dubai <br />
-                                      09174662753 <br />
+                                      {{studentName}} <br />
+                                      {{studentEmail}} <br />
+                                      {{studentCountry}} <br />
+                                      {{studentNumber}} <br />
                                     </p>
                                   </td>
                                 </tr>
@@ -234,12 +228,9 @@
                                     <h1
                                       style="font-family: &#39;Inter&#39;, sans-serif; color: #000000; font-size: 16px; line-height: 125%; font-weight: bold; font-style: normal; text-decoration: none; ;margin-bottom: 10px; margin-bottom: 0;"
                                     >
-                                      $20.00 USD due January 29, 2024
+                                      {{productInfo}}
                                     </h1>
                                   </td>
-                                </tr>
-                                <tr>
-                                  <td height="40" style="line-height: 40px"></td>
                                 </tr>
                               </tbody>
                             </table>
@@ -281,7 +272,7 @@
                                     <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                       <tbody>
                                         <tr>
-                                          <td class="row" style="padding: 0 50px" align="center">
+                                          <td class="row" style="padding: 0" align="center">
                                             <table
                                               role="presentation"
                                               cellpadding="0"
@@ -328,7 +319,7 @@
                     >
                       <tbody>
                         <tr>
-                          <td style="">
+                          <td>
                             <table
                               class="container ml-12 ml-default-border"
                               width="100%"
@@ -340,66 +331,144 @@
                               style="color: #515856"
                             >
                               <tbody>
-                                <tr style="border-bottom: solid 0.25em black">
+                                <tr style="border-bottom: 1px solid black;">
                                   <th class="row" style="padding: 0 10px 0 50px">
                                     <p
-                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; text-align: left;"
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 14px; line-height: 165%; margin-top: 0; text-align: left;"
                                     >
                                       Description
                                     </p>
                                   </th>
                                   <th class="row" style="padding: 0 10px; width: 15%">
                                     <p
-                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; text-align: left;"
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 14px; line-height: 165%; margin-top: 0; text-align: left;"
                                     >
                                       QTY
                                     </p>
                                   </th>
                                   <th class="row" style="padding: 0 10px; width: 15%">
                                     <p
-                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; text-align: left;"
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 14px; line-height: 165%; margin-top: 0; text-align: left;"
                                     >
                                       Unit price
                                     </p>
                                   </th>
                                   <th class="row" style="padding: 0 10px; width: 15%">
                                     <p
-                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; text-align: left;"
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 14px; line-height: 165%; margin-top: 0; text-align: left;"
                                     >
                                       Amount
                                     </p>
                                   </th>
                                 </tr>
                                 <tr>
-                                  <td class="ml-default-border container" height="20" style="line-height: 20px"></td>
-                                </tr>
-                                <tr>
                                   <td class="row" style="padding: 0 10px 0 50px">
                                     <p
                                       style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; text-align: left;"
                                     >
-                                      Marketing Course 10 + 10
+                                      {{description}}
                                     </p>
                                   </td>
                                   <td class="row" style="padding: 0 10px; width: 15%">
                                     <p
                                       style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; text-align: left;"
                                     >
-                                      1
+                                      {{qty}}
                                     </p>
                                   </td>
                                   <td class="row" style="padding: 0 10px; width: 15%">
                                     <p
                                       style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; text-align: left;"
                                     >
-                                      $20.00
+                                      ${{price}} USD
                                     </p>
                                   </td>
                                   <td class="row" style="padding: 0 10px; width: 15%">
                                     <p
                                       style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; text-align: left;"
                                     >
-                                      $20.00
+                                      ${{amount}} USD
+                                    </p>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td height="40" style="line-height: 40px"></td>
+                                </tr>
+                                <!-- subtotal -->
+                                <tr>
+                                  <td class="row" style="padding: 0 10px 0 50px">
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%; border-bottom: #eb921d solid 1px; border-top: #eb921d solid 1px">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 14px; line-height: 165%; margin: 2px 0; text-align: left;"
+                                    >
+                                      Subtotal
+                                    </p>
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%; border-bottom: #eb921d solid 1px; border-top: #eb921d solid 1px">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin: 2px 0; text-align: left;"
+                                    >
+                                    
+                                    </p>
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%; border-bottom: #eb921d solid 1px; border-top: #eb921d solid 1px">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin: 2px 0; text-align: left;"
+                                    >
+                                      ${{subtotal}} USD
+                                    </p>
+                                  </td>
+                                </tr>
+                                <!-- total -->
+                                <tr>
+                                  <td class="row" style="padding: 0 10px 0 50px">
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%; border-bottom: #eb921d solid 1px">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 14px; line-height: 165%; margin: 2px 0; text-align: left;"
+                                    >
+                                      Total
+                                    </p>
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%; border-bottom: #eb921d solid 1px">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin: 2px 0; text-align: left;"
+                                    >
+                                    
+                                    </p>
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%; border-bottom: #eb921d solid 1px">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin: 2px 0; text-align: left;"
+                                    >
+                                      ${{total}} USD
+                                    </p>
+                                  </td>
+                                </tr>
+                                <!-- amount due -->
+                                <tr>
+                                  <td class="row">
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%; ">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 14px; line-height: 165%; margin: 2px 0; text-align: left;"
+                                    >
+                                      <b> Amount Due </b>
+                                    </p>
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%; ">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin: 2px 0; text-align: left;"
+                                    >
+                                    
+                                    </p>
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%; margin-right: 50px;">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin: 2px 0; text-align: left;"
+                                    >
+                                      ${{amountDue}} USD
                                     </p>
                                   </td>
                                 </tr>

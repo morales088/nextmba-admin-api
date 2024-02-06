@@ -7,20 +7,46 @@ import { PdfService } from 'src/common/utils/pdf.service';
 import { Response } from 'express';
 
 @Controller('payments')
-// @UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'))
 export class PaymentsController {
   constructor(
     private readonly paymentsService: PaymentsService,
     private readonly pdfService: PdfService
   ) {}
 
-  @Get('/generate')
-  async generatePdf(@Res() res: Response): Promise<void> {
+  @Get('/generate/:paymentId')
+  async generatePdf(@Res() res: Response, @Param('paymentId') paymentId: number): Promise<void> {
+    const studentInfo = await this.paymentsService.studentPaymentInfo(paymentId);
+    
     const htmlFilePath = 'src/common/templates/invoice.template.html';
 
+    const options = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      // hour: '2-digit',
+      // minute: '2-digit',
+      // second: '2-digit',
+      // timeZoneName: 'short',
+    };
+    const formattedDate = studentInfo.createdAt.toLocaleDateString('en-US', options);
+
     const data = {
-      title: 'NestJS PDF Generation',
-      content: 'This is a sample PDF generated from NestJS.',
+      invoiceNumber: studentInfo.reference_id,
+      dateIssue: formattedDate,
+      dateDue: formattedDate,
+      studentName: studentInfo.student.name,
+      studentEmail: studentInfo.student.email,
+      studentCountry: studentInfo.student.country ?? '',
+      studentNumber: studentInfo.student.phone ?? '',
+      productInfo: `$${Number(studentInfo.price).toFixed(2)} USD due ${formattedDate}`,
+      description: studentInfo.product.name,
+      qty: 1,
+      price: Number(studentInfo.price).toFixed(2),
+      amount: Number(studentInfo.price).toFixed(2),
+      subtotal: Number(studentInfo.price).toFixed(2),
+      total: Number(studentInfo.price).toFixed(2),
+      amountDue: Number(studentInfo.price).toFixed(2),
     };
 
     const pdfBuffer = await this.pdfService.generatePdfFromHtmlFileWithVariables(

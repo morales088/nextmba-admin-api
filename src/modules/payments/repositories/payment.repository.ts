@@ -140,7 +140,7 @@ export class PaymentRepository extends AbstractRepository<Payments> {
         },
       ],
     });
-    
+
     let courses = [];
     for (const gift of gifts) {
       for (const item of gift.payment_items) {
@@ -152,5 +152,12 @@ export class PaymentRepository extends AbstractRepository<Payments> {
     }
 
     return courses;
+  }
+
+  async studentPaymentInfo(id: number) {
+    return this.prisma[this.modelName].findUnique({
+      where: { id: id },
+      include: { student: true, product: true },
+    });
   }
 }
