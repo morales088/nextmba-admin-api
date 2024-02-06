@@ -17,11 +17,7 @@
     <table width="100%" align="center" cellspacing="0" cellpadding="0" border="0">
       <tbody>
         <tr>
-          <td
-            class=""
-            align="center"
-            valign="top"
-          >
+          <td class="" align="center" valign="top">
             <table
               width="100%"
               class="wrapper"
@@ -39,78 +35,6 @@
               <tbody>
                 <tr>
                   <td align="center">
-
-                    <!-- bar line -->
-                    <table
-                      class="ml-default"
-                      width="100%"
-                      bgcolor=""
-                      align="center"
-                      border="0"
-                      cellspacing="0"
-                      cellpadding="0"
-                    >
-                      <tbody>
-                        <tr>
-                          <td style="">
-                            <table
-                              class="container ml-6 ml-default-border"
-                              width="100%"
-                              bgcolor="#ffffff"
-                              align="center"
-                              border="0"
-                              cellspacing="0"
-                              cellpadding="0"
-                              style=""
-                            >
-                              <tbody>
-                                <tr>
-                                  <td
-                                    class="ml-default-border container"
-                                    height="20"
-                                    style="line-height: 20px; "
-                                  ></td>
-                                </tr>
-                                <tr>
-                                  <td>
-                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                                      <tbody>
-                                        <tr>
-                                          <td class="row" style="padding: 0 50px" align="center">
-                                            <table
-                                              role="presentation"
-                                              cellpadding="0"
-                                              cellspacing="0"
-                                              border="0"
-                                              align="center"
-                                              width="100%"
-                                            >
-                                              <tbody>
-                                                <tr>
-                                                  <td
-                                                    height="2"
-                                                    style="border-top: 2px solid #eb921d; line-height: 2px"
-                                                  ></td>
-                                                </tr>
-                                              </tbody>
-                                            </table>
-                                          </td>
-                                        </tr>
-                                      </tbody>
-                                    </table>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td height="20" style="line-height: 20px"></td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <!--  -->
-
                     <!-- logo -->
                     <table
                       class="ml-default"
@@ -132,9 +56,12 @@
                               border="0"
                               cellspacing="0"
                               cellpadding="0"
-                              style="color: #515856; "
+                              style="color: #515856"
                             >
                               <tbody>
+                                <tr>
+                                  <td height="40" style="line-height: 40px"></td>
+                                </tr>
                                 <tr>
                                   <td class="row" style="padding: 0 50px">
                                     <h1
@@ -162,7 +89,7 @@
                     </table>
                     <!--  -->
 
-                    <!--  -->
+                    <!-- invoice -->
                     <table
                       class="ml-default"
                       width="100%"
@@ -183,30 +110,132 @@
                               border="0"
                               cellspacing="0"
                               cellpadding="0"
-                              style="color: #515856; "
+                              style="color: #515856"
                             >
                               <tbody>
                                 <tr>
                                   <td class="row" style="padding: 0 50px">
                                     <p
-                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 16px; line-height: 165%; margin-top: 0; margin-bottom: 10px;"
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; margin-bottom: 2px;"
                                     >
                                       Invoice number {{invoiceNumber}}
                                     </p>
                                     <p
-                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 16px; line-height: 165%; margin-top: 0; margin-bottom: 40px;"
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; margin-bottom: 2px;"
                                     >
-                                      Visit <a href="${{ link }}" style=""> Student Portal </a> to access your account.
+                                      Date of issue {{dateIssue}}
                                     </p>
                                     <p
-                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 16px; line-height: 165%; margin-top: 0; margin-bottom: 10px;"
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; margin-bottom: 2px;"
                                     ></p>
                                     <p
-                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 16px; line-height: 165%; margin-top: 0; margin-bottom: 10px;"
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; margin-bottom: 2px;"
                                     >
-                                      In case you have forgotten your password, you can reset it
-                                      <a href="${{ link }}/forgot-password" style="">here</a>
+                                      Date of due {{dateDue}}
                                     </p>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td height="40" style="line-height: 40px"></td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <!--  -->
+
+                    <!-- user info -->
+                    <table
+                      class="ml-default"
+                      width="100%"
+                      bgcolor=""
+                      align="center"
+                      border="0"
+                      cellspacing="0"
+                      cellpadding="0"
+                    >
+                      <tbody>
+                        <tr>
+                          <td style="">
+                            <table
+                              class="container ml-12 ml-default-border"
+                              width="100%"
+                              bgcolor="#ffffff"
+                              align="center"
+                              border="0"
+                              cellspacing="0"
+                              cellpadding="0"
+                              style="color: #515856"
+                            >
+                              <tbody>
+                                <tr>
+                                  <td class="row" style="padding: 0 50px; width: 30%">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; margin-bottom: 2px;"
+                                    >
+                                      <b>NEXED GROUP SL</b> <br />
+                                      CALLE GREAL 8 <br />
+                                      46117 Betera Valencia <br />
+                                      Spain <br />
+                                      <br />
+                                    </p>
+                                  </td>
+                                  <td class="row" style="padding: 0 50px">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; margin-bottom: 2px;"
+                                    >
+                                      <b>BILL TO</b> <br />
+                                      Cyrine Sidani <br />
+                                      cyrine.sidani@gmail.com <br />
+                                      Dubai <br />
+                                      09174662753 <br />
+                                    </p>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td height="40" style="line-height: 40px"></td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <!--  -->
+
+                    <!-- price and due date -->
+                    <table
+                      class="ml-default"
+                      width="100%"
+                      bgcolor=""
+                      align="center"
+                      border="0"
+                      cellspacing="0"
+                      cellpadding="0"
+                    >
+                      <tbody>
+                        <tr>
+                          <td style="">
+                            <table
+                              class="container ml-10 ml-default-border"
+                              width="100%"
+                              bgcolor="#ffffff"
+                              align="center"
+                              border="0"
+                              cellspacing="0"
+                              cellpadding="0"
+                              style="color: #515856"
+                            >
+                              <tbody>
+                                <tr>
+                                  <td class="row" style="padding: 0 50px">
+                                    <h1
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #000000; font-size: 16px; line-height: 125%; font-weight: bold; font-style: normal; text-decoration: none; ;margin-bottom: 10px; margin-bottom: 0;"
+                                    >
+                                      $20.00 USD due January 29, 2024
+                                    </h1>
                                   </td>
                                 </tr>
                                 <tr>
@@ -245,11 +274,7 @@
                             >
                               <tbody>
                                 <tr>
-                                  <td
-                                    class="ml-default-border container"
-                                    height="20"
-                                    style="line-height: 20px; "
-                                  ></td>
+                                  <td class="ml-default-border container" height="20" style="line-height: 20px"></td>
                                 </tr>
                                 <tr>
                                   <td>
@@ -291,19 +316,106 @@
                     </table>
                     <!--  -->
 
+                    <!-- payment info -->
+                    <table
+                      class="ml-default"
+                      width="100%"
+                      bgcolor=""
+                      align="center"
+                      border="0"
+                      cellspacing="0"
+                      cellpadding="0"
+                    >
+                      <tbody>
+                        <tr>
+                          <td style="">
+                            <table
+                              class="container ml-12 ml-default-border"
+                              width="100%"
+                              bgcolor="#ffffff"
+                              align="center"
+                              border="0"
+                              cellspacing="0"
+                              cellpadding="0"
+                              style="color: #515856"
+                            >
+                              <tbody>
+                                <tr style="border-bottom: solid 0.25em black">
+                                  <th class="row" style="padding: 0 10px 0 50px">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; text-align: left;"
+                                    >
+                                      Description
+                                    </p>
+                                  </th>
+                                  <th class="row" style="padding: 0 10px; width: 15%">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; text-align: left;"
+                                    >
+                                      QTY
+                                    </p>
+                                  </th>
+                                  <th class="row" style="padding: 0 10px; width: 15%">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; text-align: left;"
+                                    >
+                                      Unit price
+                                    </p>
+                                  </th>
+                                  <th class="row" style="padding: 0 10px; width: 15%">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; text-align: left;"
+                                    >
+                                      Amount
+                                    </p>
+                                  </th>
+                                </tr>
+                                <tr>
+                                  <td class="ml-default-border container" height="20" style="line-height: 20px"></td>
+                                </tr>
+                                <tr>
+                                  <td class="row" style="padding: 0 10px 0 50px">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; text-align: left;"
+                                    >
+                                      Marketing Course 10 + 10
+                                    </p>
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; text-align: left;"
+                                    >
+                                      1
+                                    </p>
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; text-align: left;"
+                                    >
+                                      $20.00
+                                    </p>
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; text-align: left;"
+                                    >
+                                      $20.00
+                                    </p>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <!--  -->
                   </td>
                 </tr>
               </tbody>
             </table>
 
-            <table
-              cellpadding="0"
-              cellspacing="0"
-              border="0"
-              align="center"
-              width="100%"
-              style=""
-            >
+            <table cellpadding="0" cellspacing="0" border="0" align="center" width="100%" style="">
               <tbody>
                 <tr>
                   <td height="40" style="line-height: 40px"></td>
