@@ -14,6 +14,7 @@ import { PaymentApiController } from './payment_api.controller';
 import { StudentCoursesRepository } from '../students/repositories/student_courses.repository';
 import { SendMailService } from 'src/common/utils/send-mail.service';
 import { PaymentAffiliateRepository } from './repositories/payment_affiliate.repository';
+import { PdfService } from 'src/common/utils/pdf.service';
 
 @Module({
   imports: [PrismaModule],
@@ -30,7 +31,8 @@ import { PaymentAffiliateRepository } from './repositories/payment_affiliate.rep
     SendMailService,
     ApiKeyGuard,
     StudentCoursesRepository,
-    PaymentAffiliateRepository
+    PaymentAffiliateRepository,
+    PdfService
   ],
 })
 export class PaymentsModule {}
