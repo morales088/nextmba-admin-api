@@ -47,13 +47,6 @@ export class PaymentsService {
         this.studentsService.updateStudent(findStudent.id, updateStudent);
       }
 
-      // email courses info to student
-      const emailData = {
-        student: data.email,
-        productName: product.name,
-      };
-      this.sendMailService.emailCourseInformation(data.email, emailData);
-
       studentId = findStudent.id;
     } else {
       // create student
@@ -108,7 +101,7 @@ export class PaymentsService {
         ...createPayment,
         productName: product.name,
       };
-      // this.sendMailService.emailPaymentInformation(emailData);
+      this.sendMailService.emailPaymentInformation(emailData);
     }
     
     // email courses info to student

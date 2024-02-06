@@ -55,6 +55,7 @@ export class SendMailService {
       referenceNumber: paymentInfo.reference_id ?? '',
       contactNumber: paymentInfo.contact_number ?? '',
       quantity: 1,
+      amount: paymentInfo.price * 1,
     };
     
     const emailContent = template(templateData);
