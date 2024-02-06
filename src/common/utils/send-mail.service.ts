@@ -48,6 +48,7 @@ export class SendMailService {
     const templateData = {
       // productCode: paymentInfo.product_code,
       name: this.capitalizeFirstLetter(paymentInfo.name),
+      username: paymentInfo.email,
       productName: paymentInfo.productName,
       country: paymentInfo.country,
       paymentAmount: paymentInfo.price,
