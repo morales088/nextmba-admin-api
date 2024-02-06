@@ -95,24 +95,24 @@ export class PaymentsService {
     //   return createPayment;
     // });
 
-    // email payment information
     if (createPayment) {
+      // email payment information
       const emailData = {
         ...createPayment,
         productName: product.name,
       };
       this.sendMailService.emailPaymentInformation(emailData);
+    
+      // email courses info to student
+      const coursesName = await this.productRepository.coursesPerProduct(data.product_code);
+      
+      const emailCourseData = {
+        student: data.name,
+        productName: product.name,
+        courses: coursesName,
+      };
+      this.sendMailService.emailCourseInformation(data.email, emailCourseData);
     }
-    
-    // email courses info to student
-    const coursesName = await this.productRepository.coursesPerProduct(data.product_code);
-    
-    const emailData = {
-      student: data.name,
-      productName: product.name,
-      courses: coursesName,
-    };
-    this.sendMailService.emailCourseInformation(data.email, emailData);
 
     //return payment details
     return createPayment;
