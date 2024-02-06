@@ -108,7 +108,7 @@ export class PaymentsService {
         ...createPayment,
         productName: product.name,
       };
-      this.sendMailService.emailPaymentInformation(emailData);
+      // this.sendMailService.emailPaymentInformation(emailData);
     }
     
     // email courses info to student
