@@ -51,7 +51,7 @@ export class SendMailService {
       username: paymentInfo.email,
       productName: paymentInfo.productName,
       country: paymentInfo.country,
-      paymentAmount: paymentInfo.price,
+      paymentAmount: Number(paymentInfo.price).toFixed(2),
       paymentDate: formattedDate,
       referenceNumber: paymentInfo.reference_id ?? '',
       contactNumber: paymentInfo.contact_number ?? '',
