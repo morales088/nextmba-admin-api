@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # exit on errorset -o errexit
 
-npm install; npx prisma generate; nest build; 
+npm install;
+npx prisma db push;
+npx prisma generate;
+nest build;
 
 # Store/pull Puppeteer cache with build cache
 if [[ ! -d $PUPPETEER_CACHE_DIR ]]; then
