@@ -36,88 +36,94 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
       quantity: number;
       status: number;
     }[];
-    const currentDate = new Date()
+    const currentDate = new Date();
     // try {
-      for (const product_item of productItems) {
-        // check student
-        const studentCourse = await this.prisma.student_courses.findFirst({
-          where: { student_id: studentId, course_id: product_item.course_id, status: 1 },
-        });
+    for (const product_item of productItems) {
+      // check student
+      const studentCourse = await this.prisma.student_courses.findFirst({
+        where: { student_id: studentId, course_id: product_item.course_id, status: 1 },
+      });
 
-        // if student has course or not expired
-        // const hasStudCourse = (studentCourse && (studentCourse.expiration_date > currentDate));
-        const hasStudCourse = studentCourse && studentCourse.expiration_date > currentDate ? true : false;
+      // if student has course or not expired
+      // const hasStudCourse = (studentCourse && (studentCourse.expiration_date > currentDate));
+      const hasStudCourse = studentCourse && studentCourse.expiration_date > currentDate ? true : false;
 
-        const giftable = hasStudCourse ? product_item.quantity : product_item.quantity - 1;
+      const giftable = hasStudCourse ? product_item.quantity : product_item.quantity - 1;
 
-        // insert payment items
-        const itemData = {
-          payment_id: paymentId,
-          course_id: product_item.course_id,
-          quantity: product_item.quantity,
-          giftable: giftable,
+      // insert payment items
+      const itemData = {
+        payment_id: paymentId,
+        course_id: product_item.course_id,
+        quantity: product_item.quantity,
+        giftable: giftable,
+      };
+
+      // console.log('itemData:',itemData)
+      const paymentItem = await this.prisma.payment_items.create({ data: itemData });
+      // console.log(1, paymentItem)
+
+      // insert student course
+      // const startingDate = new Date();
+      // const expirationDate = new Date();
+      // expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+
+      const course = await this.prisma.courses.findFirst({
+        where: { id: product_item.course_id },
+      });
+      const startingDate = new Date(course.starting_date);
+
+      // const startingDate = new Date();
+      // startingDate.setMonth(startingDate.getMonth() + 1);
+
+      // switch (product_item.course_id) {
+      //   // Marketing course
+      //   case 1: startingDate.setDate(3); break;
+
+      //   // Executive Course
+      //   case 2: startingDate.setDate(5); break;
+
+      //   // Tracy Mastermind
+      //   case 6: startingDate.setDate(17); break;
+
+      //   // Technology Course
+      //   case 7: startingDate.setDate(10); break;
+
+      // }
+
+      const expirationDate = new Date(startingDate);
+      expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+
+      const studentCourseData = {
+        student_id: studentId,
+        course_id: product_item.course_id,
+        starting_date: startingDate,
+        expiration_date: expirationDate,
+      };
+      // add student course for first time enrollee
+      if (!studentCourse) await this.prisma.student_courses.create({ data: studentCourseData });
+
+      // update student course to expired course
+      if (studentCourse && !hasStudCourse) {
+        let newExpDate = new Date(studentCourse.expiration_date);
+        newExpDate.setFullYear(newExpDate.getFullYear() + 1);
+
+        const modulePerCourse = parseInt(process.env.MODULE_PER_COURSE);
+        const newModuleQuantity = studentCourse.module_quantity + modulePerCourse;
+
+        const newStudentCourseData = {
+          expiration_date: newExpDate,
+          module_quantity: newModuleQuantity,
         };
 
-        // console.log('itemData:',itemData)
-        const paymentItem = await this.prisma.payment_items.create({ data: itemData });
-        // console.log(1, paymentItem)
-
-        // insert student course
-        // const startingDate = new Date();
-        // const expirationDate = new Date();
-        // expirationDate.setFullYear(expirationDate.getFullYear() + 1);
-
-        // const course = await this.prisma.courses.findFirst({
-        //   where: {  id: product_item.course_id },
-        // });
-        // const startingDate = new Date(course.starting_date);
-
-        const startingDate = new Date();
-        // startingDate.setMonth(startingDate.getMonth() + 1);
-
-        switch (product_item.course_id) {
-          // Marketing course
-          case 1: startingDate.setDate(3); break;
-
-          // Executive Course
-          case 2: startingDate.setDate(5); break;
-
-          // Tracy Mastermind
-          case 6: startingDate.setDate(17); break;
-
-          // Technology Course
-          case 7: startingDate.setDate(10); break;
-
-        }
-
-        const expirationDate = new Date(startingDate)
-        expirationDate.setFullYear(expirationDate.getFullYear() + 1);
-
-        const studentCourseData = {
-          student_id: studentId,
-          course_id: product_item.course_id,
-          starting_date: startingDate,
-          expiration_date: expirationDate,
-        };
-        // add student course for first time enrollee
-        if (!studentCourse) await this.prisma.student_courses.create({ data: studentCourseData });
-
-        // update student course to expired course
-        if (studentCourse && !hasStudCourse) {
-          let newExpDate = new Date(studentCourse.expiration_date);
-          newExpDate.setFullYear(newExpDate.getFullYear() + 1);
-
-          const modulePerCourse = parseInt(process.env.MODULE_PER_COURSE);
-          const newModuleQuantity = studentCourse.module_quantity + modulePerCourse;
-
-          const newStudentCourseData = {
-            expiration_date: newExpDate,
-            module_quantity: newModuleQuantity,
-          };
-
-          await this.prisma.student_courses.update({ where: { id: studentCourse.id }, data: newStudentCourseData });
-        }
+        await this.prisma.student_courses.update({ where: { id: studentCourse.id }, data: newStudentCourseData });
       }
+      
+    }
+
+    // insert all course if pro account
+    if(product.pro_access === true) await this.addPro(studentId)
+
+
     // } catch (error) {
     //   return { success: false, error: error.message };
     // }
@@ -142,4 +148,35 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
     return this.prisma[this.modelName].findUnique({ where: { id: id } });
   }
 
+  async addPro(studentId: number) {
+    const courses = await this.prisma.courses.findMany({ where: { status: 1, is_displayed: 1, paid: 1 } });
+    const studCourses = await this.prisma.student_courses.findMany({ where: { student_id: studentId, status: 1 } });
+    const latestDate = await this.prisma.student_courses.findFirst({
+      where: { student_id: studentId, status: 1 },
+      orderBy: [
+        {
+          id: 'desc',
+        },
+      ],
+    });
+
+    for (const course of courses) {
+      const studentCourse = studCourses.find((studCourse) => studCourse.course_id === course.id);
+
+      if (!studentCourse) {
+        const date = latestDate.starting_date ?? course.starting_date;
+        const startingDate = new Date(date);
+        const expirationDate = new Date(startingDate);
+        expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+        const studentCourseData = {
+          student_id: studentId,
+          course_id: course.id,
+          starting_date: startingDate,
+          expiration_date: expirationDate,
+        };
+        
+        await this.prisma.student_courses.create({ data: studentCourseData })
+      }
+    }
+  }
 }

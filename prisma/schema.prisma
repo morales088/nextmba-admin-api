@@ -30,24 +30,27 @@ model ResetPasswordToken {
 }
 
 model Courses {
-  id              Int               @id @default(autoincrement())
-  name            String            @db.VarChar(255)
-  description     String?
-  cover_photo     String?
-  course_link     String?
-  starting_date      DateTime?         @default(now())
-  price           Decimal           @db.Decimal(9, 2)
-  telegram_link   String?
-  paid            Int               @default(1)
-  is_displayed    Int               @default(1)
-  status          Int               @default(1)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime?         @updatedAt
-  gifts           Gifts[]
-  modules         Modules[]
-  payment_items   Payment_items[]
-  product_items   Product_items[]
-  student_courses Student_courses[]
+  id                          Int               @id @default(autoincrement())
+  name                        String            @db.VarChar(255)
+  description                 String?
+  cover_photo                 String?
+  course_link                 String?
+  applied_study_name          String?
+  applied_studies_description String?
+  applied_cover_photo         String?
+  starting_date               DateTime?         @default(now())
+  price                       Decimal           @db.Decimal(9, 2)
+  telegram_link               String?
+  paid                        Int               @default(1)
+  is_displayed                Int               @default(1)
+  status                      Int               @default(1)
+  createdAt                   DateTime          @default(now())
+  updatedAt                   DateTime?         @updatedAt
+  gifts                       Gifts[]
+  modules                     Modules[]
+  payment_items               Payment_items[]
+  product_items               Product_items[]
+  student_courses             Student_courses[]
 }
 
 model Modules {
