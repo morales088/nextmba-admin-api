@@ -1,0 +1,499 @@
+<!doctype html>
+
+<html>
+  <head>
+    <title>Course Access</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        /* background-color: #f5f5f5; */
+      }
+    </style>
+  </head>
+
+  <body>
+    <table width="100%" align="center" cellspacing="0" cellpadding="0" border="0">
+      <tbody>
+        <tr>
+          <td class="" align="center" valign="top">
+            <table
+              width="100%"
+              class="wrapper"
+              align="center"
+              border="0"
+              cellpadding="0"
+              cellspacing="0"
+            >
+              <tbody>
+                <tr>
+                  <td align="center" style="padding: 0 10px">
+                    <!-- logo -->
+                    <table
+                      class="ml-default"
+                      width="100%"
+                      bgcolor=""
+                      align="center"
+                      border="0"
+                      cellspacing="0"
+                      cellpadding="0"
+                    >
+                      <tbody>
+                        <tr>
+                          <td style="">
+                            <table
+                              class="container ml-10 ml-default-border"
+                              width="100%"
+                              bgcolor="#ffffff"
+                              align="center"
+                              border="0"
+                              cellspacing="0"
+                              cellpadding="0"
+                              style="color: #515856"
+                            >
+                              <tbody>
+                                <tr>
+                                  <td height="40" style="line-height: 40px"></td>
+                                </tr>
+                                <tr>
+                                  <td class="row" style="padding: 0 50px">
+                                    <h1
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #000000; font-size: 24px; line-height: 125%; font-weight: bold; font-style: normal; text-decoration: none; ;margin-bottom: 10px; margin-bottom: 0;"
+                                    >
+                                      Invoice
+                                    </h1>
+                                  </td>
+                                  <td class="col mobile-center" align="right" width="250" style="padding: 0 50px">
+                                    <img
+                                      src="data:image/png;base64,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"
+                                      border="0"
+                                      alt=""
+                                      width="59.89393939393939"
+                                      class="logo"
+                                      style="max-width: 59.89393939393939px; display: inline-block"
+                                    />
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <!--  -->
+
+                    <!-- invoice -->
+                    <table
+                      class="ml-default"
+                      width="100%"
+                      bgcolor=""
+                      align="center"
+                      border="0"
+                      cellspacing="0"
+                      cellpadding="0"
+                    >
+                      <tbody>
+                        <tr>
+                          <td style="">
+                            <table
+                              class="container ml-12 ml-default-border"
+                              width="100%"
+                              bgcolor="#ffffff"
+                              align="center"
+                              border="0"
+                              cellspacing="0"
+                              cellpadding="0"
+                              style="color: #515856"
+                            >
+                              <tbody>
+                                <tr>
+                                  <td class="row" style="padding: 0 50px">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; margin-bottom: 2px;"
+                                    >
+                                      Invoice number {{invoiceNumber}}
+                                    </p>
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; margin-bottom: 2px;"
+                                    >
+                                      Date of issue {{dateIssue}}
+                                    </p>
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; margin-bottom: 2px;"
+                                    ></p>
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; margin-bottom: 2px;"
+                                    >
+                                      Date of due {{dateDue}}
+                                    </p>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td height="40" style="line-height: 40px"></td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <!--  -->
+
+                    <!-- user info -->
+                    <table
+                      class="ml-default"
+                      width="100%"
+                      bgcolor=""
+                      align="center"
+                      border="0"
+                      cellspacing="0"
+                      cellpadding="0"
+                    >
+                      <tbody>
+                        <tr>
+                          <td style="">
+                            <table
+                              class="container ml-12 ml-default-border"
+                              width="100%"
+                              bgcolor="#ffffff"
+                              align="center"
+                              border="0"
+                              cellspacing="0"
+                              cellpadding="0"
+                              style="color: #515856"
+                            >
+                              <tbody>
+                                <tr>
+                                  <td class="row" style="padding: 0 50px; width: 30%">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; margin-bottom: 2px;"
+                                    >
+                                      <b>NEXED GROUP SL</b> <br />
+                                      CALLE GREAL 8 <br />
+                                      46117 Betera Valencia <br />
+                                      Spain <br />
+                                      <br />
+                                    </p>
+                                  </td>
+                                  <td class="row" style="padding: 0 50px">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; margin-bottom: 2px;"
+                                    >
+                                      <b>BILL TO</b> <br />
+                                      {{studentName}} <br />
+                                      {{studentEmail}} <br />
+                                      {{studentCountry}} <br />
+                                      {{studentNumber}} <br />
+                                    </p>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td height="40" style="line-height: 40px"></td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <!--  -->
+
+                    <!-- price and due date -->
+                    <table
+                      class="ml-default"
+                      width="100%"
+                      bgcolor=""
+                      align="center"
+                      border="0"
+                      cellspacing="0"
+                      cellpadding="0"
+                    >
+                      <tbody>
+                        <tr>
+                          <td style="">
+                            <table
+                              class="container ml-10 ml-default-border"
+                              width="100%"
+                              bgcolor="#ffffff"
+                              align="center"
+                              border="0"
+                              cellspacing="0"
+                              cellpadding="0"
+                              style="color: #515856"
+                            >
+                              <tbody>
+                                <tr>
+                                  <td class="row" style="padding: 0 50px">
+                                    <h1
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #000000; font-size: 16px; line-height: 125%; font-weight: bold; font-style: normal; text-decoration: none; ;margin-bottom: 10px; margin-bottom: 0;"
+                                    >
+                                      {{productInfo}}
+                                    </h1>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <!--  -->
+
+                    <!-- bar line -->
+                    <table
+                      class="ml-default"
+                      width="100%"
+                      bgcolor=""
+                      align="center"
+                      border="0"
+                      cellspacing="0"
+                      cellpadding="0"
+                    >
+                      <tbody>
+                        <tr>
+                          <td style="">
+                            <table
+                              class="container ml-19 ml-default-border"
+                              width="100%"
+                              bgcolor="#ffffff"
+                              align="center"
+                              border="0"
+                              cellspacing="0"
+                              cellpadding="0"
+                              style=""
+                            >
+                              <tbody>
+                                <tr>
+                                  <td class="ml-default-border container" height="20" style="line-height: 20px"></td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                      <tbody>
+                                        <tr>
+                                          <td class="row" style="padding: 0" align="center">
+                                            <table
+                                              role="presentation"
+                                              cellpadding="0"
+                                              cellspacing="0"
+                                              border="0"
+                                              align="center"
+                                              width="100%"
+                                            >
+                                              <tbody>
+                                                <tr>
+                                                  <td
+                                                    height="2"
+                                                    style="border-top: 2px solid #eb921d; line-height: 2px"
+                                                  ></td>
+                                                </tr>
+                                              </tbody>
+                                            </table>
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td height="20" style="line-height: 20px"></td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <!--  -->
+
+                    <!-- payment info -->
+                    <table
+                      class="ml-default"
+                      width="100%"
+                      bgcolor=""
+                      align="center"
+                      border="0"
+                      cellspacing="0"
+                      cellpadding="0"
+                    >
+                      <tbody>
+                        <tr>
+                          <td>
+                            <table
+                              class="container ml-12 ml-default-border"
+                              width="100%"
+                              bgcolor="#ffffff"
+                              align="center"
+                              border="0"
+                              cellspacing="0"
+                              cellpadding="0"
+                              style="color: #515856"
+                            >
+                              <tbody>
+                                <tr style="border-bottom: 1px solid black;">
+                                  <th class="row" style="padding: 0 10px 0 50px">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 14px; line-height: 165%; margin-top: 0; text-align: left;"
+                                    >
+                                      Description
+                                    </p>
+                                  </th>
+                                  <th class="row" style="padding: 0 10px; width: 15%">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 14px; line-height: 165%; margin-top: 0; text-align: left;"
+                                    >
+                                      QTY
+                                    </p>
+                                  </th>
+                                  <th class="row" style="padding: 0 10px; width: 15%">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 14px; line-height: 165%; margin-top: 0; text-align: left;"
+                                    >
+                                      Unit price
+                                    </p>
+                                  </th>
+                                  <th class="row" style="padding: 0 10px; width: 15%">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 14px; line-height: 165%; margin-top: 0; text-align: left;"
+                                    >
+                                      Amount
+                                    </p>
+                                  </th>
+                                </tr>
+                                <tr>
+                                  <td class="row" style="padding: 0 10px 0 50px">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; text-align: left;"
+                                    >
+                                      {{description}}
+                                    </p>
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; text-align: left;"
+                                    >
+                                      {{qty}}
+                                    </p>
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; text-align: left;"
+                                    >
+                                      ${{price}} USD
+                                    </p>
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin-top: 0; text-align: left;"
+                                    >
+                                      ${{amount}} USD
+                                    </p>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td height="40" style="line-height: 40px"></td>
+                                </tr>
+                                <!-- subtotal -->
+                                <tr>
+                                  <td class="row" style="padding: 0 10px 0 50px">
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%; border-bottom: #eb921d solid 1px; border-top: #eb921d solid 1px">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 14px; line-height: 165%; margin: 2px 0; text-align: left;"
+                                    >
+                                      Subtotal
+                                    </p>
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%; border-bottom: #eb921d solid 1px; border-top: #eb921d solid 1px">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin: 2px 0; text-align: left;"
+                                    >
+                                    
+                                    </p>
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%; border-bottom: #eb921d solid 1px; border-top: #eb921d solid 1px">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin: 2px 0; text-align: left;"
+                                    >
+                                      ${{subtotal}} USD
+                                    </p>
+                                  </td>
+                                </tr>
+                                <!-- total -->
+                                <tr>
+                                  <td class="row" style="padding: 0 10px 0 50px">
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%; border-bottom: #eb921d solid 1px">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 14px; line-height: 165%; margin: 2px 0; text-align: left;"
+                                    >
+                                      Total
+                                    </p>
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%; border-bottom: #eb921d solid 1px">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin: 2px 0; text-align: left;"
+                                    >
+                                    
+                                    </p>
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%; border-bottom: #eb921d solid 1px">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin: 2px 0; text-align: left;"
+                                    >
+                                      ${{total}} USD
+                                    </p>
+                                  </td>
+                                </tr>
+                                <!-- amount due -->
+                                <tr>
+                                  <td class="row">
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%; ">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 14px; line-height: 165%; margin: 2px 0; text-align: left;"
+                                    >
+                                      <b> Amount Due </b>
+                                    </p>
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%; ">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin: 2px 0; text-align: left;"
+                                    >
+                                    
+                                    </p>
+                                  </td>
+                                  <td class="row" style="padding: 0 10px; width: 15%; margin-right: 50px;">
+                                    <p
+                                      style="font-family: &#39;Inter&#39;, sans-serif; color: #515856; font-size: 12px; line-height: 165%; margin: 2px 0; text-align: left;"
+                                    >
+                                      ${{amountDue}} USD
+                                    </p>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <!--  -->
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <table cellpadding="0" cellspacing="0" border="0" align="center" width="100%" style="">
+              <tbody>
+                <tr>
+                  <td height="40" style="line-height: 40px"></td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>
