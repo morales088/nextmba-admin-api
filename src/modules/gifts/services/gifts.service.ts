@@ -74,11 +74,41 @@ export class GiftsService {
       }
 
       // insert student course
+      const startingDate = new Date();
+
+      switch (data.course_id) {
+        // Marketing course
+        case 1:
+          startingDate.setDate(3);
+          break;
+
+        // Executive Course
+        case 2:
+          startingDate.setDate(5);
+          break;
+
+        // Tracy Mastermind
+        case 6:
+          startingDate.setDate(17);
+          break;
+
+        // Technology Course
+        case 7:
+          startingDate.setDate(10);
+          break;
+      }
+
+      const expirationDate = new Date(startingDate);
+      expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+
       const studentCourseData = {
         student_id: studentId,
         course_id: data.course_id,
         course_type: 3,
+        starting_date: startingDate,
+        expiration_date: expirationDate,
       };
+
       await this.studentCoursesRepository.insert(studentCourseData);
 
       // insert gift
@@ -110,10 +140,10 @@ export class GiftsService {
     const gifts = await this.getGiftable(data.student_id);
     const recipient = gifts.filter((gift) => gift.payment_id === data.payment_id);
     const newGiftable = data.quantity - recipient[0].recipient.length;
-    
+
     const giftable = {
-      quantity : newGiftable
-    }
+      quantity: newGiftable,
+    };
     return this.giftRepository.updateGift(id, giftable);
   }
 }

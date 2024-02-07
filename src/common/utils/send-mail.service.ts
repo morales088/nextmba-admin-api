@@ -47,14 +47,16 @@ export class SendMailService {
 
     const templateData = {
       // productCode: paymentInfo.product_code,
-      name:paymentInfo.name,
+      name: this.capitalizeFirstLetter(paymentInfo.name),
+      username: paymentInfo.email,
       productName: paymentInfo.productName,
       country: paymentInfo.country,
-      paymentAmount: paymentInfo.price,
+      paymentAmount: Number(paymentInfo.price).toFixed(2),
       paymentDate: formattedDate,
       referenceNumber: paymentInfo.reference_id ?? '',
       contactNumber: paymentInfo.contact_number ?? '',
       quantity: 1,
+      amount: paymentInfo.price * 1,
     };
     
     const emailContent = template(templateData);
@@ -110,5 +112,9 @@ export class SendMailService {
       subject: 'Course Information',
       html: emailContent,
     });
+  }
+
+  capitalizeFirstLetter(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
   }
 }
