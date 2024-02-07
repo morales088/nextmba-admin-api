@@ -7,7 +7,7 @@ import { PdfService } from 'src/common/utils/pdf.service';
 import { Response } from 'express';
 
 @Controller('payments')
-// @UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'))
 export class PaymentsController {
   constructor(
     private readonly paymentsService: PaymentsService,
@@ -61,13 +61,11 @@ export class PaymentsController {
   }
 
   @Get('/:paymentId')
-@UseGuards(AuthGuard('jwt'))
   async getPayment(@Param('paymentId') paymentId: number) {
     return await this.paymentsService.getPayment(paymentId);
   }
 
   @Get('/')
-@UseGuards(AuthGuard('jwt'))
   async getPayments(
     @Request() req: any,
     @Query('search') search?: string,
@@ -81,7 +79,6 @@ export class PaymentsController {
   }
 
   @Post('/manual')
-@UseGuards(AuthGuard('jwt'))
   async createPayment(@Body() createPaymentDto: CreatePaymentDto) {
     const paymentData = {
       ...createPaymentDto,
@@ -91,7 +88,6 @@ export class PaymentsController {
   }
 
   @Put('/manual/:paymentId')
-@UseGuards(AuthGuard('jwt'))
   async updatePayment(@Param('paymentId') paymentId: number, @Body() updatePaymentDto: UpdatePaymentDto) {
     const paymentData = {
       ...updatePaymentDto,
