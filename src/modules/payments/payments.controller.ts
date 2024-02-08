@@ -7,7 +7,7 @@ import { PdfService } from 'src/common/utils/pdf.service';
 import { Response } from 'express';
 
 @Controller('payments')
-@UseGuards(AuthGuard('jwt'))
+// @UseGuards(AuthGuard('jwt'))
 export class PaymentsController {
   constructor(
     private readonly paymentsService: PaymentsService,
@@ -17,7 +17,7 @@ export class PaymentsController {
   @Get('/generate/:paymentId')
   async generatePdf(@Res() res: Response, @Param('paymentId') paymentId: number): Promise<void> {
     const studentInfo = await this.paymentsService.studentPaymentInfo(paymentId);
-    
+
     const htmlFilePath = 'src/common/templates/invoice.template.html';
 
     const options = {
@@ -49,10 +49,7 @@ export class PaymentsController {
       amountDue: Number(studentInfo.price).toFixed(2),
     };
 
-    const pdfBuffer = await this.pdfService.generatePdfFromHtmlFileWithVariables(
-      htmlFilePath,
-      data,
-    );
+    const pdfBuffer = await this.pdfService.generatePdfFromHtmlFileWithVariables(htmlFilePath, data);
 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', 'attachment; filename=document.pdf');
@@ -61,11 +58,13 @@ export class PaymentsController {
   }
 
   @Get('/:paymentId')
+  @UseGuards(AuthGuard('jwt'))
   async getPayment(@Param('paymentId') paymentId: number) {
     return await this.paymentsService.getPayment(paymentId);
   }
 
   @Get('/')
+  @UseGuards(AuthGuard('jwt'))
   async getPayments(
     @Request() req: any,
     @Query('search') search?: string,
@@ -79,6 +78,7 @@ export class PaymentsController {
   }
 
   @Post('/manual')
+  @UseGuards(AuthGuard('jwt'))
   async createPayment(@Body() createPaymentDto: CreatePaymentDto) {
     const paymentData = {
       ...createPaymentDto,
@@ -88,6 +88,7 @@ export class PaymentsController {
   }
 
   @Put('/manual/:paymentId')
+  @UseGuards(AuthGuard('jwt'))
   async updatePayment(@Param('paymentId') paymentId: number, @Body() updatePaymentDto: UpdatePaymentDto) {
     const paymentData = {
       ...updatePaymentDto,
