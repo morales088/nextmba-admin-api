@@ -3,7 +3,6 @@
 
 npm install;
 npx prisma db push;
-npx prisma generate;
 nest build;
 
 # Store/pull Puppeteer cache with build cache
