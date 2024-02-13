@@ -97,13 +97,22 @@ export class StudentRepository extends AbstractRepository<Students> {
           },
         },
       ],
+      NOT: [],
       created_by: {},
       student_courses: {},
     };
 
-    if (filters.enrolled_to) whereCondition.student_courses = { some: { course_id: filters.enrolled_to } };
-    if (filters.not_enrolled_to)
-      whereCondition.student_courses = { some: {}, none: { course_id: filters.not_enrolled_to } };
+    if (filters.enrolled_to) {
+      whereCondition.student_courses = { some: { course_id: { in: JSON.parse(filters.enrolled_to) } } };
+    }
+
+    if (filters.not_enrolled_to) {
+      // whereCondition.student_courses = { some: {}, none: { course_id: filters.not_enrolled_to } };
+      // whereCondition.student_courses = { some: { course_id: { not: JSON.parse(filters.not_enrolled_to) } } };
+      whereCondition.NOT.push({
+        student_courses: { some: { course_id: { in: JSON.parse(filters.not_enrolled_to) } } },
+      });
+    }
 
     if (admin.role === 2) whereCondition.created_by = { in: [admin.userId] };
 
