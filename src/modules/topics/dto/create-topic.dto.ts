@@ -10,6 +10,10 @@ export class CreateTopicDto {
   @Transform(({ value }) => parseInt(value))
   speaker_id: number;
 
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  applied_study_id: number;
+
   @IsNotEmpty()
   @IsString()
   name: string;
