@@ -52,6 +52,7 @@ model Courses {
   payment_items               Payment_items[]
   product_items               Product_items[]
   student_courses             Student_courses[]
+  certificates                Certificates[]
 }
 
 model Modules {
@@ -347,4 +348,16 @@ model Applied_studies {
   updatedAt   DateTime? @updatedAt
   course      Courses   @relation(fields: [course_id], references: [id])
   Topics      Topics[]
+}
+
+model Certificates {
+  id             Int      @id @default(autoincrement())
+  course_id      Int
+  certificate_id String   @db.Text
+  template       String   @db.Text
+
+  status    Int       @default(1)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  course    Courses   @relation(fields: [course_id], references: [id])
 }
