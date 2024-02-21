@@ -17,6 +17,10 @@ export class AppliedStudiesService {
       return await this.appliedStudiesRepository.appliedStudy(id);
     }
 
+    async getAppliedStudyPerCourse(id:number) {
+      return await this.appliedStudiesRepository.perCourse(id);
+    }
+
     async createStudy(data:CreateStudyDto) {
       return await this.appliedStudiesRepository.insert(data);
     }

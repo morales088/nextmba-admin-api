@@ -35,20 +35,25 @@ export class AppliedStudiesController {
     return await this.appliedStudiesService.getAppliedStudy(appliedId);
   }
 
+  @Get('/course/:courseId')
+  async getPercourse(@Param('courseId') courseId: number) {
+    return await this.appliedStudiesService.getAppliedStudyPerCourse(courseId);
+  }
+
   @Post('/')
-  @UseInterceptors(FileInterceptor('cover_photo'))
+  @UseInterceptors(FileInterceptor('cover_image'))
   async createAppliedStudy(
     @Body() createStudyDto: CreateStudyDto,
     @UploadedFile()
-    cover_photo: Express.Multer.File
+    cover_image: Express.Multer.File
   ) {
     const studyData = {
       ...createStudyDto,
     };
 
-    if (cover_photo) {
+    if (cover_image) {
       const path = 'applied_studies';
-      const fileUrl = await this.awsS3Service.upload(path, cover_photo);
+      const fileUrl = await this.awsS3Service.upload(path, cover_image);
       studyData.cover_photo = fileUrl;
     }
 

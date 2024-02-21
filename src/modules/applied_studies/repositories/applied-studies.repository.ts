@@ -14,7 +14,7 @@ export class AppliedStudiesRepository extends AbstractRepository<Applied_studies
   }
 
   async find(): Promise<Applied_studies> {
-    return this.prisma[this.modelName].findFirst({
+    return this.prisma[this.modelName].findMany({
       include: { course: true },
       orderBy: [
         {
@@ -25,8 +25,20 @@ export class AppliedStudiesRepository extends AbstractRepository<Applied_studies
   }
 
   async appliedStudy(id: number): Promise<Applied_studies> {
-    return this.prisma[this.modelName].findMany({
+    return this.prisma[this.modelName].findFirst({
       where: { id },
+      include: { course: true },
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
+    });
+  }
+
+  async perCourse(id: number): Promise<Applied_studies> {
+    return this.prisma[this.modelName].findMany({
+      where: { course_id : id },
       include: { course: true },
       orderBy: [
         {
