@@ -56,21 +56,21 @@ export class AppliedStudiesController {
   }
 
   @Put('/:studyId')
-  @UseInterceptors(FileInterceptor('cover_photo'))
+  @UseInterceptors(FileInterceptor('cover_image'))
   async updateStudy(
     @Param('studyId') studyId: number,
     @Request() req: any,
     @Body() updateStudyDto: UpdateStudyDto,
     @UploadedFile()
-    cover_photo: Express.Multer.File
+    cover_image: Express.Multer.File
   ) {
     const studyData = {
       ...updateStudyDto,
     };
     
-    if (cover_photo) {
+    if (cover_image) {
       const path = 'files';
-      const fileUrl = await this.awsS3Service.upload(path, cover_photo);
+      const fileUrl = await this.awsS3Service.upload(path, cover_image);
       studyData.cover_photo = fileUrl;
     }
 
