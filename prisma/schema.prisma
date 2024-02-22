@@ -80,19 +80,20 @@ model Modules {
 }
 
 model Speakers {
-  id          Int       @id @default(autoincrement())
-  name        String    @db.VarChar(255)
-  position    String?
-  company     String?
-  description String?
-  profile     String?
-  status      Int       @default(1)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime? @updatedAt
-  email       String?   @default("")
-  language    String    @default("en")
-  password    String?   @default("")
-  topics      Topics[]
+  id              Int               @id @default(autoincrement())
+  name            String            @db.VarChar(255)
+  position        String?
+  company         String?
+  description     String?
+  profile         String?
+  status          Int               @default(1)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime?         @updatedAt
+  email           String?           @default("")
+  language        String            @default("en")
+  password        String?           @default("")
+  topics          Topics[]
+  applied_studies Applied_studies[]
 }
 
 model Translations {
@@ -340,6 +341,7 @@ model Gifts {
 model Applied_studies {
   id          Int       @id @default(autoincrement())
   course_id   Int
+  speaker_id  Int?
   name        String
   description String?
   cover_photo String?
@@ -347,14 +349,15 @@ model Applied_studies {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime? @updatedAt
   course      Courses   @relation(fields: [course_id], references: [id])
+  speaker     Speakers?  @relation(fields: [speaker_id], references: [id])
   Topics      Topics[]
 }
 
 model Certificates {
-  id             Int      @id @default(autoincrement())
+  id             Int    @id @default(autoincrement())
   course_id      Int
-  certificate_id String   @db.Text
-  template       String   @db.Text
+  certificate_id String @db.Text
+  template       String @db.Text
 
   status    Int       @default(1)
   createdAt DateTime  @default(now())

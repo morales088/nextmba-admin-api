@@ -7,6 +7,10 @@ export class UpdateStudyDto {
   // course_id: number;
 
   @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  speaker_id: number;
+
+  @IsOptional()
   @IsString()
   name: string;
 
