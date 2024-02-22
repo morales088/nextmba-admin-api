@@ -26,7 +26,7 @@ export class AppliedStudiesRepository extends AbstractRepository<Applied_studies
 
   async appliedStudy(id: number): Promise<Applied_studies> {
     return this.prisma[this.modelName].findFirst({
-      where: { id },
+      where: { id, status : 1 },
       include: { course: true },
       orderBy: [
         {
