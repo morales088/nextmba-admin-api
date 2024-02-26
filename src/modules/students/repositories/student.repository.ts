@@ -46,7 +46,18 @@ export class StudentRepository extends AbstractRepository<Students> {
     const skipAmount = (pageNumber - 1) * perPage;
     const searchData = search ?? '';
 
-    let whereCondition = {
+    interface WhereCondition {
+      OR: any;
+      NOT?: any;
+      created_by?: any;
+      student_courses?: any;
+      country?: string;
+      company?: string;
+      phone?: string;
+      position?: string;
+    }
+
+    let whereCondition: WhereCondition = {
       OR: [
         {
           email: {
@@ -72,47 +83,19 @@ export class StudentRepository extends AbstractRepository<Students> {
             mode: 'insensitive',
           },
         },
-        {
-          country: {
-            contains: filters.country,
-            mode: 'insensitive',
-          },
-        },
-        {
-          company: {
-            contains: filters.company,
-            mode: 'insensitive',
-          },
-        },
-        {
-          phone: {
-            contains: filters.phone,
-            mode: 'insensitive',
-          },
-        },
-        {
-          position: {
-            contains: filters.position,
-            mode: 'insensitive',
-          },
-        },
       ],
-      NOT: [],
-      created_by: {},
-      student_courses: {},
     };
 
-    if (filters.enrolled_to) {
-      whereCondition.student_courses = { some: { course_id: { in: JSON.parse(filters.enrolled_to) } } };
-    }
+    if (filters.country) whereCondition.country = filters.country;
+    if (filters.company) whereCondition.company = filters.company;
+    if (filters.phone) whereCondition.phone = filters.phone;
+    if (filters.position) whereCondition.position = filters.position;
 
-    if (filters.not_enrolled_to) {
-      // whereCondition.student_courses = { some: {}, none: { course_id: filters.not_enrolled_to } };
-      // whereCondition.student_courses = { some: { course_id: { not: JSON.parse(filters.not_enrolled_to) } } };
-      whereCondition.NOT.push({
-        student_courses: { some: { course_id: { in: JSON.parse(filters.not_enrolled_to) } } },
-      });
-    }
+    if (filters.enrolled_to)
+      whereCondition.student_courses = { some: { course_id: { in: JSON.parse(filters.enrolled_to) } } };
+
+    if (filters.not_enrolled_to)
+      whereCondition.NOT = [{ student_courses: { some: { course_id: { in: JSON.parse(filters.not_enrolled_to) } } } }];
 
     if (admin.role === 2) whereCondition.created_by = { in: [admin.userId] };
 
