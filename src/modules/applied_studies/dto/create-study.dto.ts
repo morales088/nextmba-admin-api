@@ -7,6 +7,10 @@ export class CreateStudyDto {
   course_id: number;
 
   @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
+  speaker_id: number;
+
+  @IsNotEmpty()
   @IsString()
   name: string;
 
