@@ -22,6 +22,7 @@ import { SendMailService } from './common/utils/send-mail.service';
 import { GiftsModule } from './modules/gifts/gifts.module';
 import { MeetingsModule } from './modules/meetings/meetings.module';
 import { AppliedStudiesModule } from './modules/applied_studies/applied_studies.module';
+import { BillingsModule } from './modules/billings/billings.module';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -61,6 +62,7 @@ dotenv.config();
     GiftsModule,
     MeetingsModule,
     AppliedStudiesModule,
+    BillingsModule,
   ],
   controllers: [],
   providers: [SendMailService],

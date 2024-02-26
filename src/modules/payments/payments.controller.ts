@@ -5,13 +5,15 @@ import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { PdfService } from 'src/common/utils/pdf.service';
 import { Response } from 'express';
+import { BillingRepository } from '../billings/repositories/billing.repository';
 
 @Controller('payments')
 // @UseGuards(AuthGuard('jwt'))
 export class PaymentsController {
   constructor(
     private readonly paymentsService: PaymentsService,
-    private readonly pdfService: PdfService
+    private readonly pdfService: PdfService,
+    private readonly billingRepository: BillingRepository
   ) {}
 
   @Get('/generate/:paymentId')
@@ -19,6 +21,14 @@ export class PaymentsController {
     const studentInfo = await this.paymentsService.studentPaymentInfo(paymentId);
 
     const htmlFilePath = 'src/common/templates/invoice.template.html';
+
+    const studentBillingInfo = await this.billingRepository.findByStudId(studentInfo.student_id);
+    const billingName =
+      studentBillingInfo && studentBillingInfo.name ? studentBillingInfo.name : studentInfo.student.name;
+    const billingEmail =
+      studentBillingInfo && studentBillingInfo.email ? studentBillingInfo.email : studentInfo.student.email;
+    const billingAddress =
+      studentBillingInfo && studentBillingInfo.address ? studentBillingInfo.address : (studentInfo.student.country ?? '');
 
     const options = {
       year: 'numeric',
@@ -35,10 +45,12 @@ export class PaymentsController {
       invoiceNumber: studentInfo.reference_id,
       dateIssue: formattedDate,
       dateDue: formattedDate,
-      studentName: studentInfo.student.name,
-      studentEmail: studentInfo.student.email,
-      studentCountry: studentInfo.student.country ?? '',
+
+      studentName: billingName,
+      studentEmail: billingEmail,
+      studentCountry: billingAddress,
       studentNumber: studentInfo.student.phone ?? '',
+
       productInfo: `$${Number(studentInfo.price).toFixed(2)} USD due ${formattedDate}`,
       description: studentInfo.product.name,
       qty: 1,

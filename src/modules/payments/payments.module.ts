@@ -15,6 +15,7 @@ import { StudentCoursesRepository } from '../students/repositories/student_cours
 import { SendMailService } from 'src/common/utils/send-mail.service';
 import { PaymentAffiliateRepository } from './repositories/payment_affiliate.repository';
 import { PdfService } from 'src/common/utils/pdf.service';
+import { BillingRepository } from '../billings/repositories/billing.repository';
 
 @Module({
   imports: [PrismaModule],
@@ -32,6 +33,7 @@ import { PdfService } from 'src/common/utils/pdf.service';
     ApiKeyGuard,
     StudentCoursesRepository,
     PaymentAffiliateRepository,
+    BillingRepository,
     PdfService
   ],
 })
