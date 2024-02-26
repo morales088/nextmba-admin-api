@@ -7,6 +7,10 @@ export class UpdateTopicDto {
   speaker_id: number;
 
   @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  applied_study_id: number;
+
+  @IsOptional()
   @IsString()
   name: string;
 
