@@ -33,7 +33,7 @@ export class BillingRepository extends AbstractRepository<Billing_infos> {
   }
 
   async findByStudId(id: number) {
-    return this.prisma[this.modelName].findFirst({
+    return this.prisma[this.modelName].findMany({
       where: { student_id : id, status:1 },
       include: { student: true },
     });
