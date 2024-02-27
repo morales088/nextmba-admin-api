@@ -25,4 +25,8 @@ export class BillingsService {
         return await this.billingRepository.update(id, data)
     }
 
+    async getStudentBillings(studentId:number) {
+        return await this.billingRepository.findByStudId(studentId)
+    }
+
 }

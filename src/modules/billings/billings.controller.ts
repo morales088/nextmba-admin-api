@@ -42,4 +42,9 @@ export class BillingsController {
     return await this.billingsService.updateBilling(billingId, billingData);
   }
 
+  @Get('/student/:studentId')
+  async getStudentBillings(@Param('studentId') studentId: number) {
+    return await this.billingsService.getStudentBillings(studentId);
+  }
+
 }
