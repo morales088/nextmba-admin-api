@@ -42,7 +42,7 @@ export class StudentRepository extends AbstractRepository<Students> {
     filters,
     pageNumber: number = 1,
     perPage: number = 10
-  ): Promise<Students> {
+  ): Promise<Students[]> {
     const skipAmount = (pageNumber - 1) * perPage;
     const searchData = search ?? '';
 
@@ -101,7 +101,7 @@ export class StudentRepository extends AbstractRepository<Students> {
 
     return this.prisma[this.modelName].findMany({
       where: whereCondition,
-      include: { student_courses: { where: { status: 1 } } },
+      include: { student_courses: { where: { status: 1 }, include: { course: true } } },
       orderBy: [
         {
           id: 'desc',
