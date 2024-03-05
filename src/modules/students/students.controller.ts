@@ -1,10 +1,13 @@
-import { Body, Controller, Get, Param, Post, Put, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, Request, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { StudentsService } from './services/students.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { UpdateStudentCourseDto } from './dto/update-studentCourse.dto';
 import { CreateStudentCourseDto } from './dto/create-studentCourse.dto';
+import { Response } from 'express';
+import * as excel from 'exceljs';
+import { Students } from '@prisma/client';
 
 @Controller('students')
 @UseGuards(AuthGuard('jwt'))
@@ -42,6 +45,7 @@ export class StudentsController {
       position,
       account_type,
     };
+
     return await this.studentsService.getStudents(admin, search, filters, pageNumber, perPage);
   }
 
@@ -97,5 +101,90 @@ export class StudentsController {
   @Post('/email-credentials')
   async emailCredentials() {
     return await this.studentsService.emailStudents();
+  }
+
+  @Get('/download/csv')
+  async downloadStudents(
+    @Res() res: Response,
+    @Request() req: any,
+    @Query('search') search?: string,
+    @Query('per_page') per_page?: number,
+    @Query('enrolled_to') enrolled_to?: string,
+    @Query('not_enrolled_to') not_enrolled_to?: string,
+    @Query('country') country?: string,
+    @Query('company') company?: string,
+    @Query('phone') phone?: string,
+    @Query('position') position?: string,
+    @Query('account_type') account_type?: number
+  ) {
+    const admin = req.user;
+    const pageNumber = 1;
+    const perPage = 10;
+    const filters = {
+      enrolled_to,
+      not_enrolled_to,
+      country,
+      company,
+      phone,
+      position,
+      account_type,
+    };
+
+    const students = await this.studentsService.getStudents(admin, search, filters, pageNumber, perPage);
+
+    const workbook = new excel.Workbook();
+    const worksheet = workbook.addWorksheet('Sheet1');
+
+    // Add data to the worksheet
+    worksheet.columns = [
+      { header: 'ID', key: 'id', width: 10 },
+      { header: 'Name', key: 'name', width: 10 },
+      { header: 'Email', key: 'email', width: 10 },
+      { header: 'Phone', key: 'phone', width: 10 },
+      { header: 'Country', key: 'country', width: 10 },
+      { header: 'Company', key: 'company', width: 10 },
+      { header: 'Position', key: 'position', width: 10 },
+      { header: 'Language', key: 'language', width: 10 },
+      { header: 'Afiliate Access', key: 'affiliate_access', width: 10 },
+      { header: 'Last Login', key: 'last_login', width: 10 },
+      { header: 'Date Created', key: 'date_created', width: 10 },
+      { header: 'Created By', key: 'created_by', width: 10 },
+      { header: 'Status', key: 'status', width: 10 },
+      { header: 'Courses', key: 'courses', width: 10 },
+    ];
+
+    const results = students as [any]
+
+    results.forEach((student) => {
+      const status = student.status == 1 ? 'active' : 'deleted'
+      const affiliate_access = student.affiliate_access == 1 ? true : false
+
+      const courses =  student.student_courses.map(obj => obj.course.name).join(', ');
+
+      worksheet.addRow({
+        id: student.id,
+        name: student.name,
+        email: student.email,
+        phone: student.phone,
+        country: student.country,
+        company: student.company,
+        position: student.position,
+        affiliate_access: affiliate_access,
+        last_login: student.last_login ? student.last_login.toLocaleString() : '',
+        date_created: student.createdAt.toLocaleString(),
+        status: status,
+        courses: courses,
+      });
+    });
+
+    // Set up the response headers
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename=student.csv');
+
+    // Stream the workbook to the response
+    workbook.csv.write(res);
+
+    // End the response
+    res.end();
   }
 }
