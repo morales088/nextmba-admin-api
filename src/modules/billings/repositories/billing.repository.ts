@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, UseGuards } from '@nestjs/common';
 import { AbstractRepository } from 'src/common/repositories/abstract.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { Affiliates, Billing_infos, Files } from '@prisma/client';
+import { UpdateBillingDto } from '../dto/update-billing.dto';
 
 @Injectable()
 export class BillingRepository extends AbstractRepository<Billing_infos> {
@@ -39,17 +40,17 @@ export class BillingRepository extends AbstractRepository<Billing_infos> {
     });
   }
 
-  // async updateAffiliate(id: number, data: UpdateAffiliateDto): Promise<Affiliates> {
-  //   const affiliate = await this.findById(id);
+  async updateBilling(id: number, data: UpdateBillingDto): Promise<Affiliates> {
+    const billing = await this.findById(id);
 
-  //   if (!affiliate) {
-  //     throw new BadRequestException('affiliate does not exist.');
-  //   }
+    if (!billing) {
+      throw new BadRequestException('billing does not exist.');
+    }
 
-  //   return this.prisma[this.modelName].update({
-  //     where: { id: id },
-  //     data: data,
-  //     include: { student: true },
-  //   });
-  // }
+    return this.prisma[this.modelName].update({
+      where: { id: id },
+      data: data,
+      include: { student: true },
+    });
+  }
 }

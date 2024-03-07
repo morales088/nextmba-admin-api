@@ -22,7 +22,7 @@ export class BillingsService {
     }
 
     async updateBilling(id:number, data: UpdateBillingDto) {
-        return await this.billingRepository.update(id, data)
+        return await this.billingRepository.updateBilling(id, data)
     }
 
     async getStudentBillings(studentId:number) {
