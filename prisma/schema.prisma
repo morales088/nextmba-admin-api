@@ -185,6 +185,7 @@ model Students {
   telegram           String?
   website            String?
   library_access     Int                  @default(0)
+  is_translator      Boolean              @default(false)
   linkedIn           String?
   chat_access        Boolean              @default(true)
   chat_moderator     Boolean              @default(false)

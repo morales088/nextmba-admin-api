@@ -49,6 +49,9 @@ export class CreateStudentDto {
   library_access : number
 
   @IsOptional()
+  is_translator: boolean;
+
+  @IsOptional()
   @IsString()
   profile_picture: string;
 
