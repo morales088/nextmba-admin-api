@@ -4,6 +4,7 @@ import { HashService } from 'src/common/utils/hash.service';
 import { PaymentRepository } from 'src/modules/payments/repositories/payment.repository';
 import { StudentCoursesRepository } from '../repositories/student_courses.repository';
 import { SendMailService } from 'src/common/utils/send-mail.service';
+import { FilterOptions } from '../interfaces/student.interface';
 
 @Injectable()
 export class StudentsService {
@@ -116,7 +117,7 @@ export class StudentsService {
   async emailStudents() {
     const result = await this.studentRepository.studentEmail();
     const students = result as unknown as { id: number; email: string; email_sent: boolean }[];
-    
+
     try {
       for (const student of students) {
         if (student.email_sent === false) {
@@ -143,5 +144,38 @@ export class StudentsService {
     } finally {
       return { message: 'Credentiats successfully sent to students' };
     }
+  }
+
+  async getStudentByEmail(email: string) {
+    return this.studentRepository.findByEmail(email);
+  }
+
+  async getStudentsCreatedLast24Hours() {
+    const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const lastXDays = new Date(Date.now() - 6 * 24 * 60 * 60 * 1000);
+
+    const dateFilterOptions: FilterOptions = {
+      field: 'createdAt',
+      value: lastXDays,
+      comparisonOperator: 'gte',
+    };
+
+    const students = await this.studentRepository.findStudentsByDateFilter(dateFilterOptions);
+
+    return students;
+  }
+
+  async getExpiredCourseLast24Hours() {
+    const currentDate = new Date();
+
+    // Subtract 24 hours from the current date
+    const twentyHoursAgo = new Date(currentDate);
+    // twentyHoursAgo.setHours(currentDate.getHours() - 24);
+    twentyHoursAgo.setMonth(currentDate.getMonth() - 2);
+    console.log("💡 ~ twentyHoursAgo:", twentyHoursAgo)
+
+    const student_courses = await this.studentCoursesRepository.findExpiredCourses(twentyHoursAgo, currentDate);
+
+    return student_courses;
   }
 }
