@@ -1,38 +1,40 @@
 import { Controller, Get } from '@nestjs/common';
 import { CronService } from './services/cron.service';
 import { Public } from 'src/common/decorators/public.decorator';
+import { CourseGroupService } from '../../common/utils/course-group.service';
+import { MailerLiteService } from 'src/common/mailerlite/mailerlite.service';
 
 @Controller('cron')
 export class CronController {
-  constructor(private readonly cronService: CronService) {}
+  constructor(
+    private readonly cronService: CronService,
+    private readonly mailerLiteService: MailerLiteService,
+    private readonly courseGroupService: CourseGroupService
+  ) {}
 
   @Public()
-  @Get('/')
+  @Get('/info')
   async getCronInfo() {
-    return this.cronService.cronJobInfo();
+    // return this.cronService.cronJobInfo();
+    return this.mailerLiteService.getAllSubscriberGroups();
   }
 
   @Public()
-  @Get('/export-student-data')
+  @Get('/test')
+  async test() {
+    // this.courseGroupService.addMapping('2', 9994268874847133333);
+    return this.courseGroupService.getCourseGroupMapping()['2'];
+  }
+
+  @Public()
+  @Get('/export-data')
   async exportStudentData() {
     return this.cronService.runExportStudentData();
   }
 
   @Public()
-  @Get('/export-expired-courses')
-  async exportExpiredCoursesData() {
-    return this.cronService.runExportExpiredStudentCourseData();
-  }
-
-  @Public()
-  @Get('/add-students-to-group')
-  async addStudentsToGroups() {
+  @Get('/process-data')
+  async processStudentData() {
     return this.cronService.runProcessStudentData();
-  }
-
-  @Public()
-  @Get('/remove-students-to-group')
-  async removeStudentsToGroups() {
-    return this.cronService.removeStudentsToGroups();
   }
 }

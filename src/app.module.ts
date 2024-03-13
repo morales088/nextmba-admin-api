@@ -75,6 +75,6 @@ dotenv.config();
     CronModule,
   ],
   controllers: [],
-  providers: [SendMailService, MailerliteCronService],
+  providers: [SendMailService],
 })
 export class AppModule {}

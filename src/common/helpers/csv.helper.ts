@@ -3,18 +3,9 @@ import * as fs from 'fs';
 import * as fastCSV from 'fast-csv';
 import { Logger } from '@nestjs/common';
 import { randomBytes } from 'crypto';
+import { createFolderIfNotExists, getFilesCSVFolderPath } from 'src/common/helpers/path.helper';
 
-const logger = new Logger('SaveToCsvHelper');
-
-export const getFilesFolderPath = () => {
-  return join('src', 'common', 'files');
-};
-
-export const createFolderIfNotExists = (folderPath: string) => {
-  if (!fs.existsSync(folderPath)) {
-    fs.mkdirSync(folderPath, { recursive: true });
-  }
-};
+const logger = new Logger('SaveToCSVHelper');
 
 export const saveToCSV = async (fileName: string, data: any[]) => {
   if (data.length === 0) {
@@ -22,7 +13,7 @@ export const saveToCSV = async (fileName: string, data: any[]) => {
     return;
   }
 
-  const filesFolderPath = join('src', 'common', 'files');
+  const filesFolderPath = getFilesCSVFolderPath();
   const filePath = join(filesFolderPath, fileName);
 
   createFolderIfNotExists(filesFolderPath);
@@ -34,16 +25,16 @@ export const saveToCSV = async (fileName: string, data: any[]) => {
     .write(data, { headers: false, includeEndRowDelimiter: true })
     .pipe(writeStream)
     .on('finish', () => {
-      logger.log(`CSV file saved successfully at: ${filePath}`);
+      logger.log(`CSV file saved successfully`);
     });
 };
 
 export const processAndRemoveFirstEntry = async (fileName: string, processFirstEntry: (row: any) => void) => {
-  const filePath = join(getFilesFolderPath(), fileName);
+  const filePath = join(getFilesCSVFolderPath(), fileName);
   const readStream = fs.createReadStream(filePath);
 
   const tempFileName = `temp-data-${randomBytes(4).toString('hex')}.csv`;
-  const tempFilePath = join(getFilesFolderPath(), tempFileName);
+  const tempFilePath = join(getFilesCSVFolderPath(), tempFileName);
 
   let isFirstEntryProcessed = false;
 
@@ -62,12 +53,11 @@ export const processAndRemoveFirstEntry = async (fileName: string, processFirstE
         }
       })
       .on('end', async () => {
+        console.log('');
         logger.log('CSV processing complete.');
 
         // Close the write stream before resolving the promise
         writeStream.end(() => {
-          logger.log('Write stream closed.');
-
           // Rename the temp file to replace the original file
           fs.rename(tempFilePath, filePath, (error) => {
             if (error) {

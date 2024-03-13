@@ -172,7 +172,6 @@ export class StudentsService {
     const twentyHoursAgo = new Date(currentDate);
     // twentyHoursAgo.setHours(currentDate.getHours() - 24);
     twentyHoursAgo.setMonth(currentDate.getMonth() - 2);
-    console.log("💡 ~ twentyHoursAgo:", twentyHoursAgo)
 
     const student_courses = await this.studentCoursesRepository.findExpiredCourses(twentyHoursAgo, currentDate);
 
