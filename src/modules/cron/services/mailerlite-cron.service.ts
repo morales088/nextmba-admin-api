@@ -1,10 +1,12 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { StudentsService } from '../../students/services/students.service';
-import { processAndRemoveFirstEntry, saveToCSV } from '../helpers/csv.helper';
+import { processAndRemoveFirstEntry, saveToCSV } from '../../../common/helpers/csv.helper';
 import { MailerLiteService } from 'src/common/mailerlite/mailerlite.service';
 import { courseGroupMapping } from '../helpers/course-group.helper';
 import { AccountStatus, AccountType } from 'src/common/constants/enum';
 import validator from 'validator';
+import { CourseGroupService } from 'src/common/utils/course-group.service';
+import { toString } from 'lodash';
 
 @Injectable()
 export class MailerliteCronService {
@@ -12,7 +14,8 @@ export class MailerliteCronService {
 
   constructor(
     private readonly studentService: StudentsService,
-    private readonly mailerLiteService: MailerLiteService
+    private readonly mailerLiteService: MailerLiteService,
+    private readonly courseGroupService: CourseGroupService
   ) {}
 
   async exportStudentData() {
@@ -71,7 +74,9 @@ export class MailerliteCronService {
         const student = await this.studentService.getStudentByEmail(studentEmail);
         const studentCourses = student.student_courses;
 
-        const allStudentGroups = Object.values(courseGroupMapping);
+        const allStudentGroups = Object.values(this.courseGroupService.getCourseGroupMapping()).map((values) =>
+          values.toString()
+        );
 
         if (student.status !== AccountStatus.INACTIVE) {
           // Check if student account type is pro account: then add to all student groups
@@ -79,8 +84,10 @@ export class MailerliteCronService {
             await this.mailerLiteService.assignSubscriberToGroups({ email: studentEmail, groups: allStudentGroups });
           } else {
             for (const studentCourse of studentCourses) {
-              const courseId = studentCourse.course_id;
-              const courseGroupId = courseGroupMapping[courseId];
+              const courseId = toString(studentCourse.course_id);
+              console.log("💡 ~ courseId:", courseId)
+              const courseGroupId = toString(this.courseGroupService.getCourseGroupMapping()[courseId]);
+              console.log("💡 ~ courseGroupId:", courseGroupId)
 
               await this.mailerLiteService.assignSubscriberToGroup(subscriber.id, courseGroupId);
             }

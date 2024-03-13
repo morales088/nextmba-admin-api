@@ -21,38 +21,18 @@ export class CronService {
       this.logger.log('Running: Export students data');
 
       await this.mailerliteCronService.exportStudentData();
+      this.delay(1000);
 
+      await this.mailerliteCronService.exportExpiredStudentCourse();
       this.delay(500);
+
       console.log('');
       this.logger.log('Cron job is done.');
 
       const job = this.schedulerRegistry.getCronJob('export-students-data');
-      this.logger.log(`Next Scheduled Date: ${job.nextDate().toISODate()}`);
+      this.logger.log(`Next Scheduled Date: ${job.nextDate()}`);
     } catch (error) {
       this.logger.error(`Error in export-students-data cron job: ${error.message}`);
-    }
-  }
-
-  @Cron(CronExpression.EVERY_12_HOURS, {
-    name: 'export-expired-courses',
-    timeZone: 'Asia/Manila',
-  })
-  async runExportExpiredStudentCourseData() {
-    try {
-      console.log('');
-      this.logger.log('Running: Export expired student courses data');
-      const students = await this.mailerliteCronService.exportExpiredStudentCourse();
-
-      this.delay(500);
-      console.log('');
-      this.logger.log('Cron job is done.');
-
-      const job = this.schedulerRegistry.getCronJob('export-expired-courses');
-      this.logger.log(`Next Scheduled Date: ${job.nextDate().toISODate()}`);
-
-      return students;
-    } catch (error) {
-      this.logger.error(`Error in export-expired-courses cron job: ${error.message}`);
     }
   }
 
@@ -66,38 +46,18 @@ export class CronService {
       this.logger.log('Running: Process student data');
 
       await this.mailerliteCronService.addStudentsToGroups();
+      this.delay(1000);
 
+      await this.mailerliteCronService.removeStudentsToGroups();
       this.delay(500);
+
       console.log('');
       this.logger.log('Cron job is done.');
 
       const job = this.schedulerRegistry.getCronJob('process-student-data');
-      this.logger.log(`Next Scheduled Date: ${job.nextDate().toISODate()}`);
+      this.logger.log(`Next Scheduled Date: ${job.nextDate()}`);
     } catch (error) {
       this.logger.error(`Error in process-student-data cron job: ${error.message}`);
-    }
-  }
-
-  @Cron(CronExpression.EVERY_10_MINUTES, {
-    name: 'remove-students-to-group',
-    timeZone: 'Asia/Manila',
-  })
-  async removeStudentsToGroups() {
-    try {
-      console.log('');
-      this.logger.log('Running: Remove student to mailerlite groups');
-      const data = await this.mailerliteCronService.removeStudentsToGroups();
-
-      this.delay(500);
-      console.log('');
-      this.logger.log('Cron job is done.');
-
-      const job = this.schedulerRegistry.getCronJob('remove-students-to-group');
-      this.logger.log(`Next Scheduled Date: ${job.nextDate().toISODate()}`);
-
-      return data;
-    } catch (error) {
-      this.logger.error(`Error in remove-students-to-group cron job: ${error.message}`);
     }
   }
 
