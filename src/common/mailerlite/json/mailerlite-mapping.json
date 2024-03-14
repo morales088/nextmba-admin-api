@@ -1,0 +1,17 @@
+{
+  "subscriberGroup": {
+    "0": "100004012297815517",
+    "1": "99942732629279909",
+    "2": "99942699671487499",
+    "3": "99942718977869037",
+    "6": "99942678588818597",
+    "7": "99942688748471825"
+  },
+  "startDateField": {
+    "1": "marketing_start_date",
+    "2": "executive_start_date",
+    "3": "bonus_lecture_start_date",
+    "6": "mastermind_start_date",
+    "7": "technology_start_date"
+  }
+}

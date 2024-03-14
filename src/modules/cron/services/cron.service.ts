@@ -20,10 +20,10 @@ export class CronService {
       console.log('');
       this.logger.log('Running: Export students data');
 
-      await this.mailerliteCronService.exportStudentData();
+      // await this.mailerliteCronService.exportStudentData();
       this.delay(1000);
 
-      await this.mailerliteCronService.exportExpiredStudentCourse();
+      // await this.mailerliteCronService.exportExpiredStudentCourse();
       this.delay(500);
 
       console.log('');

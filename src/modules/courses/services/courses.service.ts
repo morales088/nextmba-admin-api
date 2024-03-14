@@ -4,11 +4,9 @@ import { CourseRepository } from '../repositories/course.repository';
 
 @Injectable()
 export class CoursesService {
-  constructor(
-    private readonly courseRepository: CourseRepository
-  ) {}
+  constructor(private readonly courseRepository: CourseRepository) {}
 
-  async getCourse(id:number) {
+  async getCourse(id: number) {
     return this.courseRepository.findById(id);
   }
 
@@ -22,5 +20,18 @@ export class CoursesService {
 
   async updateCourse(id: number, data) {
     return this.courseRepository.updateCourse(id, data);
+  }
+
+  async getAllCourseStartingDates() {
+    const activeCourses = await this.courseRepository.findAll();
+
+    const startingDates = activeCourses
+      .filter((course) => course.paid !== 0 && course.status !== 0)
+      .reduce((acc, course) => {
+        acc[course.id] = course.starting_date;
+        return acc;
+      }, {});
+
+    return startingDates;
   }
 }

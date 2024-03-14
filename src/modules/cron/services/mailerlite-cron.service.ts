@@ -2,11 +2,12 @@ import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common
 import { StudentsService } from '../../students/services/students.service';
 import { processAndRemoveFirstEntry, saveToCSV } from '../../../common/helpers/csv.helper';
 import { MailerLiteService } from 'src/common/mailerlite/mailerlite.service';
-import { courseGroupMapping } from '../helpers/course-group.helper';
+// import { courseGroupMapping, courseStartDateKeyMapping } from '../helpers/course-group.helper';
 import { AccountStatus, AccountType } from 'src/common/constants/enum';
 import validator from 'validator';
-import { CourseGroupService } from 'src/common/utils/course-group.service';
 import { toString } from 'lodash';
+import { MailerliteMappingService } from 'src/common/mailerlite/mailerlite-mapping.service';
+import { CoursesService } from 'src/modules/courses/services/courses.service';
 
 @Injectable()
 export class MailerliteCronService {
@@ -14,8 +15,9 @@ export class MailerliteCronService {
 
   constructor(
     private readonly studentService: StudentsService,
+    private readonly courseService: CoursesService,
     private readonly mailerLiteService: MailerLiteService,
-    private readonly courseGroupService: CourseGroupService
+    private readonly mailerliteMappingService: MailerliteMappingService
   ) {}
 
   async exportStudentData() {
@@ -64,30 +66,59 @@ export class MailerliteCronService {
     return studentCourses;
   }
 
+  async getCourseStartDateMappings() {
+    const courseStartingDate = await this.courseService.getAllCourseStartingDates();
+    const startDateFields = this.mailerliteMappingService.getMapping('startDateField');
+    const subscriberGroups = Object.values(this.mailerliteMappingService.getMapping('subscriberGroup'));
+
+    const mappedDates: { [key: string]: string } = {};
+
+    for (const key in startDateFields) {
+      if (courseStartingDate.hasOwnProperty(key)) {
+        const field = startDateFields[key];
+        mappedDates[field] = courseStartingDate[key];
+      }
+    }
+
+    return { courseStartingDates: mappedDates, allSubscriberGroups: subscriberGroups };
+  }
+
   async addStudentsToGroups() {
     try {
       await processAndRemoveFirstEntry('students-to-add.csv', async (firstRow) => {
         const [studentEmail] = firstRow;
 
-        const subscriber = await this.mailerLiteService.addNewSubscriber({ email: studentEmail });
+        const subscriber = await this.mailerLiteService.createOrUpdateSubscriber({ email: studentEmail });
 
         const student = await this.studentService.getStudentByEmail(studentEmail);
         const studentCourses = student.student_courses;
 
-        const allStudentGroups = Object.values(this.courseGroupService.getCourseGroupMapping()).map((values) =>
-          values.toString()
-        );
-
         if (student.status !== AccountStatus.INACTIVE) {
           // Check if student account type is pro account: then add to all student groups
-          if (student.account_type === AccountType.PRO) {
-            await this.mailerLiteService.assignSubscriberToGroups({ email: studentEmail, groups: allStudentGroups });
+          if (student.account_type === AccountType.REGULAR) {
+            // if (student.account_type === AccountType.PRO) {
+            const { courseStartingDates, allSubscriberGroups } = await this.getCourseStartDateMappings();
+
+            await this.mailerLiteService.assignSubscriberToGroups({
+              email: studentEmail,
+              fields: courseStartingDates,
+              groups: allSubscriberGroups,
+            });
+
+            this.logger.log(`Student successfully added to all groups: ${studentEmail}`);
           } else {
             for (const studentCourse of studentCourses) {
               const courseId = toString(studentCourse.course_id);
-              console.log("💡 ~ courseId:", courseId)
-              const courseGroupId = toString(this.courseGroupService.getCourseGroupMapping()[courseId]);
-              console.log("💡 ~ courseGroupId:", courseGroupId)
+              const courseGroupId = this.mailerliteMappingService.getMapping('subscriberGroup')[courseId];
+
+              const courseStartDate = studentCourse.starting_date;
+              const startDateKeyName = this.mailerliteMappingService.getMapping('startDateField')[courseId];
+              const courseStartDateField = { [`${startDateKeyName}`]: courseStartDate };
+
+              await this.mailerLiteService.createOrUpdateSubscriber({
+                email: studentEmail,
+                fields: courseStartDateField,
+              });
 
               await this.mailerLiteService.assignSubscriberToGroup(subscriber.id, courseGroupId);
             }
@@ -107,11 +138,11 @@ export class MailerliteCronService {
     try {
       await processAndRemoveFirstEntry('students-to-remove.csv', async (firstRowData) => {
         // Process the first row here
-        const [courseId, studentEmail, studentStatus] = firstRowData;
+        const [courseId, courseStartDate, studentEmail, studentStatus] = firstRowData;
 
-        const subscriber = await this.mailerLiteService.addNewSubscriber({ email: studentEmail });
+        const subscriber = await this.mailerLiteService.createOrUpdateSubscriber({ email: studentEmail });
 
-        const courseGroupId = courseGroupMapping[courseId];
+        const courseGroupId = this.mailerliteMappingService.getMapping('subscriberGroup')[courseId];
 
         if (studentStatus === AccountStatus.ACTIVE) {
           await this.mailerLiteService.unAssignSubscriberToGroup(subscriber.id, courseGroupId);
