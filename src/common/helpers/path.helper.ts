@@ -5,8 +5,8 @@ export const getFilesCSVFolderPath = () => {
   return join('src', 'common', 'files', 'csv');
 };
 
-export const getCourseGroupMappingFolderPath = (fileName: string) => {
-  return join('src', 'common', 'files', 'json', fileName);
+export const getMailerliteMappingFolderPath = (fileName: string) => {
+  return join('src', 'common', 'mailerlite', 'json', fileName);
 };
 
 export const createFolderIfNotExists = (folderPath: string) => {

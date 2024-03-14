@@ -19,7 +19,14 @@ export class MailerLiteService {
   }
 
   async getAllSubscribers(): Promise<ListSubscribersResponse | any> {
-    return this.mailerLite.subscribers.get({ filter: { status: 'active' } });
+    return this.mailerLite.subscribers
+      .get({ filter: { status: 'active' } })
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error) => {
+        throw new BadRequestException(error);
+      });
   }
 
   async getAllSubscriberGroups(): Promise<ListAllGroupsResponse> {
@@ -37,11 +44,12 @@ export class MailerLiteService {
       });
   }
 
-  async addNewSubscriber(studentData: CreateOrUpdateSubscriberParams): Promise<SubscriberObject> {
+  async createOrUpdateSubscriber(studentData: CreateOrUpdateSubscriberParams): Promise<SubscriberObject> {
     return this.mailerLite.subscribers
       .createOrUpdate(studentData)
       .then((response) => {
         const { data } = response.data;
+        // console.log("💡 ~ data:", data)
         return data;
       })
       .catch((error) => {
@@ -54,6 +62,7 @@ export class MailerLiteService {
       .createOrUpdate(studentData)
       .then((response) => {
         const { data } = response.data;
+        console.log("💡 ~ data:", data)
         return data;
       })
       .catch((error) => {
@@ -76,7 +85,7 @@ export class MailerLiteService {
     return this.mailerLite.groups
       .unAssignSubscriber(subscriberId, groupId)
       .then((response) => {
-        console.log("💡 ~ response.data:", response.data)
+        console.log('💡 ~ response.data:', response.data);
         return response.data;
       })
       .catch((error) => {
