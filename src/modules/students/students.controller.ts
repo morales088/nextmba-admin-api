@@ -108,7 +108,6 @@ export class StudentsController {
     @Res() res: Response,
     @Request() req: any,
     @Query('search') search?: string,
-    @Query('per_page') per_page?: number,
     @Query('enrolled_to') enrolled_to?: string,
     @Query('not_enrolled_to') not_enrolled_to?: string,
     @Query('country') country?: string,
@@ -118,8 +117,6 @@ export class StudentsController {
     @Query('account_type') account_type?: number
   ) {
     const admin = req.user;
-    const pageNumber = 1;
-    const perPage = 10;
     const filters = {
       enrolled_to,
       not_enrolled_to,
@@ -130,8 +127,8 @@ export class StudentsController {
       account_type,
     };
 
-    const students = await this.studentsService.getStudents(admin, search, filters, pageNumber, perPage);
-
+    const students = await this.studentsService.getStudents(admin, search, filters, 1, 1000000000000000000);
+    
     const workbook = new excel.Workbook();
     const worksheet = workbook.addWorksheet('Sheet1');
 
@@ -158,7 +155,7 @@ export class StudentsController {
     results.forEach((student) => {
       const status = student.status == 1 ? 'active' : 'deleted'
       const affiliate_access = student.affiliate_access == 1 ? true : false
-
+      
       const courses =  student.student_courses.map(obj => obj.course.name).join(', ');
 
       worksheet.addRow({
@@ -179,10 +176,10 @@ export class StudentsController {
 
     // Set up the response headers
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename=student.csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=student.xlsx');
 
     // Stream the workbook to the response
-    workbook.csv.write(res);
+    workbook.xlsx.write(res);
 
     // End the response
     res.end();
