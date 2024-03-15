@@ -176,10 +176,10 @@ export class StudentsController {
 
     // Set up the response headers
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename=student.xlsx');
+    res.setHeader('Content-Disposition', 'attachment; filename=student.csv');
 
     // Stream the workbook to the response
-    workbook.xlsx.write(res);
+    workbook.csv.write(res);
 
     // End the response
     res.end();
