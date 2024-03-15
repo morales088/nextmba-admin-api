@@ -95,8 +95,7 @@ export class MailerliteCronService {
 
         if (student.status !== AccountStatus.INACTIVE) {
           // Check if student account type is pro account: then add to all student groups
-          if (student.account_type === AccountType.REGULAR) {
-            // if (student.account_type === AccountType.PRO) {
+          if (student.account_type === AccountType.PRO) {
             const { courseStartingDates, allSubscriberGroups } = await this.getCourseStartDateMappings();
 
             await this.mailerLiteService.assignSubscriberToGroups({
@@ -137,14 +136,13 @@ export class MailerliteCronService {
   async removeStudentsToGroups() {
     try {
       await processAndRemoveFirstEntry('students-to-remove.csv', async (firstRowData) => {
-        // Process the first row here
-        const [courseId, courseStartDate, studentEmail, studentStatus] = firstRowData;
+        const [courseId, studentEmail, studentStatus] = firstRowData;
 
         const subscriber = await this.mailerLiteService.createOrUpdateSubscriber({ email: studentEmail });
 
         const courseGroupId = this.mailerliteMappingService.getMapping('subscriberGroup')[courseId];
 
-        if (studentStatus === AccountStatus.ACTIVE) {
+        if (studentStatus === AccountStatus.INACTIVE) {
           await this.mailerLiteService.unAssignSubscriberToGroup(subscriber.id, courseGroupId);
           this.logger.warn(`Student successfully removed to group: ${studentEmail}`);
         } else {

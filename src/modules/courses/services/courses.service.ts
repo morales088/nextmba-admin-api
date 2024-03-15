@@ -28,9 +28,10 @@ export class CoursesService {
     const startingDates = activeCourses
       .filter((course) => course.paid !== 0 && course.status !== 0)
       .reduce((acc, course) => {
-        acc[course.id] = course.starting_date;
+        acc[course.id] = course.name;
         return acc;
       }, {});
+    console.log("💡 ~ startingDates:", startingDates)
 
     return startingDates;
   }
