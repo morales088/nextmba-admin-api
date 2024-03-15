@@ -35,4 +35,26 @@ export class PdfService {
 
     return htmlContent;
   }
+  
+  async certificateGeneratePdf(htmlFilePath: string, data: Record<string, any>): Promise<Buffer> {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    const htmlContent = this.renderHtmlWithVariables(htmlFilePath, data);
+
+    await page.setContent(htmlContent, { waitUntil: 'domcontentloaded' });
+
+    const pdfBuffer = await page.pdf({
+      path: 'certificate.pdf',
+      landscape: true,
+      // format: 'A4',
+      width: '737px',
+      height: '1123px',
+      printBackground: true, // include background colors
+    });
+
+    await browser.close();
+
+    return pdfBuffer;
+  }
 }
