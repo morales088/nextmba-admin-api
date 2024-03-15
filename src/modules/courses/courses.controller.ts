@@ -19,13 +19,16 @@ import { CoursesService } from './services/courses.service';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { AnyFilesInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { AwsS3Service } from 'src/common/aws/aws_s3.service';
+import { MailerLiteService } from 'src/common/mailerlite/mailerlite.service';
+import { toString } from 'lodash';
 
 @Controller('courses')
 @UseGuards(AuthGuard('jwt'))
 export class CoursesController {
   constructor(
     private readonly courseService: CoursesService,
-    private readonly awsS3Service: AwsS3Service
+    private readonly awsS3Service: AwsS3Service,
+    private readonly mailerLiteService: MailerLiteService
   ) {}
 
   @Get('/:courseId')
@@ -60,7 +63,12 @@ export class CoursesController {
       }
     }
 
-    return await this.courseService.createCourse(courseData);
+    const createdCourse = await this.courseService.createCourse(courseData)
+
+    // Add new course to mailerlite
+    this.mailerLiteService.createNewSubscriberGroup(toString(createdCourse.id), createdCourse.name)
+
+    return createdCourse;
   }
 
   @Put('/:courseId')

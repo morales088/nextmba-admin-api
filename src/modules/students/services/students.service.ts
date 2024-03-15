@@ -152,11 +152,12 @@ export class StudentsService {
 
   async getStudentsCreatedLast24Hours() {
     const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const lastXDays = new Date(Date.now() - 6 * 24 * 60 * 60 * 1000);
+    console.log("💡 ~ last24Hours:", last24Hours)
+    // const lastXDays = new Date(Date.now() - 6 * 24 * 60 * 60 * 1000);
 
     const dateFilterOptions: FilterOptions = {
       field: 'createdAt',
-      value: lastXDays,
+      value: last24Hours,
       comparisonOperator: 'gte',
     };
 

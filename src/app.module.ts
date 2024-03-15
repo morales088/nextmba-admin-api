@@ -29,6 +29,7 @@ import { MailerliteCronService } from './modules/cron/services/mailerlite-cron.s
 import * as dotenv from 'dotenv';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { MailerliteModule } from './common/mailerlite/mailerlite.module';
 
 dotenv.config();
 
@@ -73,6 +74,7 @@ dotenv.config();
     AppliedStudiesModule,
     BillingsModule,
     CronModule,
+    MailerliteModule,
   ],
   controllers: [],
   providers: [SendMailService],
