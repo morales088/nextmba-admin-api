@@ -35,7 +35,7 @@ export class MailerLiteService {
   async getAllSubscriberGroups(): Promise<ListAllGroupsResponse> {
     return this.mailerLite.groups
       .get({
-        limit: 25,
+        limit: 50,
         page: 1,
         sort: '-name',
       })

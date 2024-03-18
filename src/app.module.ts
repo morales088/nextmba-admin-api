@@ -23,6 +23,7 @@ import { GiftsModule } from './modules/gifts/gifts.module';
 import { MeetingsModule } from './modules/meetings/meetings.module';
 import { AppliedStudiesModule } from './modules/applied_studies/applied_studies.module';
 import { BillingsModule } from './modules/billings/billings.module';
+import { CertificatesModule } from './modules/certificates/certificates.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CronModule } from './modules/cron/cron.module';
 import { MailerliteCronService } from './modules/cron/services/mailerlite-cron.service';
@@ -73,6 +74,7 @@ dotenv.config();
     MeetingsModule,
     AppliedStudiesModule,
     BillingsModule,
+    CertificatesModule,
     CronModule,
     MailerliteModule,
   ],
