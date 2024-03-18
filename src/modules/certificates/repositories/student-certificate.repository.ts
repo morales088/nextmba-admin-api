@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, UseGuards } from '@nestjs/common';
 import { AbstractRepository } from 'src/common/repositories/abstract.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
-import { Affiliates, Billing_infos, Files, Student_certificates } from '@prisma/client';
+import { Student_certificates } from '@prisma/client';
 import { UpdateCertificateDto } from '../dto/update-certificate.dto';
 
 @Injectable()
@@ -56,7 +56,7 @@ export class StudentCertificateRepository extends AbstractRepository<Student_cer
     });
   }
 
-  async updateCertificate(id: number, data: any): Promise<Affiliates> {
+  async updateCertificate(id: number, data: any): Promise<Student_certificates> {
     const certificate = await this.findById(id);
 
     if (!certificate) {

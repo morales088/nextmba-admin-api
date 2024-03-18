@@ -387,7 +387,7 @@ model Student_certificates {
   student_id       Int
   course_id        Int
   certificate_code String?
-  certificate_tier Int       @default(1) // [1-course, 2-assignment]
+  certificate_tier Int       @default(1) // [1-course completition, 2-attendance]
   status           Int       @default(1)
   createdAt        DateTime  @default(now())
   updatedAt        DateTime? @updatedAt
