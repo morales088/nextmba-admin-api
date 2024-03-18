@@ -117,4 +117,25 @@ export class SendMailService {
   capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
+
+  async emailCertificateInformation(studentEmail:string, courseName: string, link: string) {
+    const emailTemplate = fs.readFileSync('src/common/templates/email-certificate.template.html', 'utf-8');
+    const template = handlebars.compile(emailTemplate);
+
+    const templateData = {
+      course: courseName,
+      link: link,
+    };
+    
+    const emailContent = template(templateData);
+
+    const recipients = [ studentEmail, process.env.PAYMENT_INFO_RECIPIENT]
+
+    await this.mailerService.sendMail({
+      to: recipients,
+      subject: 'Course Certificate',
+      html: emailContent,
+    });
+  }
+  
 }
