@@ -15,15 +15,16 @@ export class CronController {
   @Public()
   @Get('/info')
   async getCronInfo() {
-    // return this.cronService.cronJobInfo();
-    return this.mailerLiteService.getAllSubscribers();
+    return this.cronService.cronJobInfo();
+    // return this.mailerLiteService.getAllSubscribers();
+    // return this.mailerLiteService.getAllSubscriberGroups();
   }
 
   @Public()
   @Get('/test')
   async test() {
     // this.courseGroupService.addMapping('subscriberGroup', '10', "Test");
-    return this.mailerliteMappingService.getMapping('subscriberGroup')['10'];
+    // return this.mailerliteMappingService.getMapping('subscriberGroup')['10'];
   }
 
   @Public()
