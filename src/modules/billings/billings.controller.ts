@@ -20,7 +20,7 @@ export class BillingsController {
   }
 
   @Post('/')
-  async createFiles(
+  async createBilling(
     @Body() createBillingDto: CreateBillingDto,
   ) {
     const billingData = {
@@ -31,7 +31,7 @@ export class BillingsController {
   }
 
   @Put('/:billingId')
-  async updateFile(
+  async updateBilling(
     @Param('billingId') billingId: number,
     @Body() updateBillingDto: UpdateBillingDto,
   ) {
