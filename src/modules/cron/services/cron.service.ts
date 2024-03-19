@@ -11,7 +11,7 @@ export class CronService {
     private readonly mailerliteCronService: MailerliteCronService
   ) {}
 
-  @Cron(CronExpression.EVERY_12_HOURS, {
+  @Cron(CronExpression.EVERY_DAY_AT_2PM, {
     name: 'export-students-data',
     timeZone: 'Asia/Manila',
   })

@@ -16,7 +16,7 @@ export class MailerliteMappingService {
   private courseGroupMapping: CourseMapping;
 
   constructor() {
-    this.filePath = getMailerliteMappingFolderPath('mailerlite-mapping.json');
+    this.filePath = getMailerliteMappingFolderPath(process.env.MAILERLITE_MAPPING_FILE);
     this.readMappingFromFile();
   }
 

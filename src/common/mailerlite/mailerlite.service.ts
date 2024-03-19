@@ -9,7 +9,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import { MailerliteMappingService } from './mailerlite-mapping.service';
 import { extractCourseName } from '../helpers/extract.helper';
-import { replace, snakeCase, startCase, toLower } from 'lodash';
+import { snakeCase, startCase, toLower } from 'lodash';
 
 @Injectable()
 export class MailerLiteService {
@@ -52,7 +52,6 @@ export class MailerLiteService {
       .createOrUpdate(studentData)
       .then((response) => {
         const { data } = response.data;
-        // console.log("💡 ~ data:", data)
         return data;
       })
       .catch((error) => {
@@ -65,7 +64,6 @@ export class MailerLiteService {
       .createOrUpdate(studentData)
       .then((response) => {
         const { data } = response.data;
-        console.log('💡 ~ data:', data);
         return data;
       })
       .catch((error) => {
@@ -88,7 +86,6 @@ export class MailerLiteService {
     return this.mailerLite.groups
       .unAssignSubscriber(subscriberId, groupId)
       .then((response) => {
-        console.log('💡 ~ response.data:', response.data);
         return response.data;
       })
       .catch((error) => {
@@ -108,7 +105,6 @@ export class MailerLiteService {
       })
       .then((response) => {
         const { data } = response.data;
-        console.log("💡 ~ data:", data)
         return data;
       })
       .catch((error) => {
@@ -120,7 +116,6 @@ export class MailerLiteService {
     const extractedCourseName = extractCourseName(courseName);
     const subscriberGroupName = startCase(`${extractedCourseName} Students`);
 
-    console.log("💡 ~ subscriberGroupName:", subscriberGroupName)
     const createdGroup = await this.mailerLite.groups
       .create({ name: subscriberGroupName })
       .then((response) => {
@@ -130,11 +125,9 @@ export class MailerLiteService {
       .catch((error) => {
         throw new BadRequestException(error);
       });
-    console.log("💡 ~ createdGroup:", createdGroup)
 
     const startDateName = snakeCase(toLower(`${extractedCourseName}_${courseId}_start_date`));
     await this.createNewField(startDateName, 'date');
-    console.log("💡 ~ startDateName:", startDateName)
 
     this.mailerliteMappingService.addMapping('subscriberGroup', courseId, createdGroup.id);
     this.mailerliteMappingService.addMapping('startDateField', courseId, startDateName);
