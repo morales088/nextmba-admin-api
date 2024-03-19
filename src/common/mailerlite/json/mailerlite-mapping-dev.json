@@ -1,0 +1,15 @@
+{
+  "subscriberGroup": {
+    "0": "100004012297815517",
+    "1": "99942732629279909",
+    "2": "99942699671487499",
+    "6": "99942678588818597",
+    "7": "99942688748471825"
+  },
+  "startDateField": {
+    "1": "mdc_date_start",
+    "2": "edc_date_start",
+    "6": "mastermind_date_start",
+    "7": "technology_date_start"
+  }
+}

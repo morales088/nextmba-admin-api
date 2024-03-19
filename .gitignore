@@ -37,3 +37,8 @@ lerna-debug.log*
 
 # remove env
 .env
+
+# csv files
+src/common/files/csv/*.csv
+# students-to-add.csv
+# students-to-remove.csv
