@@ -24,30 +24,31 @@ export class CertificateApiController {
   
       let moduleHtml = '';
       const result = await this.studentCertificatesService.getPreviousModules(studentInfo.id);
-      const certificate = await this.studentCertificatesService.getCertificate(studCertificate.course_id);
+      // const certificate = await this.studentCertificatesService.getCertificate(studCertificate.course_id, 2);
+      const certificate = await this.studentCertificatesService.getCertificate(1, 2);
   
-      if(certificate && result.student_modules.length < 12) return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Template not available. / Not yet complete the course.' });
+      // if(certificate && result.student_modules.length < 12) return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Template not available. / Not yet complete the course.' });
   
-      let date;
+      let endDate;
+      let startDate = null;
       for (let i = 0; i < result.student_modules.length; i++) {
         if (i > 11) break;
         const module = result.student_modules[i];
         moduleHtml += `<div class="child">${module.name}.</div>`;
-        date = module.start_date;
-      }
-  
-      const options = {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        // hour: '2-digit',
-        // minute: '2-digit',
-        // second: '2-digit',
-        // timeZoneName: 'short',
-        // timeZone: 'UTC',
-      };
-  
-      const formattedDate = date.toLocaleDateString('en-US', options);
+        if(startDate == null) module.start_date
+        endDate = module.start_date;}
+
+      // format end date
+      const newEndDate = new Date(endDate);
+      const endMonth = endDate.getMonth() + 1; // Add 1 because getMonth() returns zero-based index
+      const endYear = newEndDate.getFullYear() % 100; // Get last two digits of the year
+      const formattedEndDate = `${endMonth.toString().padStart(2, '0')}.${endYear.toString().padStart(2, '0')}`;
+
+      // format start date
+      const newStartDate = new Date(startDate);
+      const startMonth = endDate.getMonth() + 1; // Add 1 because getMonth() returns zero-based index
+      const startYear = newStartDate.getFullYear() % 100; // Get last two digits of the year
+      const formattedStartDate = `${startMonth.toString().padStart(2, '0')}.${startYear.toString().padStart(2, '0')}`;
   
       let fontSize: string;
       if (studentInfo.name.length <= 24) fontSize = '60px';
@@ -60,7 +61,7 @@ export class CertificateApiController {
         modules: moduleHtml,
         template: certificate.template,
         certificate_id: studCertificate.certificate_code,
-        certificate_date: formattedDate,
+        certificate_date: `${formattedStartDate} - ${formattedEndDate}`,
       };
   
       const pdfBuffer = await this.pdfService.certificateGeneratePdf(htmlFilePath, data);

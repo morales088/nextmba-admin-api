@@ -358,10 +358,11 @@ model Applied_studies {
 }
 
 model Certificates {
-  id             Int    @id @default(autoincrement())
-  course_id      Int
-  certificate_id String @db.Text
-  template       String @db.Text
+  id               Int    @id @default(autoincrement())
+  course_id        Int
+  certificate_tier Int    @default(1) // [1-course completition, 2-attendance]
+  certificate_id   String @db.Text
+  template         String @db.Text
 
   status    Int       @default(1)
   createdAt DateTime  @default(now())

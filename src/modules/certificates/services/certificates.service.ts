@@ -44,8 +44,8 @@ export class StudentCertificatesService {
     return await this.studentCertificateRepository.updateCertificate(id, data);
   }
 
-  async getCertificate(id: number) {
-    return await this.certificateRepository.certificate(id);
+  async getCertificate(courseId: number, tier: number = 1) {
+    return await this.certificateRepository.certificate(courseId, tier);
   }
 
   async getPreviousModules(userId: number) {

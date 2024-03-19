@@ -51,7 +51,7 @@
       .student {
         text-transform: capitalize;
         font-size: {{nameFontSize}};
-        color: #0d0d0d;
+        color: #515151;
         width: 100%;
         text-align: center;
       }
@@ -93,10 +93,11 @@
       }
 
       .certificateDate {
+        font-weight: 900;
         position: absolute;
         font-weight: lighter;
-        font-size: 12px;
-        color: #a4a3a0;
+        /* font-size: 12px; */
+        color: #FF5600;
         bottom: 45px;
         left: 205px;
       }
@@ -120,8 +121,8 @@
       <div class="modules">
         {{modules}}
       </div>
-      <h2 class="certificateId">Certificate ID: {{certificate_id}}</h2>
-      <h3 class="certificateDate">{{certificate_date}}</h3>
+      <!-- <h2 class="certificateId">Certificate ID: {{certificate_id}}</h2> -->
+      <h3 class="certificateDate"><b>{{certificate_date}}</b></h3>
     </div>
   </body>
 </html>
