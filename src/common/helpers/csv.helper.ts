@@ -29,7 +29,7 @@ export const saveToCSV = async (fileName: string, data: any[]) => {
     });
 };
 
-export const processAndRemoveFirstEntry = async (fileName: string, processFirstEntry: (row: any) => void) => {
+export const processAndRemoveFirstEntry = async (fileName: string) => {
   const filePath = join(getFilesCSVFolderPath(), fileName);
   const readStream = fs.createReadStream(filePath);
 
@@ -37,6 +37,7 @@ export const processAndRemoveFirstEntry = async (fileName: string, processFirstE
   const tempFilePath = join(getFilesCSVFolderPath(), tempFileName);
 
   let isFirstEntryProcessed = false;
+  let firstRowData;
 
   return new Promise<void>((resolve, reject) => {
     const writeStream = fs.createWriteStream(tempFilePath, { flags: 'a' });
@@ -45,8 +46,7 @@ export const processAndRemoveFirstEntry = async (fileName: string, processFirstE
       .parseStream(readStream, { headers: false })
       .on('data', async (currentRow) => {
         if (!isFirstEntryProcessed) {
-          // Process the first entry using the provided function
-          processFirstEntry(currentRow);
+          firstRowData = currentRow;
           isFirstEntryProcessed = true;
         } else {
           await writeToTempFile(tempFilePath, currentRow);
@@ -74,7 +74,7 @@ export const processAndRemoveFirstEntry = async (fileName: string, processFirstE
         logger.error('Error processing CSV:', error.message);
         reject(error);
       });
-  });
+  }).then(() => firstRowData);
 };
 
 const writeToTempFile = async (tempFilePath: string, row: any) => {
