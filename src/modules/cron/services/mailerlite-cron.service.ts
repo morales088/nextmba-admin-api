@@ -85,49 +85,54 @@ export class MailerliteCronService {
 
   async addStudentsToGroups() {
     try {
-      await processAndRemoveFirstEntry('students-to-add.csv', async (firstRow) => {
-        const [studentEmail] = firstRow;
+      const firstRowData = await processAndRemoveFirstEntry('students-to-add.csv');
 
-        const subscriber = await this.mailerLiteService.createOrUpdateSubscriber({ email: studentEmail });
+      if (!Array.isArray(firstRowData) || firstRowData.length === 0) {
+        this.logger.debug(`No data to process in CSV.`);
+        return;
+      }
 
-        const student = await this.studentService.getStudentByEmail(studentEmail);
-        const studentCourses = student.student_courses;
+      const [studentEmail] = firstRowData;
 
-        if (student.status !== AccountStatus.INACTIVE) {
-          // Check if student account type is pro account: then add to all student groups
-          if (student.account_type === AccountType.PRO) {
-            const { courseStartingDates, allSubscriberGroups } = await this.getCourseStartDateMappings();
+      const subscriber = await this.mailerLiteService.createOrUpdateSubscriber({ email: studentEmail });
 
-            await this.mailerLiteService.assignSubscriberToGroups({
+      const student = await this.studentService.getStudentByEmail(studentEmail);
+      const studentCourses = student.student_courses;
+
+      if (student.status !== AccountStatus.INACTIVE) {
+        // Check if student account type is pro account: then add to all student groups
+        if (student.account_type === AccountType.PRO) {
+          const { courseStartingDates, allSubscriberGroups } = await this.getCourseStartDateMappings();
+
+          await this.mailerLiteService.assignSubscriberToGroups({
+            email: studentEmail,
+            fields: courseStartingDates,
+            groups: allSubscriberGroups,
+          });
+
+          this.logger.log(`Student successfully added to all groups: ${studentEmail}`);
+        } else {
+          for (const studentCourse of studentCourses) {
+            const courseId = toString(studentCourse.course_id);
+            const courseGroupId = this.mailerliteMappingService.getMapping('subscriberGroup')[courseId];
+
+            const courseStartDate = studentCourse.starting_date;
+            const startDateKeyName = this.mailerliteMappingService.getMapping('startDateField')[courseId];
+            const courseStartDateField = { [`${startDateKeyName}`]: courseStartDate };
+
+            await this.mailerLiteService.createOrUpdateSubscriber({
               email: studentEmail,
-              fields: courseStartingDates,
-              groups: allSubscriberGroups,
+              fields: courseStartDateField,
             });
 
-            this.logger.log(`Student successfully added to all groups: ${studentEmail}`);
-          } else {
-            for (const studentCourse of studentCourses) {
-              const courseId = toString(studentCourse.course_id);
-              const courseGroupId = this.mailerliteMappingService.getMapping('subscriberGroup')[courseId];
-
-              const courseStartDate = studentCourse.starting_date;
-              const startDateKeyName = this.mailerliteMappingService.getMapping('startDateField')[courseId];
-              const courseStartDateField = { [`${startDateKeyName}`]: courseStartDate };
-
-              await this.mailerLiteService.createOrUpdateSubscriber({
-                email: studentEmail,
-                fields: courseStartDateField,
-              });
-
-              await this.mailerLiteService.assignSubscriberToGroup(subscriber.id, courseGroupId);
-            }
+            await this.mailerLiteService.assignSubscriberToGroup(subscriber.id, courseGroupId);
           }
-          this.logger.log(`Student successfully added to group(s): ${studentEmail}`);
-        } else {
-          await this.mailerLiteService.removeSubscriber(subscriber.id);
-          this.logger.verbose(`Removed from subscribers: ${studentEmail}`);
         }
-      });
+        this.logger.log(`Student successfully added to group(s): ${studentEmail}`);
+      } else {
+        await this.mailerLiteService.removeSubscriber(subscriber.id);
+        this.logger.log(`Removed from subscribers: ${studentEmail}`);
+      }
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -135,21 +140,26 @@ export class MailerliteCronService {
 
   async removeStudentsToGroups() {
     try {
-      await processAndRemoveFirstEntry('students-to-remove.csv', async (firstRowData) => {
-        const [courseId, studentEmail, studentStatus] = firstRowData;
+      const firstRowData = await processAndRemoveFirstEntry('students-to-remove.csv');
 
-        const subscriber = await this.mailerLiteService.createOrUpdateSubscriber({ email: studentEmail });
+      if (!Array.isArray(firstRowData) || firstRowData.length === 0) {
+        this.logger.debug(`No data to process in CSV.`);
+        return;
+      }
 
-        const courseGroupId = this.mailerliteMappingService.getMapping('subscriberGroup')[courseId];
+      const [courseId, studentEmail, studentStatus] = firstRowData;
 
-        if (studentStatus === AccountStatus.INACTIVE) {
-          await this.mailerLiteService.unAssignSubscriberToGroup(subscriber.id, courseGroupId);
-          this.logger.warn(`Student successfully removed to group: ${studentEmail}`);
-        } else {
-          await this.mailerLiteService.removeSubscriber(subscriber.id);
-          this.logger.warn(`Removed from subscribers: ${studentEmail}`);
-        }
-      });
+      const subscriber = await this.mailerLiteService.createOrUpdateSubscriber({ email: studentEmail });
+
+      const courseGroupId = this.mailerliteMappingService.getMapping('subscriberGroup')[courseId];
+
+      if (studentStatus === AccountStatus.INACTIVE) {
+        await this.mailerLiteService.unAssignSubscriberToGroup(subscriber.id, courseGroupId);
+        this.logger.log(`Student successfully removed to group: ${studentEmail}`);
+      } else {
+        await this.mailerLiteService.removeSubscriber(subscriber.id);
+        this.logger.log(`Removed from subscribers: ${studentEmail}`);
+      }
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

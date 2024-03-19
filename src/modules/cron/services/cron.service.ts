@@ -11,7 +11,7 @@ export class CronService {
     private readonly mailerliteCronService: MailerliteCronService
   ) {}
 
-  @Cron(CronExpression.EVERY_DAY_AT_2PM, {
+  @Cron(CronExpression.EVERY_DAY_AT_NOON, {
     name: 'export-students-data',
     timeZone: 'Asia/Manila',
   })
@@ -35,8 +35,9 @@ export class CronService {
       this.logger.error(`Error in export-students-data cron job: ${error.message}`);
     }
   }
-
-  @Cron(CronExpression.EVERY_5_MINUTES, {
+  // This cron job executes every 5 minutes from 12 midnight to 11 AM, and then from 1 PM to 11 PM.
+  @Cron('*/5 0-11,13-23 * * *', {
+    // @Cron(CronExpression.EVERY_10_MINUTES, {
     name: 'process-student-data',
     timeZone: 'Asia/Manila',
   })
