@@ -53,6 +53,7 @@ model Courses {
   product_items               Product_items[]
   student_courses             Student_courses[]
   student_certificates        Student_certificates[]
+  subscriber_groups           Subscriber_groups[]
 }
 
 model Modules {
@@ -390,5 +391,17 @@ model Student_certificates {
   createdAt        DateTime  @default(now())
   updatedAt        DateTime? @updatedAt
   student          Students  @relation(fields: [student_id], references: [id])
+  course           Courses   @relation(fields: [course_id], references: [id])
+}
+
+model Subscriber_groups {
+  id               Int       @id @default(autoincrement())
+  course_id        Int
+  group_name       String?
+  group_id         Int
+  start_date_field String
+  status           Int       @default(1)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime? @updatedAt
   course           Courses   @relation(fields: [course_id], references: [id])
 }
