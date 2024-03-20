@@ -4,6 +4,10 @@ import { IsBoolean, IsDate, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } f
 export class UpdateTopicDto {
   @IsNotEmpty()
   @Transform(({ value }) => parseInt(value))
+  module_id: number;
+  
+  @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
   speaker_id: number;
 
   @IsOptional()
@@ -36,6 +40,11 @@ export class UpdateTopicDto {
   @Transform(({ value }) => parseInt(value))
   @IsIn([1, 2, 3, 4])  // [1 - main lecture, 2 - assignment, 3 - bunos, 4 - theoritical]
   type: number;
+
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  @IsIn([0, 1]) // [0 - not, 1 - main topic]
+  main_topic: number;
 
   @IsOptional()
   @Transform(({ value }) => parseInt(value))

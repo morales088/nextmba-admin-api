@@ -82,10 +82,10 @@ export class ModuleRepository extends AbstractRepository<Modules> {
   }
   
 
-  async previousModules(userId) {
+  async previousModules(userId, courseId) {
     const results: Modules[] = await this.prisma.$queryRaw`SELECT distinct m.*
                                                           FROM "Modules" as m
-                                                          LEFT JOIN "Courses" as C ON m.course_id = c.id
+                                                          LEFT JOIN "Courses" as C ON m.course_id = c.id and c.id = ${courseId}
                                                           LEFT JOIN "Student_courses" as sc ON sc.course_id = c.id and sc.student_id = ${userId}
                                                           WHERE m.status in (4,5) AND c.is_displayed = 1 AND c.status <> 0 AND sc.status <> 0 AND sc.starting_date <= m.start_date
                                                           ORDER BY m.start_date asc`;
@@ -117,7 +117,7 @@ export class ModuleRepository extends AbstractRepository<Modules> {
       module.topics = topics;
 
     }
-    
+
     return modules
 
     const filteredModules =  modules.filter((res) => res.topics.length > 0);

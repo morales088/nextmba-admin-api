@@ -8,6 +8,8 @@ import { CertificateRepository } from './repositories/certificate.repository';
 import { ModuleRepository } from '../modules/repositories/module.repository';
 import { CertificateApiController } from './controllers/certificate_api.controller';
 import { SendMailService } from 'src/common/utils/send-mail.service';
+import { CoursesService } from '../courses/services/courses.service';
+import { CourseRepository } from '../courses/repositories/course.repository';
 
 @Module({
   imports: [PrismaModule],
@@ -18,7 +20,9 @@ import { SendMailService } from 'src/common/utils/send-mail.service';
     CertificateRepository,
     ModuleRepository,
     PdfService,
-    SendMailService
+    SendMailService,
+    CoursesService,
+    CourseRepository
   ],
 })
 export class CertificatesModule {}

@@ -102,6 +102,25 @@
         left: 205px;
       }
 
+      .courseContainer {
+        position: absolute;
+        z-index: 100;
+        left: 750px;
+        bottom: 490px;
+        width: 240px;
+      }
+
+      .course {
+        text-transform: lowercase;
+        /* font-size: {{nameFontSize}}; */
+        font-size: 30px;
+        font-weight: normal;
+        line-height: 1;
+        color: #999999;
+        width: 100%;
+        text-align: left;
+      }
+
     </style>
   </head>
 
@@ -109,6 +128,10 @@
     <div>
       <div class="studentContainer">
         <h1 class="student">{{name}}</h1>
+      </div>
+
+      <div class="courseContainer">
+        <h1 class="course">{{courseName}}</h1>
       </div>
       
       <img class="marketing"
@@ -121,7 +144,7 @@
       <div class="modules">
         {{modules}}
       </div>
-      <!-- <h2 class="certificateId">Certificate ID: {{certificate_id}}</h2> -->
+      <!-- <h2 class="certificateId">Student Code: {{certificate_id}}</h2> -->
       <h3 class="certificateDate"><b>{{certificate_date}}</b></h3>
     </div>
   </body>
