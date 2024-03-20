@@ -52,7 +52,6 @@ model Courses {
   payment_items               Payment_items[]
   product_items               Product_items[]
   student_courses             Student_courses[]
-  certificates                Certificates[]
   student_certificates        Student_certificates[]
 }
 
@@ -118,6 +117,7 @@ model Topics {
   description      String?
   cover_photo      String?
   type             Int              @default(1)
+  main_topic       Int              @default(0)
   position         Int              @default(1)
   publish          Int              @default(0)
   status           Int              @default(1)
@@ -358,15 +358,13 @@ model Applied_studies {
 }
 
 model Certificates {
-  id             Int    @id @default(autoincrement())
-  course_id      Int
-  certificate_id String @db.Text
-  template       String @db.Text
+  id               Int    @id @default(autoincrement())
+  certificate_tier Int    @default(1) // [1-completition, 2-attendance]
+  template         String @db.Text
 
   status    Int       @default(1)
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
-  course    Courses   @relation(fields: [course_id], references: [id])
 }
 
 model Billing_infos {

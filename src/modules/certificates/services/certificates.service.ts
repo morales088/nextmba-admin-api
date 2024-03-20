@@ -44,13 +44,13 @@ export class StudentCertificatesService {
     return await this.studentCertificateRepository.updateCertificate(id, data);
   }
 
-  async getCertificate(id: number) {
-    return await this.certificateRepository.certificate(id);
+  async getCertificate(tier: number = 1) {
+    return await this.certificateRepository.certificate(tier);
   }
 
-  async getPreviousModules(userId: number) {
+  async getPreviousModules(userId: number, courseId: number) {
 
-    const previousModules = await this.moduleRepository.previousModules(userId);
+    const previousModules = await this.moduleRepository.previousModules(userId, courseId);
     return { student_modules: previousModules };
   }
 }

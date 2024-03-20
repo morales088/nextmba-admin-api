@@ -43,6 +43,11 @@ export class CreateTopicDto {
 
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
+  @IsIn([0, 1]) // [0 - not, 1 - main topic]
+  main_topic: number;
+
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
   position: number;
 
   @IsOptional()
