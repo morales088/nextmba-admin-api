@@ -10,6 +10,7 @@ import { CertificateApiController } from './controllers/certificate_api.controll
 import { SendMailService } from 'src/common/utils/send-mail.service';
 import { CoursesService } from '../courses/services/courses.service';
 import { CourseRepository } from '../courses/repositories/course.repository';
+import { StudentRepository } from '../students/repositories/student.repository';
 
 @Module({
   imports: [PrismaModule],
@@ -22,7 +23,8 @@ import { CourseRepository } from '../courses/repositories/course.repository';
     PdfService,
     SendMailService,
     CoursesService,
-    CourseRepository
+    CourseRepository,
+    StudentRepository
   ],
 })
 export class CertificatesModule {}

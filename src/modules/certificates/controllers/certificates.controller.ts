@@ -5,13 +5,13 @@ import { CreateCertificateDto } from '../dto/create-certificate.dto';
 import { UpdateCertificateDto } from '../dto/update-certificate.dto';
 import { Response } from 'express';
 import { PdfService } from 'src/common/utils/pdf.service';
+import { StudentsService } from 'src/modules/students/services/students.service';
 
 @Controller('certificate')
 @UseGuards(AuthGuard('jwt'))
 export class CertificatesController {
   constructor(
     private readonly studentCertificatesService: StudentCertificatesService,
-    private readonly pdfService: PdfService
   ) {}
 
   @Get('/')
@@ -26,10 +26,14 @@ export class CertificatesController {
 
   @Post('/')
   async createCertificate(@Body() createCertificateDto: CreateCertificateDto) {
-    const certificateData = {
-      ...createCertificateDto,
-    };
+    const student = await this.studentCertificatesService.getStudentByEmail(createCertificateDto.student_email)
 
+    const { student_email, ...newData} = createCertificateDto // remove student_email to object
+    const certificateData = {
+      ...newData,
+      student_id : student.id
+    };
+    
     return await this.studentCertificatesService.createCertificate(certificateData);
   }
 

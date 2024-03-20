@@ -5,6 +5,7 @@ import { UpdateCertificateDto } from '../dto/update-certificate.dto';
 import { CertificateRepository } from '../repositories/certificate.repository';
 import { ModuleRepository } from 'src/modules/modules/repositories/module.repository';
 import { SendMailService } from 'src/common/utils/send-mail.service';
+import { StudentRepository } from 'src/modules/students/repositories/student.repository';
 
 @Injectable()
 export class StudentCertificatesService {
@@ -12,7 +13,8 @@ export class StudentCertificatesService {
     private readonly studentCertificateRepository: StudentCertificateRepository,
     private readonly certificateRepository: CertificateRepository,
     private readonly moduleRepository: ModuleRepository,
-    private readonly sendMailService: SendMailService
+    private readonly sendMailService: SendMailService,
+    private readonly studentRepository: StudentRepository,
   ) {}
 
   async getStudCertificates() {
@@ -27,7 +29,7 @@ export class StudentCertificatesService {
     return await this.studentCertificateRepository.findByCode(code);
   }
 
-  async createCertificate(data: CreateCertificateDto) {
+  async createCertificate(data: object) {
     return await this.studentCertificateRepository.insert(data);
   }
 
@@ -52,5 +54,9 @@ export class StudentCertificatesService {
 
     const previousModules = await this.moduleRepository.previousModules(userId, courseId);
     return { student_modules: previousModules };
+  }
+  
+  async getStudentByEmail(email: string) {
+    return this.studentRepository.findByEmail(email);
   }
 }
