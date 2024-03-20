@@ -8,15 +8,16 @@ import { createFolderIfNotExists, getFilesCSVFolderPath } from 'src/common/helpe
 const logger = new Logger('SaveToCSVHelper');
 
 export const saveToCSV = async (fileName: string, data: any[]) => {
-  if (data.length === 0) {
-    logger.log('No data to write to CSV.');
-    return;
-  }
 
   const filesFolderPath = getFilesCSVFolderPath();
   const filePath = join(filesFolderPath, fileName);
 
   createFolderIfNotExists(filesFolderPath);
+
+  if (data.length === 0) {
+    logger.log('No data to write to CSV.');
+    return;
+  }
 
   const fileExists = fs.existsSync(filePath);
   const writeStream = fs.createWriteStream(filePath, { flags: fileExists ? 'a' : 'w' });
