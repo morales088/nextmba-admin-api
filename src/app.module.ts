@@ -31,6 +31,7 @@ import * as dotenv from 'dotenv';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MailerliteModule } from './common/mailerlite/mailerlite.module';
+import { SubscriberGroupsModule } from './modules/subscriber_groups/subscriber-groups.module';
 
 dotenv.config();
 
@@ -77,6 +78,7 @@ dotenv.config();
     CertificatesModule,
     CronModule,
     MailerliteModule,
+    SubscriberGroupsModule,
   ],
   controllers: [],
   providers: [SendMailService],

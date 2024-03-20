@@ -53,7 +53,6 @@ export const processAndRemoveFirstEntry = async (fileName: string) => {
         }
       })
       .on('end', async () => {
-        console.log('');
         logger.log('CSV processing complete.');
 
         // Close the write stream before resolving the promise

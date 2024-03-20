@@ -7,16 +7,17 @@ import MailerLite, {
 } from '@mailerlite/mailerlite-nodejs';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
-import { MailerliteMappingService } from './mailerlite-mapping.service';
 import { extractCourseName } from '../helpers/extract.helper';
 import { snakeCase, startCase, toLower } from 'lodash';
+import { SubscriberGroupsService } from '../../modules/subscriber_groups/services/subscriber-groups.service';
+import { CreateSubscriberGroup } from 'src/modules/subscriber_groups/dto/subscriber-groups.dto';
 
 @Injectable()
 export class MailerLiteService {
   private readonly apiKey: string;
   private readonly mailerLite: MailerLite;
 
-  constructor(private readonly mailerliteMappingService: MailerliteMappingService) {
+  constructor(private readonly subscriberGroupsService: SubscriberGroupsService) {
     this.apiKey = process.env.MAILERLITE_API_KEY;
     this.mailerLite = new MailerLite({ api_key: this.apiKey });
   }
@@ -112,7 +113,7 @@ export class MailerLiteService {
       });
   }
 
-  async createNewSubscriberGroup(courseId: string, courseName: string) {
+  async createNewSubscriberGroup(courseId: number, courseName: string) {
     const extractedCourseName = extractCourseName(courseName);
     const subscriberGroupName = startCase(`${extractedCourseName} Students`);
 
@@ -127,10 +128,14 @@ export class MailerLiteService {
       });
 
     const startDateName = snakeCase(toLower(`${extractedCourseName}_${courseId}_start_date`));
-    await this.createNewField(startDateName, 'date');
+    const newField = await this.createNewField(startDateName, 'date');
 
-    this.mailerliteMappingService.addMapping('subscriberGroup', courseId, createdGroup.id);
-    this.mailerliteMappingService.addMapping('startDateField', courseId, startDateName);
+    await this.subscriberGroupsService.createSubscriberGroup({
+      course_id: courseId,
+      group_id: createdGroup.id,
+      group_name: createdGroup.name,
+      start_date_field: newField.name,
+    } as CreateSubscriberGroup);
 
     return createdGroup;
   }
