@@ -398,8 +398,8 @@ model Subscriber_groups {
   id               Int       @id @default(autoincrement())
   course_id        Int
   group_name       String?
-  group_id         Int
-  start_date_field String
+  group_id         String
+  start_date_field String?
   status           Int       @default(1)
   createdAt        DateTime  @default(now())
   updatedAt        DateTime? @updatedAt
