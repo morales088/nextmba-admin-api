@@ -1,7 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { CronService } from './services/cron.service';
 import { Public } from 'src/common/decorators/public.decorator';
-import { MailerliteMappingService } from '../../common/mailerlite/mailerlite-mapping.service';
 import { MailerLiteService } from 'src/common/mailerlite/mailerlite.service';
 
 @Controller('cron')
@@ -9,22 +8,19 @@ export class CronController {
   constructor(
     private readonly cronService: CronService,
     private readonly mailerLiteService: MailerLiteService,
-    private readonly mailerliteMappingService: MailerliteMappingService
   ) {}
 
   @Public()
   @Get('/info')
   async getCronInfo() {
     return this.cronService.cronJobInfo();
-    // return this.mailerLiteService.getAllSubscribers();
-    // return this.mailerLiteService.getAllSubscriberGroups();
   }
-
+  
   @Public()
   @Get('/test')
   async test() {
-    // this.courseGroupService.addMapping('subscriberGroup', '10', "Test");
-    // return this.mailerliteMappingService.getMapping('subscriberGroup')['10'];
+    return this.mailerLiteService.getAllSubscribers();
+    // return this.mailerLiteService.getAllSubscriberGroups();
   }
 
   @Public()

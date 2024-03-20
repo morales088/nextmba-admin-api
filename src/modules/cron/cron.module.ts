@@ -4,9 +4,10 @@ import { CronController } from './cron.controller';
 import { MailerliteCronService } from './services/mailerlite-cron.service';
 import { StudentsModule } from '../students/students.module';
 import { CoursesModule } from '../courses/courses.module';
+import { SubscriberGroupsModule } from '../subscriber_groups/subscriber-groups.module';
 
 @Module({
-  imports: [StudentsModule, CoursesModule],
+  imports: [StudentsModule, CoursesModule, SubscriberGroupsModule],
   controllers: [CronController],
   providers: [CronService, MailerliteCronService],
   exports: [CronService]

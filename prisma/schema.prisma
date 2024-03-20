@@ -403,5 +403,5 @@ model Subscriber_groups {
   status           Int       @default(1)
   createdAt        DateTime  @default(now())
   updatedAt        DateTime? @updatedAt
-  course           Courses   @relation(fields: [course_id], references: [id])
+  course           Courses?   @relation(fields: [course_id], references: [id])
 }

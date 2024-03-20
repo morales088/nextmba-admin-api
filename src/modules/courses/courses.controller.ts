@@ -66,7 +66,7 @@ export class CoursesController {
     const createdCourse = await this.courseService.createCourse(courseData)
 
     // Add new course to mailerlite
-    this.mailerLiteService.createNewSubscriberGroup(toString(createdCourse.id), createdCourse.name)
+    this.mailerLiteService.createNewSubscriberGroup(createdCourse.id, createdCourse.name)
 
     return createdCourse;
   }
