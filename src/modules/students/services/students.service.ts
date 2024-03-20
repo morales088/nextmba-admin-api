@@ -152,8 +152,7 @@ export class StudentsService {
 
   async getStudentsCreatedLast24Hours() {
     const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    console.log("💡 ~ last24Hours:", last24Hours)
-    // const lastXDays = new Date(Date.now() - 6 * 24 * 60 * 60 * 1000);
+    // const last24Hours = new Date(Date.now() - 20 * 24 * 60 * 60 * 1000);
 
     const dateFilterOptions: FilterOptions = {
       field: 'createdAt',
@@ -171,8 +170,8 @@ export class StudentsService {
 
     // Subtract 24 hours from the current date
     const twentyHoursAgo = new Date(currentDate);
-    // twentyHoursAgo.setHours(currentDate.getHours() - 24);
-    twentyHoursAgo.setMonth(currentDate.getMonth() - 2);
+    twentyHoursAgo.setHours(currentDate.getHours() - 24);
+    // twentyHoursAgo.setMonth(currentDate.getMonth() - 2);
 
     const student_courses = await this.studentCoursesRepository.findExpiredCourses(twentyHoursAgo, currentDate);
 

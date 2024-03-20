@@ -8,25 +8,28 @@ import { createFolderIfNotExists, getFilesCSVFolderPath } from 'src/common/helpe
 const logger = new Logger('SaveToCSVHelper');
 
 export const saveToCSV = async (fileName: string, data: any[]) => {
-  if (data.length === 0) {
-    logger.log('No data to write to CSV.');
-    return;
-  }
-
   const filesFolderPath = getFilesCSVFolderPath();
-  const filePath = join(filesFolderPath, fileName);
-
   createFolderIfNotExists(filesFolderPath);
 
+  const filePath = join(filesFolderPath, fileName)
   const fileExists = fs.existsSync(filePath);
-  const writeStream = fs.createWriteStream(filePath, { flags: fileExists ? 'a' : 'w' });
+  
+  if (!fileExists) {
+    // Create the file if it doesn't exist and write the data to it
+    const writeStream = fs.createWriteStream(filePath);
+    fastCSV.write(data, { headers: false }).pipe(writeStream);
+    logger.log('CSV file created and data saved successfully.');
+  } else {
+    if (data.length === 0) {
+      logger.log('No data to write to CSV.');
+      return;
+    }
 
-  fastCSV
-    .write(data, { headers: false, includeEndRowDelimiter: true })
-    .pipe(writeStream)
-    .on('finish', () => {
-      logger.log(`CSV file saved successfully`);
-    });
+    // If the file already exists, append data to it
+    const writeStream = fs.createWriteStream(filePath, { flags: 'a' });
+    fastCSV.write(data, { headers: false, includeEndRowDelimiter: false }).pipe(writeStream);
+    logger.log('Data appended to existing CSV file successfully.');
+  }
 };
 
 export const processAndRemoveFirstEntry = async (fileName: string) => {
@@ -53,7 +56,6 @@ export const processAndRemoveFirstEntry = async (fileName: string) => {
         }
       })
       .on('end', async () => {
-        console.log('');
         logger.log('CSV processing complete.');
 
         // Close the write stream before resolving the promise

@@ -46,11 +46,15 @@ export class CronService {
       console.log('');
       this.logger.log('Running: Process student data');
 
+      console.log('');
+      this.logger.log('Running: Add student to groups');
       await this.mailerliteCronService.addStudentsToGroups();
       this.delay(1000);
 
+      console.log('');
+      this.logger.log('Running: Remove students to group');
       await this.mailerliteCronService.removeStudentsToGroups();
-      this.delay(500);
+      this.delay(1000);
 
       console.log('');
       this.logger.log('Cron job is done.');
