@@ -118,8 +118,6 @@ export class ModuleRepository extends AbstractRepository<Modules> {
 
     }
 
-    return modules
-
     const filteredModules =  modules.filter((res) => res.topics.length > 0);
 
     return filteredModules;
