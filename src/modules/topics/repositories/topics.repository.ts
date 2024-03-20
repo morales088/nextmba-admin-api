@@ -38,6 +38,13 @@ export class TopicsRepository extends AbstractRepository<Topics> {
       throw new BadRequestException('Speaker does not exist.');
     }
 
+    if (data.main_topic == 1) { // update main topic to 0 per module
+      await this.prisma[this.modelName].updateMany({
+        where: { module_id: data.module_id },
+        data: { main_topic: 0 },
+      });
+    }
+
     return this.prisma[this.modelName].create({ data });
   }
 
@@ -55,7 +62,7 @@ export class TopicsRepository extends AbstractRepository<Topics> {
     }
 
     if (data.main_topic == 1) { // update main topic to 0 per module
-      await this.prisma[this.modelName].update({
+      await this.prisma[this.modelName].updateMany({
         where: { module_id: data.module_id },
         data: { main_topic: 0 },
       });
