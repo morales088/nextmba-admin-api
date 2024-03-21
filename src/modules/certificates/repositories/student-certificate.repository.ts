@@ -75,7 +75,7 @@ export class StudentCertificateRepository extends AbstractRepository<Student_cer
       throw new BadRequestException('certificate does not exist.');
     }
 
-    if (data.certificate_tier == 2 && certificate.certificate_code == null) {
+    if (data.status == 2 && certificate.certificate_code == null) {
       data.certificate_code = this.generateRandomString(32);
     }
 

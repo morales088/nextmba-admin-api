@@ -42,8 +42,10 @@ export class StudentCertificatesService {
       
     if(data.download) await this.sendMailService.emailCertificateInformation(student.name, course.name, downloadLink);
 
+    
+    const { download, ...newData} = data // remove download to object
 
-    return await this.studentCertificateRepository.updateCertificate(id, data);
+    return await this.studentCertificateRepository.updateCertificate(id, newData);
   }
 
   async getCertificate(tier: number = 1) {
