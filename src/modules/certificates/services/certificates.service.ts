@@ -33,7 +33,7 @@ export class StudentCertificatesService {
     return await this.studentCertificateRepository.insert(data);
   }
 
-  async updateCertificate(id: number, data: UpdateCertificateDto) {
+  async updateCertificate(id: number, data: any) {
     const certificate = await this.studentCertificateRepository.findById(id);
     const student = certificate.student
     const course = certificate.course

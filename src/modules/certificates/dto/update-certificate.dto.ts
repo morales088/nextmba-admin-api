@@ -2,9 +2,13 @@ import { Transform } from 'class-transformer';
 import { IsBoolean, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateCertificateDto {
-  @IsOptional()
-  @Transform(({ value }) => parseInt(value))
-  student_id: number;
+  // @IsOptional()
+  // @Transform(({ value }) => parseInt(value))
+  // student_id: number;
+
+  @IsNotEmpty()
+  @IsString()
+  student_email: string;
 
   @IsOptional()
   @Transform(({ value }) => parseInt(value))

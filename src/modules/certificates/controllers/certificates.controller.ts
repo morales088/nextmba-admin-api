@@ -42,8 +42,12 @@ export class CertificatesController {
     @Param('certificateId') certificateId: number,
     @Body() updateCertificateDto: UpdateCertificateDto
   ) {
+    const student = await this.studentCertificatesService.getStudentByEmail(updateCertificateDto.student_email)
+
+    const { student_email, ...newData} = updateCertificateDto // remove student_email to object
     const certificateData = {
-      ...updateCertificateDto,
+      ...newData,
+      student_id : student.id
     };
 
     return await this.studentCertificatesService.updateCertificate(certificateId, certificateData);
