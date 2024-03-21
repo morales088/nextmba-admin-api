@@ -46,6 +46,18 @@ export class StudentCertificateRepository extends AbstractRepository<Student_cer
       throw new BadRequestException('Student not enrolled to this course.');
     }
 
+    const studCertificate = await this.prisma.student_certificates.findFirst({
+      where: {
+        student_id: data.student_id,
+        course_id: data.course_id,
+        certificate_tier: data.certificate_tier,
+      },
+    });
+
+    if (studCertificate) {
+      throw new BadRequestException('Student has entry to this course and tier.');
+    }
+
     return this.prisma[this.modelName].create({ data });
   }
 
