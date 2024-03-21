@@ -19,4 +19,9 @@ export class CreateCertificateDto {
   @IsIn([1, 2]) // [1-course, 2-assignment]
   certificate_tier: number;
 
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  @IsIn([1, 2, 3]) // [1-new, 2-approved, 3-canceled]
+  status: number;
+
 }

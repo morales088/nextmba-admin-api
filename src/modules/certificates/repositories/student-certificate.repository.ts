@@ -16,7 +16,7 @@ export class StudentCertificateRepository extends AbstractRepository<Student_cer
 
   async find(): Promise<Student_certificates> {
     return this.prisma[this.modelName].findMany({
-      where: { status: 1 },
+      where: { status: { in: [1,2,3]} },
       include: { student: true },
       orderBy: [
         {
