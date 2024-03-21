@@ -213,6 +213,7 @@ model Student_courses {
   course_id       Int
   student_id      Int
   module_quantity Int       @default(12)
+  course_tier     Int       @default(1) // [1-full, 2-limited]
   course          Courses   @relation(fields: [course_id], references: [id])
   student         Students  @relation(fields: [student_id], references: [id])
 }
@@ -232,15 +233,16 @@ model Products {
 }
 
 model Product_items {
-  id         Int       @id @default(autoincrement())
-  product_id Int
-  course_id  Int
-  quantity   Int       @default(1)
-  status     Int       @default(1)
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime? @updatedAt
-  course     Courses   @relation(fields: [course_id], references: [id])
-  product    Products  @relation(fields: [product_id], references: [id])
+  id          Int       @id @default(autoincrement())
+  product_id  Int
+  course_id   Int
+  quantity    Int       @default(1)
+  course_tier Int       @default(1) // [1-full, 2-limited]
+  status      Int       @default(1)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  course      Courses   @relation(fields: [course_id], references: [id])
+  product     Products  @relation(fields: [product_id], references: [id])
 }
 
 model Payments {
@@ -276,16 +278,17 @@ model Payments {
 }
 
 model Payment_items {
-  id         Int       @id @default(autoincrement())
-  payment_id Int
-  course_id  Int
-  quantity   Int       @default(1)
-  giftable   Int       @default(0)
-  status     Int       @default(1)
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime? @updatedAt
-  course     Courses   @relation(fields: [course_id], references: [id])
-  payment    Payments  @relation(fields: [payment_id], references: [id])
+  id          Int       @id @default(autoincrement())
+  payment_id  Int
+  course_id   Int
+  quantity    Int       @default(1)
+  giftable    Int       @default(0)
+  course_tier Int       @default(1) // [1-full, 2-limited]
+  status      Int       @default(1)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+  course      Courses   @relation(fields: [course_id], references: [id])
+  payment     Payments  @relation(fields: [payment_id], references: [id])
 }
 
 model Affiliates {
@@ -403,5 +406,5 @@ model Subscriber_groups {
   status           Int       @default(1)
   createdAt        DateTime  @default(now())
   updatedAt        DateTime? @updatedAt
-  course           Courses?   @relation(fields: [course_id], references: [id])
+  course           Courses?  @relation(fields: [course_id], references: [id])
 }

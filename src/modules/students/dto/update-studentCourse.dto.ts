@@ -36,4 +36,9 @@ export class UpdateStudentCourseDto {
   @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1]) // 0 - delete, 1 - active
   status: number;
+
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  @IsIn([1, 2]) // [1-full, 2-limited]
+  course_tier: number;
 }

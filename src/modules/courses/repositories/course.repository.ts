@@ -42,7 +42,7 @@ export class CourseRepository extends AbstractRepository<Courses> {
     });
   }
 
-  async findById(id: number) {
+  async findById(id: number): Promise<Courses> {
     return this.prisma[this.modelName].findUnique({ where: { id: id } });
   }
 }

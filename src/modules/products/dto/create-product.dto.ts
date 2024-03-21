@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
-import { Type } from 'class-transformer';
-import { IsArray, IsDecimal, IsNotEmpty, IsOptional, IsString, ValidateNested, isNumber } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { IsArray, IsDecimal, IsIn, IsNotEmpty, IsOptional, IsString, ValidateNested, isNumber } from 'class-validator';
 
 export class CreateProductDto {
   @IsNotEmpty()
@@ -36,4 +36,9 @@ export class ItemsDTO {
 
   @IsNotEmpty()
   quantity: number;
+
+  @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
+  @IsIn([1, 2]) // [1-full, 2-limited]
+  course_tier: number;
 }
