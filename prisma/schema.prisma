@@ -133,7 +133,7 @@ model Topics {
   medias           Medias[]
   module           Modules          @relation(fields: [module_id], references: [id])
   speaker          Speakers         @relation(fields: [speaker_id], references: [id])
-  // applied_study    Applied_studies? @relation(fields: [applied_study_id], references: [id])
+  applied_study    Applied_studies? @relation(fields: [applied_study_id], references: [id])
 }
 
 model Files {
@@ -358,7 +358,7 @@ model Applied_studies {
   updatedAt   DateTime? @updatedAt
   course      Courses   @relation(fields: [course_id], references: [id])
   speaker     Speakers? @relation(fields: [speaker_id], references: [id])
-  // Topics      Topics[]
+  Topics      Topics[]
 }
 
 model Certificates {
