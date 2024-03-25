@@ -24,7 +24,7 @@ export class CertificateApiController {
 
     const htmlFilePath = 'src/common/templates/certificate.template.html';
 
-    let moduleHtml = '';
+    let moduleHtml = [];
     const result = await this.studentCertificatesService.getPreviousModules(studentInfo.id, studCertificate.course_id);
     const certificate = await this.studentCertificatesService.getCertificate(studCertificate.certificate_tier);
     const course = await this.coursesService.getCourse(studCertificate.course_id);
@@ -34,7 +34,7 @@ export class CertificateApiController {
 
     let endDate;
     let startDate = null;
-    const modules = result.student_modules.length
+    const modules = result.student_modules.length;
     let lectures = 0;
     for (let i = 0; i < result.student_modules.length; i++) {
       if (i > 11) break;
@@ -43,18 +43,15 @@ export class CertificateApiController {
       let speakerName: string;
       const topics = module.topics as unknown as any;
       lectures += topics.length;
-      // topics.forEach(topic => {
-      //   if(topic.main_topic == 1) speakerName = topic.speaker.name
-      // });
-      // moduleHtml += `<div class="child"> ${speakerName ? `<b>${speakerName}</b> - ` : '' } ${module.name}.</div>`;
       let speakersIds = [];
 
       topics.forEach((topic) => {
         if (!speakersIds.includes(topic.speaker.id)) {
-          moduleHtml += `<div class="child">${topic.speaker.name}.</div>`;
+          moduleHtml.push(topic.speaker.name);
+          speakersIds.push(topic.speaker.id);
         }
       });
-      
+
       if (startDate == null) startDate = module.start_date;
       endDate = module.start_date;
     }
@@ -73,12 +70,13 @@ export class CertificateApiController {
     // const formattedStartDate = `${startMonth.toString().padStart(2, '0')}.${startYear.toString().padStart(2, '0')}`;
 
     // format start date
-    const newStartDate = this.formatDate(new Date(startDate));
+    const newStartDate = this.formatMonthYear(new Date(startDate));
     // format end date
-    const newEndDate = this.formatDate(new Date(endDate));
-  
+    const newEndDate = this.formatMonthYear(new Date(endDate));
+    const certDate = this.formatDate(new Date(endDate));
+
     const completionInfo = `Completed the ${course.name} at NEXT MBA by Attending 12 modules ( ${lectures} lectures, ${hours} hours) and participating in the required assignments during the period between ${newStartDate} and ${newEndDate}.`;
-    const attendanceInfo = `Attended the ${course.name} ( ${modules} modules/ ${lectures} lectures/ ${hours} hours) during period between ${newStartDate} and ${newEndDate}.`
+    const attendanceInfo = `Attended the ${course.name} ( ${modules} modules/ ${lectures} lectures/ ${hours} hours) during period between ${newStartDate} and ${newEndDate}.`;
 
     let fontSize: string;
     if (studentInfo.name.length <= 24) fontSize = '60px';
@@ -90,10 +88,10 @@ export class CertificateApiController {
       courseName: courseName,
       name: studentInfo.name,
       nameFontSize: fontSize,
-      modules: moduleHtml,
+      modules: moduleHtml.join(', ') + '.',
       template: certificate.template,
       certificate_id: studCertificate.certificate_code,
-      certificate_date: newEndDate,
+      certificate_date: certDate,
       info: studCertificate.certificate_tier == 1 ? completionInfo : attendanceInfo,
     };
 
@@ -110,5 +108,25 @@ export class CertificateApiController {
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Add 1 because getMonth() returns zero-based index
     const year = date.getFullYear();
     return `${day}.${month}.${year}`;
+  }
+
+  formatMonthYear(date) {
+    const monthNames = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    const month = monthNames[date.getMonth()].toUpperCase();
+    const year = date.getFullYear();
+    return `${month} ${year}`;
   }
 }

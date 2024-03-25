@@ -61,15 +61,22 @@
       
       .modules {
         position: absolute;
-        width: 630px;
-        left: 420px;
-        top: 468px;
+        width: 850px;
+        left: 205px;
+        top: 490px;
         margin-left: auto; 
         margin-right: auto; 
         z-index: 100;
         display: flex;
         flex-wrap: wrap;
         /* background: DodgerBlue; */
+      }
+
+      .modules h2{
+        text-transform: uppercase;
+        font-weight: normal;
+        font-size: 14px;
+        color: #515151;
       }
             
       .child {
@@ -106,6 +113,7 @@
 
       .description {
         position: absolute;
+        text-transform: uppercase;
         font-weight: normal;
         font-size: 12px;
         color: #515151;
@@ -164,9 +172,9 @@
       />
 
       <div class="modules">
-        {{modules}}
+        <h2>{{modules}}</h2>
       </div>
-      <h2 class="certificateId">Certificate Code: {{certificate_id}}</h2>
+      <!-- <h2 class="certificateId">Certificate Code: {{certificate_id}}</h2> -->
       <h2 class="description">{{info}}</h2>
       <h2 class="speaker">Course speakers:</h2>
       <h3 class="certificateDate"><b>{{certificate_date}}</b></h3>
