@@ -21,6 +21,7 @@ export class SubscriberGroupsService {
       }, {});
 
     const subscriberGroups = allSubscriberGroups.map((group) => group.group_id);
+    subscriberGroups.push(process.env.PRO_ACCOUNTS_GROUP_ID);
 
     return { courseStartingDates, allSubscriberGroups: subscriberGroups };
   }
