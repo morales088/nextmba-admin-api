@@ -10,6 +10,7 @@ import { StudentsService } from '../students/services/students.service';
 import { HashService } from 'src/common/utils/hash.service';
 import { SendMailService } from 'src/common/utils/send-mail.service';
 import { StudentCoursesRepository } from '../students/repositories/student_courses.repository';
+import { CourseRepository } from '../courses/repositories/course.repository';
 
 @Module({
   imports: [PrismaModule],
@@ -24,6 +25,7 @@ import { StudentCoursesRepository } from '../students/repositories/student_cours
     HashService,
     SendMailService,
     StudentCoursesRepository,
+    CourseRepository
   ],
 })
 export class GiftsModule {}

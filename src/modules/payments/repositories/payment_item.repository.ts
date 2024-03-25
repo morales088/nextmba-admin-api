@@ -34,6 +34,7 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
       product_id: number;
       course_id: number;
       quantity: number;
+      course_tier: number;
       status: number;
     }[];
     const currentDate = new Date();
@@ -56,6 +57,7 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
         course_id: product_item.course_id,
         quantity: product_item.quantity,
         giftable: giftable,
+        course_tier: product_item.course_tier,
       };
 
       // console.log('itemData:',itemData)
@@ -98,6 +100,7 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
         course_id: product_item.course_id,
         starting_date: startingDate,
         expiration_date: expirationDate,
+        course_tier: product_item.course_tier,
       };
       // add student course for first time enrollee
       if (!studentCourse) await this.prisma.student_courses.create({ data: studentCourseData });
@@ -113,6 +116,7 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
         const newStudentCourseData = {
           expiration_date: newExpDate,
           module_quantity: newModuleQuantity,
+          course_tier: product_item.course_tier,
         };
 
         await this.prisma.student_courses.update({ where: { id: studentCourse.id }, data: newStudentCourseData });
