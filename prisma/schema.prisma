@@ -363,6 +363,7 @@ model Applied_studies {
 
 model Certificates {
   id               Int    @id @default(autoincrement())
+  certificate_code String?
   certificate_tier Int    @default(1) // [1-completition, 2-attendance]
   template         String @db.Text
 
