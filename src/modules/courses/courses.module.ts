@@ -11,6 +11,7 @@ import { AwsS3Service } from 'src/common/aws/aws_s3.service';
     PrismaModule,
   ],
   controllers: [CoursesController],
-  providers: [CoursesService, CourseRepository, AwsService, AwsS3Service]
+  providers: [CoursesService, CourseRepository, AwsService, AwsS3Service],
+  exports: [CoursesService]
 })
 export class CoursesModule {}

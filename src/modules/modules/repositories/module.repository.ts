@@ -80,4 +80,46 @@ export class ModuleRepository extends AbstractRepository<Modules> {
       data: data,
     });
   }
+  
+
+  async previousModules(userId, courseId) {
+    const results: Modules[] = await this.prisma.$queryRaw`SELECT distinct m.*
+                                                          FROM "Modules" as m
+                                                          LEFT JOIN "Courses" as C ON m.course_id = c.id and c.id = ${courseId}
+                                                          LEFT JOIN "Student_courses" as sc ON sc.course_id = c.id and sc.student_id = ${userId}
+                                                          WHERE m.status in (4,5) AND c.is_displayed = 1 AND c.status <> 0 AND sc.status <> 0 AND sc.starting_date <= m.start_date
+                                                          ORDER BY m.start_date asc`;
+
+    let modules = results as unknown as {
+      id: number;
+      name: string;
+      description: string;
+      start_date: string;
+      course_id: number;
+      course: object;
+      translations: object;
+      topics: object[];
+      medias: object;
+      has_access: boolean;
+    }[];
+
+    for (const module of modules) {
+
+      // add topics to module
+      const topics = await this.prisma.topics.findMany({
+        where: { module_id: module.id, status: 1, hide_recordings: false },
+        include: {
+          speaker: true,
+          files: { where: { status: 1 } },
+          medias: { where: { status: 1 } },
+        },
+      });
+      module.topics = topics;
+
+    }
+
+    const filteredModules =  modules.filter((res) => res.topics.length > 0);
+
+    return filteredModules;
+  }
 }

@@ -39,4 +39,9 @@ export class CreateStudentCourseDto {
   @Type(() => Date)
   @IsDate()
   expiration_date: Date;
+
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  @IsIn([1, 2]) // [1-full, 2-limited]
+  course_tier: number;
 }

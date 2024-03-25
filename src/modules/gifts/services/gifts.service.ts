@@ -7,6 +7,7 @@ import { StudentsService } from 'src/modules/students/services/students.service'
 import { StudentCoursesRepository } from 'src/modules/students/repositories/student_courses.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { SendMailService } from 'src/common/utils/send-mail.service';
+import { CourseRepository } from 'src/modules/courses/repositories/course.repository';
 
 @Injectable()
 export class GiftsService {
@@ -17,7 +18,8 @@ export class GiftsService {
     private readonly studentRepository: StudentRepository,
     private readonly studentsService: StudentsService,
     private readonly studentCoursesRepository: StudentCoursesRepository,
-    private readonly sendMailService: SendMailService
+    private readonly sendMailService: SendMailService,
+    private readonly courseRepository: CourseRepository
   ) {}
 
   async getGiftable(studentId: number) {
@@ -81,31 +83,33 @@ export class GiftsService {
 
         studentId = createStudent.id;
       }
+      
+      const course = await this.courseRepository.findById(data.course_id);
 
       // insert student course
-      const startingDate = new Date();
+      const startingDate = new Date(course.starting_date);
 
-      switch (data.course_id) {
-        // Marketing course
-        case 1:
-          startingDate.setDate(3);
-          break;
+      // switch (data.course_id) {
+      //   // Marketing course
+      //   case 1:
+      //     startingDate.setDate(3);
+      //     break;
 
-        // Executive Course
-        case 2:
-          startingDate.setDate(5);
-          break;
+      //   // Executive Course
+      //   case 2:
+      //     startingDate.setDate(5);
+      //     break;
 
-        // Tracy Mastermind
-        case 6:
-          startingDate.setDate(17);
-          break;
+      //   // Tracy Mastermind
+      //   case 6:
+      //     startingDate.setDate(17);
+      //     break;
 
-        // Technology Course
-        case 7:
-          startingDate.setDate(10);
-          break;
-      }
+      //   // Technology Course
+      //   case 7:
+      //     startingDate.setDate(10);
+      //     break;
+      // }
 
       const expirationDate = new Date(startingDate);
       expirationDate.setFullYear(expirationDate.getFullYear() + 1);
@@ -116,6 +120,7 @@ export class GiftsService {
         course_type: 3,
         starting_date: startingDate,
         expiration_date: expirationDate,
+        course_tier : paymentItem.course_tier
       };
 
       await this.studentCoursesRepository.insert(studentCourseData);
@@ -154,5 +159,9 @@ export class GiftsService {
       quantity: newGiftable,
     };
     return this.giftRepository.updateGift(id, giftable);
+  }
+
+  async getCourse(id: number) {
+    return this.courseRepository.findById(id);
   }
 }

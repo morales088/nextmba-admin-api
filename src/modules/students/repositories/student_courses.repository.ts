@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { AbstractRepository } from 'src/common/repositories/abstract.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { Student_courses, Students } from '@prisma/client';
 import { UpdateStudentDto } from '../dto/update-student.dto';
+import { FilterOptions } from '../interfaces/student.interface';
 
 @Injectable()
 export class StudentCoursesRepository extends AbstractRepository<Student_courses> {
@@ -79,11 +80,24 @@ export class StudentCoursesRepository extends AbstractRepository<Student_courses
 
     return studCourses;
   }
-  
+
   async activeCourses() {
     return this.prisma.courses.findMany({
       where: { is_displayed: 1, paid: 1, status: 1 },
       orderBy: { id: 'asc' },
+    });
+  }
+
+  async findExpiredCourses(expiredDate: Date, currentDate: Date) {
+    return this.prisma[this.modelName].findMany({
+      where: {
+        status: 0,
+        expiration_date: {
+          gt: expiredDate,
+          lt: currentDate,
+        },
+      },
+      include: { course: true, student: true },
     });
   }
 }

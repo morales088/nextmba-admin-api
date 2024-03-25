@@ -5,6 +5,10 @@ import axios from 'axios';
 export class DailycoService {
   private apiKey: string = process.env.DAILY_API;
   private url: string = 'https://api.daily.co/v1';
+  
+  #awsS3
+  private bucket: string = process.env.AWS_BUCKET;
+  private region: string = process.env.AWS_DEFAULT_REGION;
 
   async createMeetingRoom(roomName: string): Promise<any> {
     try {
@@ -16,7 +20,15 @@ export class DailycoService {
           "properties": {
             "enable_chat" : true,
             "enable_emoji_reactions" : true,
-            "enable_advanced_chat" : true
+            "enable_advanced_chat" : true,
+            // "enable_recording" : "cloud",
+            // "enable_recording" : "raw-tracks",
+            // "recordings_bucket": {
+            //     "bucket_name": this.bucket+'/Live-recordings',
+            //     "bucket_region": this.region,
+            //     "assume_role_arn": "arn:aws:iam::555555555555:role/DailyS3AccessRole",
+            //     "allow_api_access": true
+            // }
           }
         },
         {

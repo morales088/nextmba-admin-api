@@ -21,5 +21,14 @@ import { SendMailService } from 'src/common/utils/send-mail.service';
     PaymentItemRepository,
     StudentCoursesRepository,
   ],
+  exports: [
+    StudentsService,
+    StudentRepository,
+    HashService,
+    SendMailService,
+    PaymentRepository,
+    PaymentItemRepository,
+    StudentCoursesRepository,
+  ],
 })
 export class StudentsModule {}

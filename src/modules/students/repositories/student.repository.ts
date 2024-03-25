@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { AbstractRepository } from 'src/common/repositories/abstract.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { Students } from '@prisma/client';
 import { UpdateStudentDto } from '../dto/update-student.dto';
+import { FilterOptions } from '../interfaces/student.interface';
 
 @Injectable()
 export class StudentRepository extends AbstractRepository<Students> {
@@ -42,7 +43,7 @@ export class StudentRepository extends AbstractRepository<Students> {
     filters,
     pageNumber: number = 1,
     perPage: number = 10
-  ): Promise<Students> {
+  ): Promise<Students[]> {
     const skipAmount = (pageNumber - 1) * perPage;
     const searchData = search ?? '';
 
@@ -101,7 +102,7 @@ export class StudentRepository extends AbstractRepository<Students> {
 
     return this.prisma[this.modelName].findMany({
       where: whereCondition,
-      include: { student_courses: { where: { status: 1 } } },
+      include: { student_courses: { where: { status: 1 }, include: { course: true } } },
       orderBy: [
         {
           id: 'desc',
@@ -150,6 +151,24 @@ export class StudentRepository extends AbstractRepository<Students> {
     return this.prisma[this.modelName].findUnique({
       where: { email: email },
       include: { student_courses: { where: { status: 1 } } },
+    });
+  }
+
+  async findStudentsByDateFilter(options: FilterOptions) {
+    const { field, value, comparisonOperator } = options;
+    const whereCondition = {}
+
+    if (field && value && comparisonOperator) {
+      whereCondition[field] = {
+        [comparisonOperator]: value
+      }
+    } else {
+      throw new InternalServerErrorException('Invalid filter options.')
+    }
+
+    return this.prisma[this.modelName].findMany({
+      where: whereCondition,
+      include: { student_courses: { include: { course: true } } },
     });
   }
 }

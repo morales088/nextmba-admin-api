@@ -23,12 +23,21 @@ import { GiftsModule } from './modules/gifts/gifts.module';
 import { MeetingsModule } from './modules/meetings/meetings.module';
 import { AppliedStudiesModule } from './modules/applied_studies/applied_studies.module';
 import { BillingsModule } from './modules/billings/billings.module';
+import { CertificatesModule } from './modules/certificates/certificates.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CronModule } from './modules/cron/cron.module';
+import { MailerliteCronService } from './modules/cron/services/mailerlite-cron.service';
 import * as dotenv from 'dotenv';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { MailerliteModule } from './common/mailerlite/mailerlite.module';
+import { SubscriberGroupsModule } from './modules/subscriber_groups/subscriber-groups.module';
 
 dotenv.config();
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     MailerModule.forRoot({
       transport: {
         host: process.env.MAIL_HOST,
@@ -43,6 +52,9 @@ dotenv.config();
         from: `"${process.env.MAIL_FROM_NAME}" <${process.env.MAIL_FROM_ADDRESS}>`,
       },
     }),
+    // ServeStaticModule.forRoot({
+    //   rootPath: join(__dirname, '..', 'src/common/files'), // Adjust the path as needed
+    // }),
     AuthModule,
     UserModule,
     CloudinaryModule,
@@ -63,6 +75,10 @@ dotenv.config();
     MeetingsModule,
     AppliedStudiesModule,
     BillingsModule,
+    CertificatesModule,
+    CronModule,
+    MailerliteModule,
+    SubscriberGroupsModule,
   ],
   controllers: [],
   providers: [SendMailService],
