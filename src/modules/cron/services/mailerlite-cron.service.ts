@@ -76,6 +76,12 @@ export class MailerliteCronService {
       const subscriber = await this.mailerLiteService.createOrUpdateSubscriber({ email: studentEmail });
 
       const student = await this.studentService.getStudentByEmail(studentEmail);
+
+      if (!student || !student.student_courses) {
+        this.logger.debug(`Unable to process student courses.`);
+        return;
+      }
+
       const studentCourses = student.student_courses;
 
       const { courseStartingDates, allSubscriberGroups } = await this.subscriberGroupsService.getAllSubscriberGroups();
