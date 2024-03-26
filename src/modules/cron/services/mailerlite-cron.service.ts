@@ -118,7 +118,7 @@ export class MailerliteCronService {
         this.logger.log(`Removed from subscribers: ${studentEmail}`);
       }
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      this.logger.error('An error occurred:', error.message);
     }
   }
 
@@ -150,7 +150,7 @@ export class MailerliteCronService {
         this.logger.log(`Removed from subscribers: ${studentEmail}`);
       }
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      this.logger.error('An error occurred:', error.message);
     }
   }
 }
