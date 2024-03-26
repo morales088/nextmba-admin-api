@@ -30,6 +30,10 @@ export class PaymentsService {
   async createPayment(data) {
     // const payment = this.prisma.$transaction(async (prisma) => {
 
+    // check if ref id already exist
+    const payment = await this.paymentRepository.findByReferenceId(data.reference_id);
+    if (data.reference_id && payment.length > 0) return { message: 'Reference Id already exists.' };
+
     // get product details
     const product = await this.productRepository.findByCode(data.product_code);
     if (!product) return { message: 'Invalid Product Code.' };

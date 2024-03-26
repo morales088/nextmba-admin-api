@@ -111,6 +111,15 @@ export class PaymentRepository extends AbstractRepository<Payments> {
     return payments;
   }
 
+  async findByReferenceId(referenceId: string) {
+    const payments = await this.prisma[this.modelName].findMany({
+      where: { reference_id: referenceId, status: 1 },
+      include: { payment_items: true },
+    });
+
+    return payments;
+  }
+
   async findByFromStudId(studentId: number): Promise<Payments> {
     return this.prisma[this.modelName].findMany({
       where: { from_student_id: studentId, status: 1 },
