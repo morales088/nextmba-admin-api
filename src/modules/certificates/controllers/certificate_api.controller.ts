@@ -36,6 +36,7 @@ export class CertificateApiController {
     let startDate = null;
     const modules = result.student_modules.length;
     let lectures = 0;
+    let speakersIds = [];
     for (let i = 0; i < result.student_modules.length; i++) {
       if (i > 11) break;
       const module = result.student_modules[i];
@@ -43,8 +44,7 @@ export class CertificateApiController {
       let speakerName: string;
       const topics = module.topics as unknown as any;
       lectures += topics.length;
-      let speakersIds = [];
-
+      
       topics.forEach((topic) => {
         if (!speakersIds.includes(topic.speaker.id)) {
           moduleHtml.push(topic.speaker.name);
