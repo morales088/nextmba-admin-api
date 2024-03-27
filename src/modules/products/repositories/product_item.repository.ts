@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { AbstractRepository } from 'src/common/repositories/abstract.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { Product_items } from '@prisma/client';
+import { ItemsDTO } from '../dto/create-product.dto';
 
 @Injectable()
 export class ProductItemRepository extends AbstractRepository<Product_items> {
@@ -24,9 +25,9 @@ export class ProductItemRepository extends AbstractRepository<Product_items> {
     });
   }
 
-  async insert(data: any): Promise<any> {
+  async insert(data: ItemsDTO): Promise<any> {
     try {
-      return await this.prisma[this.modelName].create({ data });
+      if (data.quantity > 0) return await this.prisma[this.modelName].create({ data });
     } catch (error) {
       return { success: false, error: error.message };
     }
