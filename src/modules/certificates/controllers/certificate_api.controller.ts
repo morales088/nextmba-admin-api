@@ -34,11 +34,12 @@ export class CertificateApiController {
 
     let endDate;
     let startDate = null;
-    const modules = result.student_modules.length;
+    let modules : number ;
     let lectures = 0;
     let speakersIds = [];
     for (let i = 0; i < result.student_modules.length; i++) {
       if (i > 11) break;
+      modules = i+1
       const module = result.student_modules[i];
 
       let speakerName: string;
@@ -75,7 +76,7 @@ export class CertificateApiController {
     const newEndDate = this.formatMonthYear(new Date(endDate));
     const certDate = this.formatDate(new Date(endDate));
 
-    const completionInfo = `Completed the ${course.name} at NEXT MBA by Attending 12 modules ( ${lectures} lectures, ${hours} hours) and participating in the required assignments during the period between ${newStartDate} and ${newEndDate}.`;
+    const completionInfo = `Completed the ${course.name} at NEXT MBA by Attending ${modules} modules ( ${lectures} lectures, ${hours} hours) and participating in the required assignments during the period between ${newStartDate} and ${newEndDate}.`;
     const attendanceInfo = `Attended the ${course.name} ( ${modules} modules/ ${lectures} lectures/ ${hours} hours) during period between ${newStartDate} and ${newEndDate}.`;
 
     let fontSize: string;
