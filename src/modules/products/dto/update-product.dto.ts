@@ -39,7 +39,7 @@ export class ItemsDTO {
   @IsOptional()
   quantity: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @Transform(({ value }) => parseInt(value))
   @IsIn([1, 2]) // [1-full, 2-limited]
   course_tier: number;

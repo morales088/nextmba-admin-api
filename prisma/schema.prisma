@@ -113,7 +113,7 @@ model Topics {
   id               Int              @id @default(autoincrement())
   module_id        Int
   speaker_id       Int
-  applied_study_id Int?             @default(0)
+  applied_study_id Int?             
   name             String           @db.VarChar(255)
   description      String?
   cover_photo      String?
