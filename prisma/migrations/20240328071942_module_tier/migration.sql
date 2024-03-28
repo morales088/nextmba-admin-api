@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Modules" ADD COLUMN     "tier" INTEGER NOT NULL DEFAULT 1;
