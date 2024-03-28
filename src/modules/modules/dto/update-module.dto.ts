@@ -48,6 +48,11 @@ export class UpdateModuleDto {
 
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
+  @IsIn([1, 2, 3]) // 1 - Full, 2 - Limited, 3 - All
+  tier: number;
+
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1, 2, 3, 4, 5]) // [0 - delete, 1 - draft, 2 - offline, 3 - live, 4 - pending replay, 5 - replay]
   status: number;
 }

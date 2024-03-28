@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsBoolean, IsDate, IsDateString, IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateModuleDto {
@@ -46,4 +46,9 @@ export class CreateModuleDto {
   @IsOptional()
   @IsBoolean()
   display_speaker: boolean;
+
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  @IsIn([1, 2, 3]) // 1 - Full, 2 - Limited, 3 - All
+  tier: number;
 }
