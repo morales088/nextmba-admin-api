@@ -34,4 +34,10 @@ export class CronController {
   async processStudentData() {
     return this.cronService.runProcessStudentData();
   }
+
+  // @Public()
+  // @Get('/process-course-tier')
+  // async processCourseTier() {
+  //   return this.cronService.runProcessCourseTier();
+  // }
 }
