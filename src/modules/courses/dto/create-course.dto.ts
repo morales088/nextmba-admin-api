@@ -51,4 +51,8 @@ export class CreateCourseDto {
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
   is_displayed: number;
+
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  module_length: number;
 }
