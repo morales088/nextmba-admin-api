@@ -149,14 +149,14 @@ export class StudentRepository extends AbstractRepository<Students> {
 
   async findStudentsByDateFilter(options: FilterOptions) {
     const { field, value, comparisonOperator } = options;
-    const whereCondition = {}
+    const whereCondition = {};
 
     if (field && value && comparisonOperator) {
       whereCondition[field] = {
-        [comparisonOperator]: value
-      }
+        [comparisonOperator]: value,
+      };
     } else {
-      throw new InternalServerErrorException('Invalid filter options.')
+      throw new InternalServerErrorException('Invalid filter options.');
     }
 
     return this.prisma[this.modelName].findMany({

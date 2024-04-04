@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { AbstractRepository } from 'src/common/repositories/abstract.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
-import { Student_courses, Students } from '@prisma/client';
+import { Prisma, Student_courses, Students } from '@prisma/client';
 import { UpdateStudentDto } from '../dto/update-student.dto';
 import { FilterOptions } from '../interfaces/student.interface';
 
@@ -99,5 +99,39 @@ export class StudentCoursesRepository extends AbstractRepository<Student_courses
       },
       include: { course: true, student: true },
     });
+  }
+
+  async findStudentCompletedModules() {
+    const currentDate = new Date();
+    console.log('💡 ~ currentDate:', currentDate);
+
+    const completedCourses: any = await this.prisma.$queryRaw`
+      SELECT sc.student_id, 
+        c.id course_id, 
+        count(m.id) AS number_of_modules 
+        -- max(m.end_date) AS max_end_date_of_12th_module
+      FROM "Modules" AS m
+      LEFT JOIN "Courses" AS c ON m.course_id = c.id
+      LEFT JOIN "Student_courses" AS sc ON sc.course_id = c.id
+      WHERE m.status IN (4,5) 
+        AND c.is_displayed = 1 
+        AND c.status <> 0 
+        AND sc.status <> 0 
+        AND sc.starting_date <= m.start_date
+      GROUP BY sc.student_id, c.id 
+      HAVING COUNT(m.id) >= 12 
+      ORDER BY sc.student_id;
+    `;
+
+    // Convert BigInt values
+    const completedCoursesMapped = completedCourses.map((course) => ({
+      student_id: Number(course.student_id),
+      course_id: Number(course.course_id),
+      number_of_modules: String(course.number_of_modules),
+      max_start_date_of_12th_module: course.max_start_date_of_12th_module,
+    }));
+    console.log('💡 ~ completedCoursesMapped:', completedCoursesMapped.length);
+
+    return completedCoursesMapped;
   }
 }

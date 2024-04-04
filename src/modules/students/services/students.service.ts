@@ -177,4 +177,18 @@ export class StudentsService {
 
     return student_courses;
   }
+
+  async getStudentsCompletedModules() {
+    const completedStudents = await this.studentCoursesRepository.findStudentCompletedModules();
+
+    // const studentCourseIds = students.map((student) => {
+    //   return student.student_courses.map((student_course) => student_course.course_id);
+    // });
+    // console.log("💡 ~ studentCourseIds:", studentCourseIds)
+    // console.log('💡 ~ students:', students);
+    // const completedStudents = await this.activeCourses()
+
+    // return students;
+    return completedStudents;
+  }
 }
