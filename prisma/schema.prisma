@@ -39,6 +39,7 @@ model Courses {
   telegram_link               String?
   paid                        Int                    @default(1)
   is_displayed                Int                    @default(1)
+  module_length               Int                    @default(12)
   status                      Int                    @default(1)
   createdAt                   DateTime               @default(now())
   updatedAt                   DateTime?              @updatedAt
