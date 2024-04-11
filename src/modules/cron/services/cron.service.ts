@@ -26,7 +26,7 @@ export class CronService {
       this.delay(1000);
 
       // await this.mailerliteCronService.exportExpiredStudentCourse();
-      const result = await this.mailerliteCronService.exportCompletedStudentModule();
+      const result = await this.mailerliteCronService.exportCompletedStudentsCourses();
       this.delay(500);
 
       console.log('');
@@ -53,12 +53,12 @@ export class CronService {
 
       console.log('');
       this.logger.log('Running: Add student to groups');
-      await this.mailerliteCronService.addStudentsToGroups();
+      // await this.mailerliteCronService.addStudentsToGroups();
       this.delay(1000);
 
       console.log('');
       this.logger.log('Running: Remove students to group');
-      await this.mailerliteCronService.removeStudentsToGroups();
+      // await this.mailerliteCronService.removeStudentsToGroups();
       this.delay(1000);
 
       console.log('');

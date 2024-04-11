@@ -134,4 +134,65 @@ export class StudentCoursesRepository extends AbstractRepository<Student_courses
 
     return completedCoursesMapped;
   }
+
+  async findStudentCourses() {
+    // Subtract 1 month from the current date
+    const currentDate = new Date();
+    // currentDate.setMonth(currentDate.getMonth() - 1);
+
+    const studentCourses = await this.prisma[this.modelName].findMany({
+      where: {
+        expiration_date: { gte: currentDate }, // Fetch only courses with expiration date greater than current date
+        status: 1,
+        course: {
+          status: 1,
+          is_displayed: 1,
+          paid: 1,
+        },
+      },
+      include: {
+        student: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            status: true,
+          },
+        },
+        course: {
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            paid: true,
+            is_displayed: true,
+            module_length: true,
+            starting_date: true,
+            status: true,
+            modules: {
+              select: {
+                id: true,
+                course_id: true,
+                name: true,
+                start_date: true,
+                end_date: true,
+                tier: true,
+                topics: true,
+                status: true,
+              },
+              orderBy: {
+                start_date: 'asc',
+              },
+            },
+          },
+        },
+      },
+      take: 1000,
+      // orderBy: {
+      //   id: 'desc',
+      // },
+    });
+
+    return studentCourses;
+  }
 }

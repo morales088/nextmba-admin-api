@@ -178,17 +178,48 @@ export class StudentsService {
     return student_courses;
   }
 
-  async getStudentsCompletedModules() {
-    const completedStudents = await this.studentCoursesRepository.findStudentCompletedModules();
+  async getStudentsCompletedCourse() {
+    const studentCourses = await this.studentCoursesRepository.findStudentCourses();
 
-    // const studentCourseIds = students.map((student) => {
-    //   return student.student_courses.map((student_course) => student_course.course_id);
-    // });
-    // console.log("💡 ~ studentCourseIds:", studentCourseIds)
-    // console.log('💡 ~ students:', students);
-    // const completedStudents = await this.activeCourses()
+    // Filter out the completed student courses
+    const completedStudentCourses = studentCourses
+      .map((studentCourse) => {
+        const studentCourseStartingDate = studentCourse.starting_date;
 
-    // return students;
-    return completedStudents;
+        // Filter out modules that are completed
+        const filteredModules = studentCourse.course.modules.filter((module) => {
+          // Filter modules after student course starts
+          // Check if module status is [4 - Pending replay, 5 - Replay ]
+          if (module.status === 4 || (module.status === 5 && studentCourseStartingDate <= module.start_date)) {
+            // Filter active topics and visible to recordings
+            const topic = module.topics.find((topic) => {
+              return topic.status === 1 && topic.hide_recordings === false;
+            });
+
+            return topic !== undefined;
+          }
+
+          return false;
+        });
+
+        // Update the course modules with the filtered modules
+        const modifiedStudentCourse = {
+          ...studentCourse.course,
+          modules: filteredModules,
+        };
+
+        // Check if modules are exceeds or equal to course module length
+        if (filteredModules.length >= studentCourse.course.module_length) {
+          return {
+            ...studentCourse,
+            course: modifiedStudentCourse,
+          };
+        }
+
+        return null; // Course not completed
+      })
+      .filter(Boolean);
+
+    return completedStudentCourses;
   }
 }

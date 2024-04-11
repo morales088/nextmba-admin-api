@@ -62,30 +62,30 @@ export class MailerliteCronService {
     return studentCourses;
   }
 
-  async exportCompletedStudentModule() {
-    const studentCompletedModules = await this.studentService.getStudentsCompletedModules();
-    console.log("💡 ~ studentCompletedModules:", studentCompletedModules)
-    const completedStudentModules = [];
+  async exportCompletedStudentsCourses() {
+    const studentsCompleted = await this.studentService.getStudentsCompletedCourse();
+    const studentsCompletedCourses = [];
 
-    // for (const studentModule of studentCompletedModules) {
-    //   const studentEmail = '// email of the student';
+    for (const studentCompleted of studentsCompleted) {
+      const studentEmail = studentCompleted.student.email;
+      const studentStatus = studentCompleted.student.status;
+      const courseIdCompleted = studentCompleted.course_id;
 
-    //   if (!validator.isEmail(studentEmail)) {
-    //     this.logger.debug(`Skipping student with invalid email: ${studentEmail}`);
-    //     continue;
-    //   }
+      if (!validator.isEmail(studentEmail)) {
+        this.logger.debug(`Skipping student with invalid email: ${studentEmail}`);
+        continue;
+      }
 
-    //   completedStudentModules.push({
-    //     course_id: '// course Id',
-    //     student_email: '// student email',
-    //     student_status: '// student status',
-    //   });
+      studentsCompletedCourses.push({
+        course_id: courseIdCompleted,
+        student_email: studentEmail,
+        student_status: studentStatus,
+      });
+    }
 
-    //   await saveToCSV('students-to-remove.csv', completedStudentModules);
+    await saveToCSV('students-to-remove.csv', studentsCompletedCourses);
 
-    //   return studentCompletedModules;
-    // }
-    return studentCompletedModules
+    return studentsCompleted;
   }
 
   async addStudentsToGroups() {
