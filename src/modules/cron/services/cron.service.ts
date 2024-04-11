@@ -22,10 +22,11 @@ export class CronService {
       console.log('');
       this.logger.log('Running: Export students data');
 
-      await this.mailerliteCronService.exportStudentData();
+      // await this.mailerliteCronService.exportStudentData();
       this.delay(1000);
 
-      await this.mailerliteCronService.exportExpiredStudentCourse();
+      // await this.mailerliteCronService.exportExpiredStudentCourse();
+      const result = await this.mailerliteCronService.exportCompletedStudentsCourses();
       this.delay(500);
 
       console.log('');
@@ -33,6 +34,8 @@ export class CronService {
 
       const job = this.schedulerRegistry.getCronJob('export-students-data');
       this.logger.log(`Next Scheduled Date: ${job.nextDate()}`);
+
+      return result
     } catch (error) {
       this.logger.error(`Error in export-students-data cron job: ${error.message}`);
     }
@@ -50,12 +53,12 @@ export class CronService {
 
       console.log('');
       this.logger.log('Running: Add student to groups');
-      await this.mailerliteCronService.addStudentsToGroups();
+      // await this.mailerliteCronService.addStudentsToGroups();
       this.delay(1000);
 
       console.log('');
       this.logger.log('Running: Remove students to group');
-      await this.mailerliteCronService.removeStudentsToGroups();
+      // await this.mailerliteCronService.removeStudentsToGroups();
       this.delay(1000);
 
       console.log('');

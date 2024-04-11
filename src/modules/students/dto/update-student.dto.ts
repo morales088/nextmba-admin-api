@@ -52,6 +52,9 @@ export class UpdateStudentDto {
   is_translator: boolean;
 
   @IsOptional()
+  is_speaker: boolean;
+
+  @IsOptional()
   @IsString()
   profile_picture: string;
 

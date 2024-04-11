@@ -62,6 +62,32 @@ export class MailerliteCronService {
     return studentCourses;
   }
 
+  async exportCompletedStudentsCourses() {
+    const studentsCompleted = await this.studentService.getStudentsCompletedCourse();
+    const studentsCompletedCourses = [];
+
+    for (const studentCompleted of studentsCompleted) {
+      const studentEmail = studentCompleted.student.email;
+      const studentStatus = studentCompleted.student.status;
+      const courseIdCompleted = studentCompleted.course_id;
+
+      if (!validator.isEmail(studentEmail)) {
+        this.logger.debug(`Skipping student with invalid email: ${studentEmail}`);
+        continue;
+      }
+
+      studentsCompletedCourses.push({
+        course_id: courseIdCompleted,
+        student_email: studentEmail,
+        student_status: studentStatus,
+      });
+    }
+
+    await saveToCSV('students-to-remove.csv', studentsCompletedCourses);
+
+    return studentsCompleted;
+  }
+
   async addStudentsToGroups() {
     try {
       const firstRowData = await processAndRemoveFirstEntry('students-to-add.csv');
