@@ -27,7 +27,7 @@ export const saveToCSV = async (fileName: string, data: any[]) => {
 
     // If the file already exists, append data to it
     const writeStream = fs.createWriteStream(filePath, { flags: 'a' });
-    fastCSV.write(data, { headers: false, includeEndRowDelimiter: false }).pipe(writeStream);
+    fastCSV.write(data, { headers: false, includeEndRowDelimiter: true }).pipe(writeStream);
     logger.log('Data appended to existing CSV file successfully.');
   }
 };

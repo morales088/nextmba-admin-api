@@ -101,48 +101,43 @@ export class StudentCoursesRepository extends AbstractRepository<Student_courses
     });
   }
 
-  async findStudentCompletedModules() {
-    const currentDate = new Date();
-    console.log('💡 ~ currentDate:', currentDate);
+  // async findStudentCompletedModules() {
+  //   const currentDate = new Date();
+  //   console.log('💡 ~ currentDate:', currentDate);
 
-    const completedCourses: any = await this.prisma.$queryRaw`
-      SELECT sc.student_id, 
-        c.id course_id, 
-        count(m.id) AS number_of_modules 
-        -- max(m.end_date) AS max_end_date_of_12th_module
-      FROM "Modules" AS m
-      LEFT JOIN "Courses" AS c ON m.course_id = c.id
-      LEFT JOIN "Student_courses" AS sc ON sc.course_id = c.id
-      WHERE m.status IN (4,5) 
-        AND c.is_displayed = 1 
-        AND c.status <> 0 
-        AND sc.status <> 0 
-        AND sc.starting_date <= m.start_date
-      GROUP BY sc.student_id, c.id 
-      HAVING COUNT(m.id) >= 12 
-      ORDER BY sc.student_id;
-    `;
+  //   const completedCourses: any = await this.prisma.$queryRaw`
+  //     SELECT sc.student_id,
+  //       c.id course_id,
+  //       count(m.id) AS number_of_modules
+  //       -- max(m.end_date) AS max_end_date_of_12th_module
+  //     FROM "Modules" AS m
+  //     LEFT JOIN "Courses" AS c ON m.course_id = c.id
+  //     LEFT JOIN "Student_courses" AS sc ON sc.course_id = c.id
+  //     WHERE m.status IN (4,5)
+  //       AND c.is_displayed = 1
+  //       AND c.status <> 0
+  //       AND sc.status <> 0
+  //       AND sc.starting_date <= m.start_date
+  //     GROUP BY sc.student_id, c.id
+  //     HAVING COUNT(m.id) >= 12
+  //     ORDER BY sc.student_id;
+  //   `;
 
-    // Convert BigInt values
-    const completedCoursesMapped = completedCourses.map((course) => ({
-      student_id: Number(course.student_id),
-      course_id: Number(course.course_id),
-      number_of_modules: String(course.number_of_modules),
-      max_start_date_of_12th_module: course.max_start_date_of_12th_module,
-    }));
-    console.log('💡 ~ completedCoursesMapped:', completedCoursesMapped.length);
+  //   // Convert BigInt values
+  //   const completedCoursesMapped = completedCourses.map((course) => ({
+  //     student_id: Number(course.student_id),
+  //     course_id: Number(course.course_id),
+  //     number_of_modules: String(course.number_of_modules),
+  //     max_start_date_of_12th_module: course.max_start_date_of_12th_module,
+  //   }));
 
-    return completedCoursesMapped;
-  }
+  //   return completedCoursesMapped;
+  // }
 
-  async findStudentCourses() {
-    // Subtract 1 month from the current date
-    const currentDate = new Date();
-    // currentDate.setMonth(currentDate.getMonth() - 1);
-
+  async findStudentCourses(queryDate: Date) {
     const studentCourses = await this.prisma[this.modelName].findMany({
       where: {
-        expiration_date: { gte: currentDate }, // Fetch only courses with expiration date greater than current date
+        expiration_date: { gte: queryDate }, // Fetch only courses with expiration date greater than date
         status: 1,
         course: {
           status: 1,
@@ -177,17 +172,29 @@ export class StudentCoursesRepository extends AbstractRepository<Student_courses
                 start_date: true,
                 end_date: true,
                 tier: true,
-                topics: true,
                 status: true,
+                topics: {
+                  select: {
+                    id: true,
+                    module_id: true,
+                    speaker_id: true,
+                    type: true,
+                    publish: true,
+                    status: true,
+                    hide_recordings: true,
+                    featured_lecture: true,
+                  },
+                },
               },
               orderBy: {
-                start_date: 'asc',
+                end_date: 'desc',
               },
             },
           },
         },
       },
-      take: 1000,
+      take: 5000,
+      // skip: 15000,
       // orderBy: {
       //   id: 'desc',
       // },

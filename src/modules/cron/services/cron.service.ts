@@ -22,7 +22,7 @@ export class CronService {
       console.log('');
       this.logger.log('Running: Export students data');
 
-      // await this.mailerliteCronService.exportStudentData();
+      await this.mailerliteCronService.exportStudentData();
       this.delay(1000);
 
       // await this.mailerliteCronService.exportExpiredStudentCourse();
@@ -41,11 +41,10 @@ export class CronService {
     }
   }
   // This cron job executes every 5 minutes from 12 midnight to 11 AM, and then from 1 PM to 11 PM.
-  @Cron('*/5 0-11,13-23 * * *', {
-    // @Cron(CronExpression.EVERY_10_MINUTES, {
-    name: 'process-student-data',
-    timeZone: 'Asia/Manila',
-  })
+  // @Cron('*/5 0-11,13-23 * * *', {
+  //   name: 'process-student-data',
+  //   timeZone: 'Asia/Manila',
+  // })
   async runProcessStudentData() {
     try {
       console.log('');

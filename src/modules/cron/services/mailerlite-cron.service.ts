@@ -63,7 +63,8 @@ export class MailerliteCronService {
   }
 
   async exportCompletedStudentsCourses() {
-    const studentsCompleted = await this.studentService.getStudentsCompletedCourse();
+    // const studentsCompleted = await this.studentService.getStudentsCompletedCourse();
+    const studentsCompleted = await this.studentService.getStudentsCompletedByDate();
     const studentsCompletedCourses = [];
 
     for (const studentCompleted of studentsCompleted) {

@@ -5,6 +5,7 @@ import { PaymentRepository } from 'src/modules/payments/repositories/payment.rep
 import { StudentCoursesRepository } from '../repositories/student_courses.repository';
 import { SendMailService } from 'src/common/utils/send-mail.service';
 import { FilterOptions } from '../interfaces/student.interface';
+import { currentStartOfDay, currentTime, endDayOfMonth, startDayOfMonth } from 'src/common/helpers/date.helper';
 
 @Injectable()
 export class StudentsService {
@@ -178,8 +179,61 @@ export class StudentsService {
     return student_courses;
   }
 
-  async getStudentsCompletedCourse() {
-    const studentCourses = await this.studentCoursesRepository.findStudentCourses();
+  // async getStudentsCompletedCourse() {
+  //   const studentCourses = await this.studentCoursesRepository.findStudentCourses();
+
+  //   // Filter out the completed student courses
+  //   const completedStudentCourses = studentCourses
+  //     .map((studentCourse) => {
+  //       const studentCourseStartingDate = studentCourse.starting_date;
+
+  //       // Filter out modules that are completed
+  //       const filteredModules = studentCourse.course.modules.filter((module) => {
+  //         // Filter modules after student course starts
+  //         // Check if module status is [4 - Pending replay, 5 - Replay ]
+  //         if (module.status === 4 || (module.status === 5 && studentCourseStartingDate <= module.start_date)) {
+  //           // Filter active topics and visible to recordings
+  //           const topic = module.topics.find((topic) => {
+  //             return topic.status === 1 && topic.hide_recordings === false;
+  //           });
+
+  //           return topic !== undefined;
+  //         }
+
+  //         return false;
+  //       });
+
+  //       // Update the course modules with the filtered modules
+  //       const modifiedStudentCourse = {
+  //         ...studentCourse.course,
+  //         modules: filteredModules,
+  //       };
+
+  //       // Check if modules are exceeds or equal to course module length
+  //       if (filteredModules.length >= studentCourse.course.module_length) {
+  //         return {
+  //           ...studentCourse,
+  //           course: modifiedStudentCourse,
+  //         };
+  //       }
+
+  //       return null; // Course not completed
+  //     })
+  //     .filter(Boolean);
+
+  //   return completedStudentCourses;
+  // }
+
+  async getStudentsCompletedByDate() {
+    const date = currentStartOfDay();
+    date.setMonth(date.getMonth() - 2);
+
+    const firstDayOfMonth = startDayOfMonth(date);
+    const lastDayOfMonth = endDayOfMonth(date);
+    console.log('💡 ~ startDateOfMonth:', firstDayOfMonth);
+    console.log('💡 ~ lastDayOfMonth:', lastDayOfMonth);
+
+    const studentCourses = await this.studentCoursesRepository.findStudentCourses(lastDayOfMonth);
 
     // Filter out the completed student courses
     const completedStudentCourses = studentCourses
@@ -202,6 +256,12 @@ export class StudentsService {
           return false;
         });
 
+        // Get the maximum end date of filtered modules
+        const maxEndDate = filteredModules.reduce((maxDate, module) => {
+          const moduleEndDate = new Date(module.end_date);
+          return moduleEndDate > maxDate ? moduleEndDate : maxDate;
+        }, new Date(0));
+
         // Update the course modules with the filtered modules
         const modifiedStudentCourse = {
           ...studentCourse.course,
@@ -210,10 +270,12 @@ export class StudentsService {
 
         // Check if modules are exceeds or equal to course module length
         if (filteredModules.length >= studentCourse.course.module_length) {
-          return {
-            ...studentCourse,
-            course: modifiedStudentCourse,
-          };
+          if (maxEndDate >= firstDayOfMonth && maxEndDate <= lastDayOfMonth) {
+            return {
+              ...studentCourse,
+              course: modifiedStudentCourse,
+            };
+          }
         }
 
         return null; // Course not completed
