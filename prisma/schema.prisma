@@ -39,10 +39,12 @@ model Courses {
   telegram_link               String?
   paid                        Int                    @default(1)
   is_displayed                Int                    @default(1)
+  module_length               Int                    @default(12)
   status                      Int                    @default(1)
   createdAt                   DateTime               @default(now())
   updatedAt                   DateTime?              @updatedAt
-  starting_date               DateTime?              @default(now())
+  // starting_date               DateTime?              @default(now())
+  starting_date               DateTime?
   applied_studies_description String?
   applied_cover_photo         String?
   applied_study_name          String?
@@ -191,6 +193,7 @@ model Students {
   website              String?
   library_access       Int                    @default(0)
   is_translator        Boolean                @default(false)
+  is_speaker           Boolean                @default(false)
   linkedIn             String?
   chat_access          Boolean                @default(true)
   chat_moderator       Boolean                @default(false)
