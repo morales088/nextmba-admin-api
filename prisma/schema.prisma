@@ -43,7 +43,8 @@ model Courses {
   status                      Int                    @default(1)
   createdAt                   DateTime               @default(now())
   updatedAt                   DateTime?              @updatedAt
-  starting_date               DateTime?              @default(now())
+  // starting_date               DateTime?              @default(now())
+  starting_date               DateTime?
   applied_studies_description String?
   applied_cover_photo         String?
   applied_study_name          String?
