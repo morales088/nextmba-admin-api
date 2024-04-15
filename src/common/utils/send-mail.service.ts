@@ -61,7 +61,7 @@ export class SendMailService {
     
     const emailContent = template(templateData);
 
-    const recipients = [ paymentInfo.email, process.env.PAYMENT_INFO_RECIPIENT]
+    const recipients = [ paymentInfo.email, process.env.PAYMENT_INFO_RECIPIENT, process.env.PAYMENT_INFO_RECIPIENT2]
 
     await this.mailerService.sendMail({
       to: recipients,
