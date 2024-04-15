@@ -32,10 +32,61 @@ export const saveToCSV = async (fileName: string, data: any[]) => {
   }
 };
 
+// export const processAndRemoveFirstEntry = async (fileName: string) => {
+//   const filePath = join(getFilesCSVFolderPath(), fileName);
+//   const readStream = fs.createReadStream(filePath);
+
+//   const tempFileName = `temp-data-${randomBytes(4).toString('hex')}.csv`;
+//   const tempFilePath = join(getFilesCSVFolderPath(), tempFileName);
+
+//   let isFirstEntryProcessed = false;
+//   let firstRowData;
+
+//   try {
+//     await new Promise<void>((resolve, reject) => {
+//       const writeStream = fs.createWriteStream(tempFilePath, { flags: 'a' });
+
+//       fastCSV
+//         .parseStream(readStream, { headers: false })
+//         .on('data', async (currentRow) => {
+//           if (!isFirstEntryProcessed) {
+//             firstRowData = currentRow;
+//             isFirstEntryProcessed = true;
+//           } else {
+//             await writeToTempFile(tempFilePath, currentRow);
+//           }
+//         })
+//         .on('end', async () => {
+//           logger.log('CSV processing complete.');
+
+//           // Close the write stream before resolving the promise
+//           writeStream.end(() => {
+//             // Rename the temp file to replace the original file
+//             fs.rename(tempFilePath, filePath, (error) => {
+//               if (error) {
+//                 logger.error('Error renaming file:', error.message);
+//                 reject(error);
+//               } else {
+//                 logger.log('File renamed successfully.');
+//                 resolve();
+//               }
+//             });
+//           });
+//         })
+//         .on('error', (error) => {
+//           logger.error('Error processing CSV:', error.message);
+//           reject(error);
+//         });
+//     });
+//   } catch (error) {
+//     logger.error('An error occurred:', error.message);
+//   }
+
+//   return firstRowData;
+// };
+
 export const processAndRemoveFirstEntry = async (fileName: string) => {
   const filePath = join(getFilesCSVFolderPath(), fileName);
-  const readStream = fs.createReadStream(filePath);
-
   const tempFileName = `temp-data-${randomBytes(4).toString('hex')}.csv`;
   const tempFilePath = join(getFilesCSVFolderPath(), tempFileName);
 
@@ -43,9 +94,10 @@ export const processAndRemoveFirstEntry = async (fileName: string) => {
   let firstRowData;
 
   try {
-    await new Promise<void>((resolve, reject) => {
-      const writeStream = fs.createWriteStream(tempFilePath, { flags: 'a' });
+    const readStream = fs.createReadStream(filePath);
+    const writeStream = fs.createWriteStream(tempFilePath, { flags: 'a' });
 
+    await new Promise<void>((resolve, reject) => {
       fastCSV
         .parseStream(readStream, { headers: false })
         .on('data', async (currentRow) => {
@@ -53,7 +105,7 @@ export const processAndRemoveFirstEntry = async (fileName: string) => {
             firstRowData = currentRow;
             isFirstEntryProcessed = true;
           } else {
-            await writeToTempFile(tempFilePath, currentRow);
+            writeStream.write(currentRow.join(',') + '\n'); // Write current row to temp file
           }
         })
         .on('end', async () => {
