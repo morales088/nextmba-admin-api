@@ -1,6 +1,6 @@
-import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { StudentsService } from '../../students/services/students.service';
-import { processAndRemoveFirstEntry, saveToCSV } from '../../../common/helpers/csv.helper';
+import { processAndRemoveEntries, processAndRemoveFirstEntry, saveToCSV } from '../../../common/helpers/csv.helper';
 import { MailerLiteService } from 'src/common/mailerlite/mailerlite.service';
 import { AccountStatus, AccountType } from 'src/common/constants/enum';
 import { SubscriberGroupsService } from '../../subscriber_groups/services/subscriber-groups.service';
@@ -9,6 +9,10 @@ import validator from 'validator';
 @Injectable()
 export class MailerliteCronService {
   private readonly logger = new Logger(MailerliteCronService.name);
+
+  private async delay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
 
   constructor(
     private readonly studentService: StudentsService,
@@ -63,7 +67,6 @@ export class MailerliteCronService {
   }
 
   async exportCompletedStudentsCourses() {
-    // const studentsCompleted = await this.studentService.getStudentsCompletedCourse();
     const studentsCompleted = await this.studentService.getStudentsCompletedByDate();
     const studentsCompletedCourses = [];
 
@@ -84,7 +87,7 @@ export class MailerliteCronService {
       });
     }
 
-    await saveToCSV('students-to-remove.csv', studentsCompletedCourses);
+    await saveToCSV('students-completed-course.csv', studentsCompletedCourses);
 
     return studentsCompleted;
   }
@@ -101,6 +104,11 @@ export class MailerliteCronService {
       const [studentEmail] = firstRowData;
 
       const subscriber = await this.mailerLiteService.createOrUpdateSubscriber({ email: studentEmail });
+
+      if (!subscriber) {
+        this.logger.debug(`Skipping student with invalid email: ${studentEmail}`);
+        return;
+      }
 
       const student = await this.studentService.getStudentByEmail(studentEmail);
 
@@ -168,19 +176,71 @@ export class MailerliteCronService {
 
       const subscriber = await this.mailerLiteService.createOrUpdateSubscriber({ email: studentEmail });
 
-      const subscriberGroup = await this.subscriberGroupsService.getSubscriberGroupByCourseId(Number(courseId));
+      if (!subscriber) {
+        this.logger.debug(`Skipping student with invalid email: ${studentEmail}`);
+        return;
+      }
+
+      const subscriberGroup = await this.subscriberGroupsService.getSubscriberGroupByCourseId(parseInt(courseId));
 
       if (!subscriberGroup) {
         this.logger.debug(`Skipping student course ${courseId}, No data available.`);
         return;
       }
 
-      if (studentStatus === AccountStatus.INACTIVE) {
+      if (parseInt(studentStatus) === AccountStatus.ACTIVE) {
         await this.mailerLiteService.unAssignSubscriberToGroup(subscriber.id, subscriberGroup.group_id);
         this.logger.log(`Student successfully removed to group: ${studentEmail}`);
       } else {
         await this.mailerLiteService.removeSubscriber(subscriber.id);
         this.logger.log(`Removed from subscribers: ${studentEmail}`);
+      }
+    } catch (error) {
+      this.logger.error('An error occurred:', error.message);
+    }
+  }
+
+  async removeCompletedStudentsToGroups() {
+    try {
+      const rowsData = await processAndRemoveEntries('students-completed-course.csv', 10);
+
+      if (!Array.isArray(rowsData) || rowsData.length === 0) {
+        this.logger.debug(`No data to process in CSV.`);
+        return;
+      }
+
+      for (const rowData of rowsData) {
+        const [courseId, studentEmail, studentStatus] = rowData;
+
+        const subscriber = await this.mailerLiteService.createOrUpdateSubscriber({ email: studentEmail });
+
+        if (!subscriber) {
+          this.logger.debug(`Skipping student with invalid email: ${studentEmail}`);
+          continue;
+        }
+
+        const subscriberGroup = await this.subscriberGroupsService.getSubscriberGroupByCourseId(parseInt(courseId));
+
+        if (!subscriberGroup) {
+          this.logger.debug(`Skipping student course ${courseId}, No data available.`);
+          continue;
+        }
+
+        if (parseInt(studentStatus) === AccountStatus.ACTIVE) {
+          const result = await this.mailerLiteService.unAssignSubscriberToGroup(
+            subscriber.id,
+            subscriberGroup.group_id
+          );
+
+          if (result !== null) {
+            this.logger.log(`Student successfully removed to group: ${studentEmail}`);
+          } else {
+            this.logger.log(`Student is not a member of the group: ${studentEmail}`);
+          }
+        } else {
+          await this.mailerLiteService.removeSubscriber(subscriber.id);
+          this.logger.log(`Removed from subscribers: ${studentEmail}`);
+        }
       }
     } catch (error) {
       this.logger.error('An error occurred:', error.message);

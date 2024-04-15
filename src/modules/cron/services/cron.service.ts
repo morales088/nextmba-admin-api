@@ -25,9 +25,11 @@ export class CronService {
       await this.mailerliteCronService.exportStudentData();
       this.delay(1000);
 
-      // await this.mailerliteCronService.exportExpiredStudentCourse();
-      const result = await this.mailerliteCronService.exportCompletedStudentsCourses();
-      this.delay(500);
+      await this.mailerliteCronService.exportExpiredStudentCourse();
+      this.delay(1000);
+      
+      await this.mailerliteCronService.exportCompletedStudentsCourses();
+      this.delay(1000);
 
       console.log('');
       this.logger.log('Cron job is done.');
@@ -35,16 +37,15 @@ export class CronService {
       const job = this.schedulerRegistry.getCronJob('export-students-data');
       this.logger.log(`Next Scheduled Date: ${job.nextDate()}`);
 
-      return result
     } catch (error) {
       this.logger.error(`Error in export-students-data cron job: ${error.message}`);
     }
   }
   // This cron job executes every 5 minutes from 12 midnight to 11 AM, and then from 1 PM to 11 PM.
-  // @Cron('*/5 0-11,13-23 * * *', {
-  //   name: 'process-student-data',
-  //   timeZone: 'Asia/Manila',
-  // })
+  @Cron('*/5 0-11,13-23 * * *', {
+    name: 'process-student-data',
+    timeZone: 'Asia/Manila',
+  })
   async runProcessStudentData() {
     try {
       console.log('');
@@ -52,12 +53,16 @@ export class CronService {
 
       console.log('');
       this.logger.log('Running: Add student to groups');
-      // await this.mailerliteCronService.addStudentsToGroups();
+      await this.mailerliteCronService.addStudentsToGroups();
       this.delay(1000);
 
       console.log('');
       this.logger.log('Running: Remove students to group');
-      // await this.mailerliteCronService.removeStudentsToGroups();
+      await this.mailerliteCronService.removeStudentsToGroups();
+      
+      console.log('');
+      this.logger.log('Running: Remove students with completed courses to group');
+      await this.mailerliteCronService.removeCompletedStudentsToGroups();
       this.delay(1000);
 
       console.log('');

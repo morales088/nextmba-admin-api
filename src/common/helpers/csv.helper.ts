@@ -17,7 +17,7 @@ export const saveToCSV = async (fileName: string, data: any[]) => {
   if (!fileExists) {
     // Create the file if it doesn't exist and write the data to it
     const writeStream = fs.createWriteStream(filePath);
-    fastCSV.write(data, { headers: false }).pipe(writeStream);
+    fastCSV.write(data, { headers: false, includeEndRowDelimiter: true }).pipe(writeStream);
     logger.log('CSV file created and data saved successfully.');
   } else {
     if (data.length === 0) {

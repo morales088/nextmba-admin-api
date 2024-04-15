@@ -56,7 +56,9 @@ export class MailerLiteService {
         return data;
       })
       .catch((error) => {
-        throw new BadRequestException(error);
+        console.log("💡 ~ error:", error.message)
+        // throw new BadRequestException(error);
+        return null
       });
   }
 
@@ -90,7 +92,7 @@ export class MailerLiteService {
         return response.data;
       })
       .catch((error) => {
-        throw new BadRequestException(error);
+        return null;
       });
   }
 

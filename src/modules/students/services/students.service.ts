@@ -5,7 +5,7 @@ import { PaymentRepository } from 'src/modules/payments/repositories/payment.rep
 import { StudentCoursesRepository } from '../repositories/student_courses.repository';
 import { SendMailService } from 'src/common/utils/send-mail.service';
 import { FilterOptions } from '../interfaces/student.interface';
-import { currentStartOfDay, currentTime, endDayOfMonth, startDayOfMonth } from 'src/common/helpers/date.helper';
+import { currentTime, last24Hours, previousEndOfDay, previousStartOfDay } from 'src/common/helpers/date.helper';
 
 @Injectable()
 export class StudentsService {
@@ -152,12 +152,11 @@ export class StudentsService {
   }
 
   async getStudentsCreatedLast24Hours() {
-    const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    // const last24Hours = new Date(Date.now() - 20 * 24 * 60 * 60 * 1000);
+    const twentyFourHoursAgo = last24Hours();
 
     const dateFilterOptions: FilterOptions = {
       field: 'createdAt',
-      value: last24Hours,
+      value: twentyFourHoursAgo,
       comparisonOperator: 'gte',
     };
 
@@ -167,73 +166,19 @@ export class StudentsService {
   }
 
   async getExpiredCourseLast24Hours() {
-    const currentDate = new Date();
+    const currentDate = currentTime();
+    const twentyFourHoursAgo = last24Hours();
 
-    // Subtract 24 hours from the current date
-    const twentyHoursAgo = new Date(currentDate);
-    twentyHoursAgo.setHours(currentDate.getHours() - 24);
-    // twentyHoursAgo.setMonth(currentDate.getMonth() - 2);
-
-    const student_courses = await this.studentCoursesRepository.findExpiredCourses(twentyHoursAgo, currentDate);
+    const student_courses = await this.studentCoursesRepository.findExpiredCourses(twentyFourHoursAgo, currentDate);
 
     return student_courses;
   }
 
-  // async getStudentsCompletedCourse() {
-  //   const studentCourses = await this.studentCoursesRepository.findStudentCourses();
-
-  //   // Filter out the completed student courses
-  //   const completedStudentCourses = studentCourses
-  //     .map((studentCourse) => {
-  //       const studentCourseStartingDate = studentCourse.starting_date;
-
-  //       // Filter out modules that are completed
-  //       const filteredModules = studentCourse.course.modules.filter((module) => {
-  //         // Filter modules after student course starts
-  //         // Check if module status is [4 - Pending replay, 5 - Replay ]
-  //         if (module.status === 4 || (module.status === 5 && studentCourseStartingDate <= module.start_date)) {
-  //           // Filter active topics and visible to recordings
-  //           const topic = module.topics.find((topic) => {
-  //             return topic.status === 1 && topic.hide_recordings === false;
-  //           });
-
-  //           return topic !== undefined;
-  //         }
-
-  //         return false;
-  //       });
-
-  //       // Update the course modules with the filtered modules
-  //       const modifiedStudentCourse = {
-  //         ...studentCourse.course,
-  //         modules: filteredModules,
-  //       };
-
-  //       // Check if modules are exceeds or equal to course module length
-  //       if (filteredModules.length >= studentCourse.course.module_length) {
-  //         return {
-  //           ...studentCourse,
-  //           course: modifiedStudentCourse,
-  //         };
-  //       }
-
-  //       return null; // Course not completed
-  //     })
-  //     .filter(Boolean);
-
-  //   return completedStudentCourses;
-  // }
-
   async getStudentsCompletedByDate() {
-    const date = currentStartOfDay();
-    date.setMonth(date.getMonth() - 2);
+    const startDate = previousStartOfDay();
+    const endDate = previousEndOfDay();
 
-    const firstDayOfMonth = startDayOfMonth(date);
-    const lastDayOfMonth = endDayOfMonth(date);
-    console.log('💡 ~ startDateOfMonth:', firstDayOfMonth);
-    console.log('💡 ~ lastDayOfMonth:', lastDayOfMonth);
-
-    const studentCourses = await this.studentCoursesRepository.findStudentCourses(lastDayOfMonth);
+    const studentCourses = await this.studentCoursesRepository.findStudentCourses(endDate);
 
     // Filter out the completed student courses
     const completedStudentCourses = studentCourses
@@ -270,7 +215,7 @@ export class StudentsService {
 
         // Check if modules are exceeds or equal to course module length
         if (filteredModules.length >= studentCourse.course.module_length) {
-          if (maxEndDate >= firstDayOfMonth && maxEndDate <= lastDayOfMonth) {
+          if (maxEndDate >= startDate && maxEndDate <= endDate) {
             return {
               ...studentCourse,
               course: modifiedStudentCourse,

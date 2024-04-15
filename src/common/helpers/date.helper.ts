@@ -16,8 +16,23 @@ export const currentEndOfDay = (date = currentTime()) => {
   return new Date(endOfDay.toJSDate());
 };
 
+export const last24Hours = () => {
+  const startOfLast24Hours = DateTime.utc().minus({ hours: 24 });
+  return new Date(startOfLast24Hours.toJSDate());
+};
+
 export const previousDay = (date = currentTime()) => {
   const previousDay = DateTime.fromJSDate(date).minus({ day: 1 });
+  return new Date(previousDay.toJSDate());
+};
+
+export const previousStartOfDay = (date = currentTime()) => {
+  const previousDay = DateTime.fromJSDate(date).minus({ day: 1 }).startOf('day');
+  return new Date(previousDay.toJSDate());
+};
+
+export const previousEndOfDay = (date = currentTime()) => {
+  const previousDay = DateTime.fromJSDate(date).minus({ day: 1 }).endOf('day');
   return new Date(previousDay.toJSDate());
 };
 
