@@ -5,7 +5,7 @@ import MailerLite, {
   SingleGroupResponse,
   SubscriberObject,
 } from '@mailerlite/mailerlite-nodejs';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import { extractCourseName } from '../helpers/extract.helper';
 import { snakeCase, startCase, toLower } from 'lodash';
@@ -16,6 +16,8 @@ import { CreateSubscriberGroup } from 'src/modules/subscriber_groups/dto/subscri
 export class MailerLiteService {
   private readonly apiKey: string;
   private readonly mailerLite: MailerLite;
+
+  private readonly logger = new Logger(MailerLiteService.name);
 
   constructor(private readonly subscriberGroupsService: SubscriberGroupsService) {
     this.apiKey = process.env.MAILERLITE_API_KEY;
@@ -56,7 +58,8 @@ export class MailerLiteService {
         return data;
       })
       .catch((error) => {
-        throw new BadRequestException(error);
+        console.log('💡 ~ error:', error.message);
+        return null;
       });
   }
 
@@ -68,7 +71,8 @@ export class MailerLiteService {
         return data;
       })
       .catch((error) => {
-        throw new BadRequestException(error);
+        this.logger.error('An error occurred:', error.message);
+        return null;
       });
   }
 
@@ -79,7 +83,8 @@ export class MailerLiteService {
         return response.data;
       })
       .catch((error) => {
-        throw new BadRequestException(error);
+        this.logger.error('An error occurred:', error.message);
+        return null;
       });
   }
 
@@ -90,7 +95,8 @@ export class MailerLiteService {
         return response.data;
       })
       .catch((error) => {
-        throw new BadRequestException(error);
+        this.logger.error('An error occurred:', error.message);
+        return null;
       });
   }
 
@@ -114,29 +120,26 @@ export class MailerLiteService {
   }
 
   async createNewSubscriberGroup(courseId: number, courseName: string) {
-    const extractedCourseName = extractCourseName(courseName);
-    const subscriberGroupName = startCase(`${extractedCourseName} Students`);
+    try {
+      const extractedCourseName = extractCourseName(courseName);
+      const subscriberGroupName = startCase(`${extractedCourseName} Students`);
 
-    const createdGroup = await this.mailerLite.groups
-      .create({ name: subscriberGroupName })
-      .then((response) => {
-        const { data } = response.data;
-        return data;
-      })
-      .catch((error) => {
-        throw new BadRequestException(error);
-      });
+      const createdGroup = await this.mailerLite.groups.create({ name: subscriberGroupName });
+      const { data } = createdGroup.data;
 
-    const startDateName = snakeCase(toLower(`${extractedCourseName}_${courseId}_start_date`));
-    const newField = await this.createNewField(startDateName, 'date');
+      const startDateName = snakeCase(toLower(`${extractedCourseName}_${courseId}_start_date`));
+      const newField = await this.createNewField(startDateName, 'date');
 
-    await this.subscriberGroupsService.createSubscriberGroup({
-      course_id: courseId,
-      group_id: createdGroup.id,
-      group_name: createdGroup.name,
-      start_date_field: newField.name,
-    } as CreateSubscriberGroup);
+      await this.subscriberGroupsService.createSubscriberGroup({
+        course_id: courseId,
+        group_id: data.id,
+        group_name: data.name,
+        start_date_field: newField.name,
+      } as CreateSubscriberGroup);
 
-    return createdGroup;
+      return data;
+    } catch (error) {
+      this.logger.error('An error occurred while creating a new subscriber group:', error);
+    }
   }
 }
