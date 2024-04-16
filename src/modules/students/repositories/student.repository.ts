@@ -148,22 +148,22 @@ export class StudentRepository extends AbstractRepository<Students> {
   }
 
   async findByEmail(email: string) {
-    return this.prisma[this.modelName].findUnique({
-      where: { email: email },
+    return this.prisma[this.modelName].findFirst({
+      where: { email: { contains: email, mode: 'insensitive' } },
       include: { student_courses: { where: { status: 1 } } },
     });
   }
 
   async findStudentsByDateFilter(options: FilterOptions) {
     const { field, value, comparisonOperator } = options;
-    const whereCondition = {}
+    const whereCondition = {};
 
     if (field && value && comparisonOperator) {
       whereCondition[field] = {
-        [comparisonOperator]: value
-      }
+        [comparisonOperator]: value,
+      };
     } else {
-      throw new InternalServerErrorException('Invalid filter options.')
+      throw new InternalServerErrorException('Invalid filter options.');
     }
 
     return this.prisma[this.modelName].findMany({
