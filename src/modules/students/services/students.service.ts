@@ -5,7 +5,7 @@ import { PaymentRepository } from 'src/modules/payments/repositories/payment.rep
 import { StudentCoursesRepository } from '../repositories/student_courses.repository';
 import { SendMailService } from 'src/common/utils/send-mail.service';
 import { FilterOptions } from '../interfaces/student.interface';
-import { currentTime, last24Hours, previousEndOfDay, previousStartOfDay } from 'src/common/helpers/date.helper';
+import { currentTime, endDayOfMonth, last24Hours, previousEndOfDay, previousStartOfDay, startDayOfMonth } from 'src/common/helpers/date.helper';
 
 @Injectable()
 export class StudentsService {
@@ -175,8 +175,10 @@ export class StudentsService {
   }
 
   async getStudentsCompletedByDate() {
-    const startDate = previousStartOfDay();
-    const endDate = previousEndOfDay();
+    // const startDate = previousStartOfDay();
+    // const endDate = previousEndOfDay();
+    const startDate = startDayOfMonth();
+    const endDate = endDayOfMonth();
 
     const studentCourses = await this.studentCoursesRepository.findStudentCourses(endDate);
 

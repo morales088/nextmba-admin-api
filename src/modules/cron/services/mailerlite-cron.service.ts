@@ -21,75 +21,85 @@ export class MailerliteCronService {
   ) {}
 
   async exportStudentData() {
-    const students = await this.studentService.getStudentsCreatedLast24Hours();
-    const validStudents = [];
+    try {
+      const students = await this.studentService.getStudentsCreatedLast24Hours();
+      const validStudents = [];
 
-    for (const student of students) {
-      if (!validator.isEmail(student.email)) {
-        this.logger.debug(`Skipping student with invalid email: ${student.email}`);
-        continue;
+      for (const student of students) {
+        if (!validator.isEmail(student.email)) {
+          this.logger.debug(`Skipping student with invalid email: ${student.email}`);
+          continue;
+        }
+
+        validStudents.push({
+          email: student.email,
+        });
       }
 
-      // If the email is valid, add the student info to validStudents array
-      validStudents.push({
-        email: student.email,
-      });
+      await saveToCSV('students-to-add.csv', validStudents);
+
+      return validStudents;
+    } catch (error) {
+      this.logger.error('An error occurred while exporting student data:', error.message);
     }
-
-    await saveToCSV('students-to-add.csv', validStudents);
-
-    return validStudents;
   }
 
   async exportExpiredStudentCourse() {
-    const studentCourses = await this.studentService.getExpiredCourseLast24Hours();
-    const expiredStudentCourses = [];
+    try {
+      const studentCourses = await this.studentService.getExpiredCourseLast24Hours();
+      const expiredStudentCourses = [];
 
-    for (const studentCourse of studentCourses) {
-      const studentEmail = studentCourse.student.email;
+      for (const studentCourse of studentCourses) {
+        const studentEmail = studentCourse.student.email;
 
-      if (!validator.isEmail(studentEmail)) {
-        this.logger.debug(`Skipping student with invalid email: ${studentEmail}`);
-        continue;
+        if (!validator.isEmail(studentEmail)) {
+          this.logger.debug(`Skipping student with invalid email: ${studentEmail}`);
+          continue;
+        }
+
+        expiredStudentCourses.push({
+          course_id: studentCourse.course_id,
+          student_email: studentEmail,
+          student_status: studentCourse.student.status,
+        });
       }
 
-      // If the email is valid, add the student and course info to  expiredStudentCourses array
-      expiredStudentCourses.push({
-        course_id: studentCourse.course_id,
-        student_email: studentEmail,
-        student_status: studentCourse.student.status,
-      });
+      await saveToCSV('students-to-remove.csv', expiredStudentCourses);
+
+      return studentCourses;
+    } catch (error) {
+      this.logger.error('An error occurred while exporting expired student courses:', error.message);
     }
-
-    await saveToCSV('students-to-remove.csv', expiredStudentCourses);
-
-    return studentCourses;
   }
 
   async exportCompletedStudentsCourses() {
-    const studentsCompleted = await this.studentService.getStudentsCompletedByDate();
-    const studentsCompletedCourses = [];
+    try {
+      const studentsCompleted = await this.studentService.getStudentsCompletedByDate();
+      const studentsCompletedCourses = [];
 
-    for (const studentCompleted of studentsCompleted) {
-      const studentEmail = studentCompleted.student.email;
-      const studentStatus = studentCompleted.student.status;
-      const courseIdCompleted = studentCompleted.course_id;
+      for (const studentCompleted of studentsCompleted) {
+        const studentEmail = studentCompleted.student.email;
+        const studentStatus = studentCompleted.student.status;
+        const courseIdCompleted = studentCompleted.course_id;
 
-      if (!validator.isEmail(studentEmail)) {
-        this.logger.debug(`Skipping student with invalid email: ${studentEmail}`);
-        continue;
+        if (!validator.isEmail(studentEmail)) {
+          this.logger.debug(`Skipping student with invalid email: ${studentEmail}`);
+          continue;
+        }
+
+        studentsCompletedCourses.push({
+          course_id: courseIdCompleted,
+          student_email: studentEmail,
+          student_status: studentStatus,
+        });
       }
 
-      studentsCompletedCourses.push({
-        course_id: courseIdCompleted,
-        student_email: studentEmail,
-        student_status: studentStatus,
-      });
+      await saveToCSV('students-completed-course.csv', studentsCompletedCourses);
+
+      return studentsCompleted;
+    } catch (error) {
+      this.logger.error('An error occurred while exporting completed students courses:', error.message);
     }
-
-    await saveToCSV('students-completed-course.csv', studentsCompletedCourses);
-
-    return studentsCompleted;
   }
 
   async addStudentsToGroups() {
@@ -124,13 +134,16 @@ export class MailerliteCronService {
       if (student.status !== AccountStatus.INACTIVE) {
         // Check if student account type is pro account: then add to all student groups
         if (student.account_type === AccountType.PRO) {
-          await this.mailerLiteService.assignSubscriberToGroups({
-            email: studentEmail,
-            fields: courseStartingDates,
-            groups: allSubscriberGroups,
-          });
-
-          this.logger.log(`Student successfully added to all groups: ${studentEmail}`);
+          try {
+            await this.mailerLiteService.assignSubscriberToGroups({
+              email: studentEmail,
+              fields: courseStartingDates,
+              groups: allSubscriberGroups,
+            });
+            this.logger.log(`Student successfully added to all groups: ${studentEmail}`);
+          } catch (error) {
+            this.logger.error('An error occurred:', error.message);
+          }
         } else {
           for (const studentCourse of studentCourses) {
             const courseId = studentCourse.course_id;
@@ -145,12 +158,16 @@ export class MailerliteCronService {
             const courseStartDate = studentCourse.starting_date;
             const courseStartDateField = { [`${subscriberGroup.start_date_field}`]: courseStartDate };
 
-            await this.mailerLiteService.createOrUpdateSubscriber({
-              email: studentEmail,
-              fields: courseStartDateField,
-            });
+            try {
+              await this.mailerLiteService.createOrUpdateSubscriber({
+                email: studentEmail,
+                fields: courseStartDateField,
+              });
 
-            await this.mailerLiteService.assignSubscriberToGroup(subscriber.id, subscriberGroup.group_id);
+              await this.mailerLiteService.assignSubscriberToGroup(subscriber.id, subscriberGroup.group_id);
+            } catch (error) {
+              this.logger.error('An error occurred:', error.message);
+            }
           }
           this.logger.log(`Student successfully added to group(s): ${studentEmail}`);
         }
