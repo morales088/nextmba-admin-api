@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { AbstractRepository } from 'src/common/repositories/abstract.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
-import { Student_courses, Students } from '@prisma/client';
+import { Prisma, Student_courses, Students } from '@prisma/client';
 import { UpdateStudentDto } from '../dto/update-student.dto';
 import { FilterOptions } from '../interfaces/student.interface';
 
@@ -93,11 +93,95 @@ export class StudentCoursesRepository extends AbstractRepository<Student_courses
       where: {
         status: 0,
         expiration_date: {
-          gt: expiredDate,
-          lt: currentDate,
+          gte: expiredDate,
+          lte: currentDate,
         },
       },
       include: { course: true, student: true },
     });
+  }
+
+  async findStudentCourses(queryDate: Date) {
+    let studentCourses = [];
+    let skip = 0;
+    const batchSize = 5000;
+    let totalCount = batchSize;
+
+    try {
+      while (totalCount === batchSize) {
+        const coursesBatch = await this.prisma[this.modelName].findMany({
+          where: {
+            expiration_date: { gte: queryDate }, // Fetch only courses with expiration date greater than date
+            status: 1,
+            course: {
+              status: 1,
+              is_displayed: 1,
+              paid: 1,
+            },
+          },
+          include: {
+            student: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                status: true,
+              },
+            },
+            course: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                paid: true,
+                is_displayed: true,
+                module_length: true,
+                starting_date: true,
+                status: true,
+                modules: {
+                  select: {
+                    id: true,
+                    course_id: true,
+                    name: true,
+                    start_date: true,
+                    end_date: true,
+                    tier: true,
+                    status: true,
+                    topics: {
+                      select: {
+                        id: true,
+                        module_id: true,
+                        speaker_id: true,
+                        type: true,
+                        publish: true,
+                        status: true,
+                        hide_recordings: true,
+                        featured_lecture: true,
+                      },
+                    },
+                  },
+                  orderBy: {
+                    end_date: 'desc',
+                  },
+                },
+              },
+            },
+          },
+          take: batchSize,
+          skip: skip,
+          orderBy: {
+            id: 'desc',
+          },
+        });
+
+        totalCount = coursesBatch.length;
+        studentCourses = studentCourses.concat(coursesBatch);
+        skip += batchSize;
+      }
+
+      return studentCourses;
+    } catch (error) {
+      console.error('Error fetching student courses:', error);
+    }
   }
 }
