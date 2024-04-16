@@ -154,18 +154,20 @@ model Files {
 }
 
 model Medias {
-  id            Int       @id @default(autoincrement())
-  module_id     Int
-  topic_id      Int
-  language_code String    @db.VarChar(255)
-  media_type    Int       @default(1)
-  source        Int       @default(1)
-  source_code   String    @db.VarChar(255)
-  status        Int       @default(1)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime? @updatedAt
-  module        Modules   @relation(fields: [module_id], references: [id])
-  topic         Topics    @relation(fields: [topic_id], references: [id])
+  id                 Int       @id @default(autoincrement())
+  module_id          Int
+  topic_id           Int
+  language_code      String    @db.VarChar(255)
+  media_type         Int       @default(1)
+  source             Int       @default(1)
+  source_code        String    @db.VarChar(255)
+  backup_source      Int?      @default(1)
+  backup_source_code String?   @db.VarChar(255)
+  status             Int       @default(1)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime? @updatedAt
+  module             Modules   @relation(fields: [module_id], references: [id])
+  topic              Topics    @relation(fields: [topic_id], references: [id])
 }
 
 model Students {

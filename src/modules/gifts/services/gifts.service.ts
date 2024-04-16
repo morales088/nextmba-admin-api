@@ -52,9 +52,20 @@ export class GiftsService {
     const paymentItem = paymentItems.find(
       (res) => res.payment_id === data.payment_id && res.course_id === data.course_id
     );
-      console.log(data.recipient)
-    if (!paymentItem || paymentItem.giftable < 1 || studentCourse || paymentItem.createdAt <= giftableDate)
-      return { code: 422, message: 'zero courses available / recipient already has this course / course expired' };
+
+    // if (!paymentItem || paymentItem.giftable < 1 || studentCourse || paymentItem.createdAt <= giftableDate)
+    //   return { code: 422, message: 'zero courses available / recipient already has this course / course expired' };
+
+    if (!paymentItem || paymentItem.giftable < 1)
+      return { code: 422, message: 'zero courses available' };
+
+    if (studentCourse)
+      return { code: 422, message: 'recipient already has this course' };
+
+    if (paymentItem.createdAt <= giftableDate)
+      return { code: 422, message: `Cannot gift course bought below ${giftableDate}` };
+
+    console.log(data.recipient)
 
     const gift = this.prisma.$transaction(async (prisma) => {
       // check if email has account and return student_id
