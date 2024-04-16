@@ -65,6 +65,8 @@ export class GiftsService {
     if (paymentItem.createdAt <= giftableDate)
       return { code: 422, message: `Cannot gift course bought below ${giftableDate}` };
 
+    console.log(data.recipient)
+
     const gift = this.prisma.$transaction(async (prisma) => {
       // check if email has account and return student_id
       let studentId: number;
