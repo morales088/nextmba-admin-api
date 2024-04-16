@@ -52,7 +52,7 @@ export class GiftsService {
     const paymentItem = paymentItems.find(
       (res) => res.payment_id === data.payment_id && res.course_id === data.course_id
     );
-
+      console.log(data.recipient)
     if (!paymentItem || paymentItem.giftable < 1 || studentCourse || paymentItem.createdAt <= giftableDate)
       return { code: 422, message: 'zero courses available / recipient already has this course / course expired' };
 
