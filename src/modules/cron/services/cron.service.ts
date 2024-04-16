@@ -10,7 +10,7 @@ export class CronService {
   constructor(
     private readonly schedulerRegistry: SchedulerRegistry,
     private readonly mailerliteCronService: MailerliteCronService,
-    private readonly courseTierCronService: CourseTierCronService
+    // private readonly courseTierCronService: CourseTierCronService
   ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_NOON, {
@@ -41,6 +41,7 @@ export class CronService {
       this.logger.error(`Error in export-students-data cron job: ${error.message}`);
     }
   }
+
   // This cron job executes every 5 minutes from 12 midnight to 11 AM, and then from 1 PM to 11 PM.
   @Cron('*/5 0-11,13-23 * * *', {
     name: 'process-student-data',
