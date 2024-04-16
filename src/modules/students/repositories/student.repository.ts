@@ -113,8 +113,15 @@ export class StudentRepository extends AbstractRepository<Students> {
     });
   }
 
-  async insert(data: Partial<Students>): Promise<Students> {
-    const existingStudent = await this.prisma[this.modelName].findUnique({ where: { email: data.email } });
+  async insert(data: Partial<Students>): Promise<any> {
+    const existingStudent = await this.prisma[this.modelName].findFirst({
+      where: { 
+        email: { 
+          equals: data.email, 
+          mode: 'insensitive' 
+        } 
+      },
+    });
 
     if (existingStudent) {
       throw new BadRequestException('Student already exists.');
@@ -141,8 +148,8 @@ export class StudentRepository extends AbstractRepository<Students> {
   }
 
   async findByEmail(email: string) {
-    return this.prisma[this.modelName].findUnique({
-      where: { email: email },
+    return this.prisma[this.modelName].findFirst({
+      where: { email: { contains: email, mode: 'insensitive' } },
       include: { student_courses: { where: { status: 1 } } },
     });
   }
