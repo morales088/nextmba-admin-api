@@ -44,6 +44,8 @@
     "dotenv-cli": "^7.3.0",
     "exceljs": "^4.4.0",
     "fast-csv": "^5.0.1",
+    "google-auth-library": "^9.8.0",
+    "googleapis": "^134.0.0",
     "handlebars": "^4.7.8",
     "lodash": "^4.17.21",
     "luxon": "^3.4.4",
