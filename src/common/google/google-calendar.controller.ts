@@ -6,6 +6,16 @@ import { CalendarEvent } from './interfaces/calendar-event.interface';
 export class GoogleCalendarController {
   constructor(private readonly googleCalendarService: GoogleCalendarService) {}
 
+  @Get('/events')
+  async getEvents() {
+    try {
+      const events = await this.googleCalendarService.getEvents();
+      return { success: true, events };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
   @Post('/events')
   async createEvent(@Body() eventData: CalendarEvent) {
     try {

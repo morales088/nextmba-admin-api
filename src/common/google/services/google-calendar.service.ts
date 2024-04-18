@@ -22,6 +22,33 @@ export class GoogleCalendarService {
     this.calendar = google.calendar({ version: 'v3', auth: auth });
   }
 
+  async getEvents() {
+    try {
+      const events = await this.calendar.events.list({
+        calendarId: this.calendarId,
+      });
+
+      return events.data;
+    } catch (error) {
+      this.logger.error(`Error fetching events: ${error.message}`);
+      throw error;
+    }
+  }
+
+  async getEvent(eventId: string) {
+    try {
+      const event = await this.calendar.events.get({
+        calendarId: this.calendarId,
+        eventId: eventId,
+      });
+
+      return event.data;
+    } catch (error) {
+      this.logger.error(`Error fetching events: ${error.message}`);
+      throw error;
+    }
+  }
+
   async createEvent(eventData: CalendarEvent): Promise<any> {
     const calendarEvent = {
       summary: eventData.name,
@@ -52,10 +79,10 @@ export class GoogleCalendarService {
     }
   }
 
-  async updateEvent(eventId: string, eventData: any): Promise<any> {
+  async updateEvent(eventId: string, eventData: CalendarEvent): Promise<any> {
     const calendarEvent = {
       summary: eventData.name,
-      description: 'This event was updated',
+      description: eventData.description,
       start: {
         dateTime: eventData.startTime,
         timeZone: 'UTC',
