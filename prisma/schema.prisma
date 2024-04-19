@@ -403,12 +403,12 @@ model Student_certificates {
 
 model Subscriber_groups {
   id               Int       @id @default(autoincrement())
-  course_id        Int
+  course_id        Int?
   group_name       String?
   group_id         String
   start_date_field String?
   status           Int       @default(1)
   createdAt        DateTime  @default(now())
   updatedAt        DateTime? @updatedAt
-  course           Courses   @relation(fields: [course_id], references: [id])
+  course           Courses?   @relation(fields: [course_id], references: [id])
 }
