@@ -102,86 +102,92 @@ export class StudentCoursesRepository extends AbstractRepository<Student_courses
   }
 
   async findStudentCourses(queryDate: Date) {
-    let studentCourses = [];
-    let skip = 0;
-    const batchSize = 5000;
-    let totalCount = batchSize;
-
     try {
-      while (totalCount === batchSize) {
-        const coursesBatch = await this.prisma[this.modelName].findMany({
-          where: {
-            expiration_date: { gte: queryDate }, // Fetch only courses with expiration date greater than date
-            status: 1,
-            course: {
-              status: 1,
-              is_displayed: 1,
-              paid: 1,
-            },
-          },
-          include: {
-            student: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                status: true,
+      const chunkSize = 5000;
+      const studentCourses = await this.prisma.$transaction(
+        async (tx) => {
+          const courses: any[] = [];
+
+          let offset = 0;
+          while (true) {
+            const chunkCourses = await tx[this.modelName].findMany({
+              where: {
+                expiration_date: { gte: queryDate },
+                status: 1,
               },
-            },
-            course: {
-              select: {
-                id: true,
-                name: true,
-                price: true,
-                paid: true,
-                is_displayed: true,
-                module_length: true,
-                starting_date: true,
-                status: true,
-                modules: {
+              include: {
+                student: {
                   select: {
                     id: true,
-                    course_id: true,
                     name: true,
-                    start_date: true,
-                    end_date: true,
-                    tier: true,
+                    email: true,
                     status: true,
-                    topics: {
+                  },
+                },
+                course: {
+                  select: {
+                    id: true,
+                    name: true,
+                    price: true,
+                    paid: true,
+                    is_displayed: true,
+                    module_length: true,
+                    starting_date: true,
+                    status: true,
+                    modules: {
                       select: {
                         id: true,
-                        module_id: true,
-                        speaker_id: true,
-                        type: true,
-                        publish: true,
+                        course_id: true,
+                        name: true,
+                        start_date: true,
+                        end_date: true,
+                        tier: true,
                         status: true,
-                        hide_recordings: true,
-                        featured_lecture: true,
+                        topics: {
+                          select: {
+                            id: true,
+                            module_id: true,
+                            speaker_id: true,
+                            type: true,
+                            publish: true,
+                            status: true,
+                            hide_recordings: true,
+                            featured_lecture: true,
+                          },
+                        },
+                      },
+                      orderBy: {
+                        end_date: 'desc',
                       },
                     },
                   },
-                  orderBy: {
-                    end_date: 'desc',
-                  },
                 },
               },
-            },
-          },
-          take: batchSize,
-          skip: skip,
-          orderBy: {
-            id: 'desc',
-          },
-        });
+              skip: offset,
+              take: chunkSize,
+              orderBy: {
+                id: 'desc',
+              },
+            });
 
-        totalCount = coursesBatch.length;
-        studentCourses = studentCourses.concat(coursesBatch);
-        skip += batchSize;
-      }
+            if (chunkCourses.length === 0) {
+              break;
+            }
+
+            courses.push(...chunkCourses);
+            offset += chunkSize;
+          }
+
+          return courses;
+        },
+        {
+          timeout: 600000, // 5 minutes
+        }
+      );
 
       return studentCourses;
     } catch (error) {
-      console.error('Error fetching student courses:', error);
+      throw new Error(error.message);
     }
   }
 }

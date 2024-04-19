@@ -179,58 +179,62 @@ export class StudentsService {
   }
 
   async getStudentsCompletedByDate() {
-    const startDate = previousStartOfDay();
-    const endDate = previousEndOfDay();
+    try {
+      const startDate = previousStartOfDay();
+      const endDate = previousEndOfDay();
 
-    const studentCourses = await this.studentCoursesRepository.findStudentCourses(endDate);
+      const studentCourses = await this.studentCoursesRepository.findStudentCourses(endDate);
 
-    // Filter out the completed student courses
-    const completedStudentCourses = studentCourses
-      .map((studentCourse) => {
-        const studentCourseStartingDate = studentCourse.starting_date;
+      // Filter out the completed student courses
+      const completedStudentCourses = studentCourses
+        .map((studentCourse) => {
+          const studentCourseStartingDate = studentCourse.starting_date;
 
-        // Filter out modules that are completed
-        const filteredModules = studentCourse.course.modules.filter((module) => {
-          // Filter modules after student course starts
-          // Check if module status is [4 - Pending replay, 5 - Replay ]
-          if (module.status === 4 || (module.status === 5 && studentCourseStartingDate <= module.start_date)) {
-            // Filter active topics and visible to recordings
-            const topic = module.topics.find((topic) => {
-              return topic.status === 1 && topic.hide_recordings === false;
-            });
+          // Filter out modules that are completed
+          const filteredModules = studentCourse.course.modules.filter((module) => {
+            // Filter modules after student course starts
+            // Check if module status is [4 - Pending replay, 5 - Replay ]
+            if (module.status === 4 || (module.status === 5 && studentCourseStartingDate <= module.start_date)) {
+              // Filter active topics and visible to recordings
+              const topic = module.topics.find((topic) => {
+                return topic.status === 1 && topic.hide_recordings === false;
+              });
 
-            return topic !== undefined;
+              return topic !== undefined;
+            }
+
+            return false;
+          });
+
+          // Get the maximum end date of filtered modules
+          const maxEndDate = filteredModules.reduce((maxDate, module) => {
+            const moduleEndDate = new Date(module.end_date);
+            return moduleEndDate > maxDate ? moduleEndDate : maxDate;
+          }, new Date(0));
+
+          // Update the course modules with the filtered modules
+          const modifiedStudentCourse = {
+            ...studentCourse.course,
+            modules: filteredModules,
+          };
+
+          // Check if modules are exceeds or equal to course module length
+          if (filteredModules.length >= studentCourse.course.module_length) {
+            if (maxEndDate >= startDate && maxEndDate <= endDate) {
+              return {
+                ...studentCourse,
+                course: modifiedStudentCourse,
+              };
+            }
           }
 
-          return false;
-        });
+          return null; // Course not completed
+        })
+        .filter(Boolean);
 
-        // Get the maximum end date of filtered modules
-        const maxEndDate = filteredModules.reduce((maxDate, module) => {
-          const moduleEndDate = new Date(module.end_date);
-          return moduleEndDate > maxDate ? moduleEndDate : maxDate;
-        }, new Date(0));
-
-        // Update the course modules with the filtered modules
-        const modifiedStudentCourse = {
-          ...studentCourse.course,
-          modules: filteredModules,
-        };
-
-        // Check if modules are exceeds or equal to course module length
-        if (filteredModules.length >= studentCourse.course.module_length) {
-          if (maxEndDate >= startDate && maxEndDate <= endDate) {
-            return {
-              ...studentCourse,
-              course: modifiedStudentCourse,
-            };
-          }
-        }
-
-        return null; // Course not completed
-      })
-      .filter(Boolean);
-
-    return completedStudentCourses;
+      return completedStudentCourses;
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 }
