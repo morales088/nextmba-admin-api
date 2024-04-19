@@ -18,7 +18,9 @@ export class StudentsController {
   @Public()
   @Get('/count')
   async getStudentsCount() {
-    return this.studentsService.getStudentsCount();
+    const studentsCount = await this.studentsService.getStudentsCount();
+
+    return { studentsCount };
   }
 
   @Get('/:StudentId')
@@ -135,7 +137,7 @@ export class StudentsController {
     };
 
     const students = await this.studentsService.getStudents(admin, search, filters, 1, 1000000000000000000);
-    
+
     const workbook = new excel.Workbook();
     const worksheet = workbook.addWorksheet('Sheet1');
 
@@ -157,13 +159,13 @@ export class StudentsController {
       { header: 'Courses', key: 'courses', width: 10 },
     ];
 
-    const results = students as [any]
+    const results = students as [any];
 
     results.forEach((student) => {
-      const status = student.status == 1 ? 'active' : 'deleted'
-      const affiliate_access = student.affiliate_access == 1 ? true : false
-      
-      const courses =  student.student_courses.map(obj => obj.course.name).join(', ');
+      const status = student.status == 1 ? 'active' : 'deleted';
+      const affiliate_access = student.affiliate_access == 1 ? true : false;
+
+      const courses = student.student_courses.map((obj) => obj.course.name).join(', ');
 
       worksheet.addRow({
         id: student.id,
