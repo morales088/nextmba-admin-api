@@ -64,10 +64,10 @@ export class CronService {
       this.logger.log('Running: Remove students to group');
       await this.mailerliteCronService.removeStudentsToGroups();
       
-      console.log('');
-      this.logger.log('Running: Remove students with completed courses to group');
-      await this.mailerliteCronService.removeCompletedStudentsToGroups();
-      this.delay(1000);
+      // console.log('');
+      // this.logger.log('Running: Remove students with completed courses to group');
+      // await this.mailerliteCronService.removeCompletedStudentsToGroups();
+      // this.delay(1000);
 
       console.log('');
       this.logger.log('Cron job is done.');
