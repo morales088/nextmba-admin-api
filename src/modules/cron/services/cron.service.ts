@@ -21,13 +21,16 @@ export class CronService {
     try {
       console.log('');
       this.logger.log('Running: Export students data');
-
       await this.mailerliteCronService.exportStudentData();
       this.delay(1000);
 
+      console.log('');
+      this.logger.log('Running: Export expired students course');
       await this.mailerliteCronService.exportExpiredStudentCourse();
       this.delay(1000);
       
+      console.log('');
+      this.logger.log('Running: Export completed students courses');
       await this.mailerliteCronService.exportCompletedStudentsCourses();
       this.delay(1000);
 

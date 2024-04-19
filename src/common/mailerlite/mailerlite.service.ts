@@ -58,7 +58,7 @@ export class MailerLiteService {
         return data;
       })
       .catch((error) => {
-        console.log('💡 ~ error:', error.message);
+        this.logger.error(`An error occurred: ${error.message}`);
         return null;
       });
   }
@@ -71,7 +71,7 @@ export class MailerLiteService {
         return data;
       })
       .catch((error) => {
-        this.logger.error('An error occurred:', error.message);
+        this.logger.error(`An error occurred: ${error.message}`);
         return null;
       });
   }
@@ -83,7 +83,7 @@ export class MailerLiteService {
         return response.data;
       })
       .catch((error) => {
-        this.logger.error('An error occurred:', error.message);
+        this.logger.error(`An error occurred: ${error.message}`);
         return null;
       });
   }
@@ -95,7 +95,7 @@ export class MailerLiteService {
         return response.data;
       })
       .catch((error) => {
-        this.logger.error('An error occurred:', error.message);
+        this.logger.error(`An error occurred: ${error.message}`);
         return null;
       });
   }
@@ -139,7 +139,7 @@ export class MailerLiteService {
 
       return data;
     } catch (error) {
-      this.logger.error('An error occurred while creating a new subscriber group:', error);
+      this.logger.error(`An error occurred while creating a new subscriber group: ${error.message}`);
     }
   }
 }
