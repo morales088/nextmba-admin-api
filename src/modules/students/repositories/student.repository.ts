@@ -15,6 +15,12 @@ export class StudentRepository extends AbstractRepository<Students> {
     return 'Students'; // Specify the Prisma model name for entity
   }
 
+  async countAllStudents(): Promise<number> {
+    return this.prisma.students.count({
+      where: { status: 1 },
+    });
+  }
+
   async find(): Promise<Students> {
     return this.prisma[this.modelName].findMany({
       where: { status: 1 },

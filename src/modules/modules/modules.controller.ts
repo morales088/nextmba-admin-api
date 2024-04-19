@@ -83,7 +83,9 @@ export class ModulesController {
       updatedModule = await this.modulesService.updateModule(updatedModule.id, { event_id: createdEvent.id });
     }
 
-    if (updatedModule.status !== ModuleType.DELETED) {
+    const { DELETED, DRAFT } = ModuleType;
+    
+    if (updatedModule.status !== DELETED && updatedModule.status !== DRAFT) {
       await this.googleCalendarService.updateEvent(updatedModule.event_id, eventData);
     } else {
       this.googleCalendarService.deleteEvent(updatedModule.event_id);
@@ -113,5 +115,35 @@ export class ModulesController {
       const fileUrl = await this.awsS3Service.uploadSmallFile(path, file);
       return { fileUrl };
     }
+  }
+
+  @Post('/generate-events')
+  async generateEventsForUpcomingModules() {
+    const upcomingModules = await this.modulesService.getUpcomingModules();
+
+    const result: any[] = [];
+
+    for (const upcomingModule of upcomingModules) {
+      const eventData = {
+        name: upcomingModule.name,
+        description: upcomingModule.description,
+        startTime: upcomingModule.start_date.toISOString(),
+        endTime: upcomingModule.end_date.toISOString(),
+      };
+
+      let updatedModule;
+
+      const isEventExists =
+        upcomingModule.event_id !== null ? await this.googleCalendarService.getEvent(upcomingModule.event_id) : false;
+
+      if (!isEventExists) {
+        const createdEvent = await this.googleCalendarService.createEvent(eventData);
+        updatedModule = await this.modulesService.updateModule(upcomingModule.id, { event_id: createdEvent.id });
+
+        result.push(updatedModule);
+      }
+    }
+
+    return result;
   }
 }

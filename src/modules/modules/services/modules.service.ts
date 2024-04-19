@@ -20,4 +20,8 @@ export class ModulesService {
   async updateModule(id: number, data) {
     return this.moduleRepository.updateModule(id, data);
   }
+
+  async getUpcomingModules() {
+    return this.moduleRepository.upcomingModules();
+  }
 }
