@@ -8,11 +8,20 @@ import { CreateStudentCourseDto } from './dto/create-studentCourse.dto';
 import { Response } from 'express';
 import * as excel from 'exceljs';
 import { Students } from '@prisma/client';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('students')
 @UseGuards(AuthGuard('jwt'))
 export class StudentsController {
   constructor(private readonly studentsService: StudentsService) {}
+
+  @Public()
+  @Get('/count')
+  async getStudentsCount() {
+    const studentsCount = await this.studentsService.getStudentsCount();
+
+    return { studentsCount };
+  }
 
   @Get('/:StudentId')
   async getStudent(@Param('StudentId') StudentId: number) {
@@ -128,7 +137,7 @@ export class StudentsController {
     };
 
     const students = await this.studentsService.getStudents(admin, search, filters, 1, 1000000000000000000);
-    
+
     const workbook = new excel.Workbook();
     const worksheet = workbook.addWorksheet('Sheet1');
 
@@ -150,13 +159,13 @@ export class StudentsController {
       { header: 'Courses', key: 'courses', width: 10 },
     ];
 
-    const results = students as [any]
+    const results = students as [any];
 
     results.forEach((student) => {
-      const status = student.status == 1 ? 'active' : 'deleted'
-      const affiliate_access = student.affiliate_access == 1 ? true : false
-      
-      const courses =  student.student_courses.map(obj => obj.course.name).join(', ');
+      const status = student.status == 1 ? 'active' : 'deleted';
+      const affiliate_access = student.affiliate_access == 1 ? true : false;
+
+      const courses = student.student_courses.map((obj) => obj.course.name).join(', ');
 
       worksheet.addRow({
         id: student.id,

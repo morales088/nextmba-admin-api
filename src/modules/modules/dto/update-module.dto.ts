@@ -29,7 +29,7 @@ export class UpdateModuleDto {
   @IsOptional()
   @IsString()
   host_email: string;
-  
+
   @IsOptional()
   @Type(() => Date)
   start_date: Date;
@@ -55,4 +55,7 @@ export class UpdateModuleDto {
   @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1, 2, 3, 4, 5]) // [0 - delete, 1 - draft, 2 - offline, 3 - live, 4 - pending replay, 5 - replay]
   status: number;
+
+  @IsOptional()
+  event_id: string;
 }
