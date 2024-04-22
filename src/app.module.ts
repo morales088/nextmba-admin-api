@@ -32,6 +32,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MailerliteModule } from './common/mailerlite/mailerlite.module';
 import { SubscriberGroupsModule } from './modules/subscriber_groups/subscriber-groups.module';
+import { GoogleModule } from './common/google/google.module';
 
 dotenv.config();
 
@@ -79,6 +80,7 @@ dotenv.config();
     CronModule,
     MailerliteModule,
     SubscriberGroupsModule,
+    GoogleModule,
   ],
   controllers: [],
   providers: [SendMailService],
