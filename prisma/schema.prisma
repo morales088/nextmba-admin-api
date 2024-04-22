@@ -37,6 +37,7 @@ model Courses {
   course_link                 String?
   price                       Decimal                @db.Decimal(9, 2)
   telegram_link               String?
+  upgrade_link                String?
   paid                        Int                    @default(1)
   is_displayed                Int                    @default(1)
   status                      Int                    @default(1)
