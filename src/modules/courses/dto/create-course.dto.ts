@@ -35,7 +35,7 @@ export class CreateCourseDto {
   @Type(() => Date)
   @IsDate()
   starting_date: Date;
-  
+
   @IsDecimal({ decimal_digits: '2' })
   @IsNotEmpty()
   price: Prisma.Decimal;
@@ -55,4 +55,8 @@ export class CreateCourseDto {
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
   module_length: number;
+
+  @IsOptional()
+  @IsString()
+  upgrade_link: number;
 }
