@@ -106,11 +106,11 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
       // add student course for first time enrollee
       if (!studentCourse) await this.prisma.student_courses.create({ data: studentCourseData });
 
-      // update course tier
-      if (studentCourse && studentCourse?.course_tier !== product_item.course_tier) {
+      // update student course tier if not full access already
+      if (studentCourse && studentCourse?.course_tier !== CourseTierType.FULL) {
         await this.prisma.student_courses.update({
           where: { id: studentCourse.id },
-          data: { course_tier: product_item.course_tier },
+          data: { course_tier: CourseTierType.FULL },
         });
       }
 
