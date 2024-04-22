@@ -7,21 +7,11 @@ import { UpdateStudentCourseDto } from './dto/update-studentCourse.dto';
 import { CreateStudentCourseDto } from './dto/create-studentCourse.dto';
 import { Response } from 'express';
 import * as excel from 'exceljs';
-import { Students } from '@prisma/client';
-import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('students')
 @UseGuards(AuthGuard('jwt'))
 export class StudentsController {
   constructor(private readonly studentsService: StudentsService) {}
-
-  @Public()
-  @Get('/count')
-  async getStudentsCount() {
-    const studentsCount = await this.studentsService.getStudentsCount();
-
-    return { studentsCount };
-  }
 
   @Get('/:StudentId')
   async getStudent(@Param('StudentId') StudentId: number) {
