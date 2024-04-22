@@ -57,6 +57,10 @@ export class UpdateCourseDto {
   module_length: number;
 
   @IsOptional()
+  @IsString()
+  upgrade_link: number;
+
+  @IsOptional()
   @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1]) // 0 - delete, 1 - active
   status: number;

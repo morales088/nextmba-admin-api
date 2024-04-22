@@ -3,6 +3,8 @@ import { AbstractRepository } from 'src/common/repositories/abstract.repository'
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { Modules } from '@prisma/client';
 import { UpdateModuleDto } from '../dto/update-module.dto';
+import { currentTime } from 'src/common/helpers/date.helper';
+import { ModuleType } from 'src/common/constants/enum';
 
 @Injectable()
 export class ModuleRepository extends AbstractRepository<Modules> {
@@ -40,7 +42,7 @@ export class ModuleRepository extends AbstractRepository<Modules> {
           },
         },
       ],
-      course: {  },
+      course: {},
     };
 
     if (filterData.status) whereCondition.status = { in: [filterData.status] };
@@ -80,7 +82,6 @@ export class ModuleRepository extends AbstractRepository<Modules> {
       data: data,
     });
   }
-  
 
   async previousModules(userId, courseId) {
     const results: Modules[] = await this.prisma.$queryRaw`SELECT distinct m.*
@@ -104,7 +105,6 @@ export class ModuleRepository extends AbstractRepository<Modules> {
     }[];
 
     for (const module of modules) {
-
       // add topics to module
       const topics = await this.prisma.topics.findMany({
         where: { module_id: module.id, status: 1, hide_recordings: false },
@@ -115,11 +115,25 @@ export class ModuleRepository extends AbstractRepository<Modules> {
         },
       });
       module.topics = topics;
-
     }
 
-    const filteredModules =  modules.filter((res) => res.topics.length > 0);
+    const filteredModules = modules.filter((res) => res.topics.length > 0);
 
     return filteredModules;
+  }
+
+  async upcomingModules(): Promise<Modules[]> {
+    const currentDate = currentTime();
+    const { OFFLINE, LIVE } = ModuleType;
+
+    const upcomingModules: Modules[] = await this.prisma.modules.findMany({
+      where: {
+        status: { in: [OFFLINE, LIVE] },
+        start_date: { gte: currentDate },
+      },
+      orderBy: { start_date: 'asc' },
+    });
+
+    return upcomingModules;
   }
 }
