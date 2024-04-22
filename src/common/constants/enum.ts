@@ -21,3 +21,8 @@ export enum ModuleType {
   PENDING = 4,
   REPLAY = 5,
 }
+
+export enum CourseTierType {
+  FULL = 1,
+  LIMITED = 2,
+}
