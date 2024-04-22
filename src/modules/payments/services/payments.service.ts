@@ -106,10 +106,10 @@ export class PaymentsService {
         productName: product.name,
       };
       this.sendMailService.emailPaymentInformation(emailData);
-    
+
       // email courses info to student
       const coursesName = await this.productRepository.coursesPerProduct(data.product_code);
-      
+
       const emailCourseData = {
         student: data.name,
         productName: product.name,

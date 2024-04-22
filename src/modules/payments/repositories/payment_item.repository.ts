@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { AbstractRepository } from 'src/common/repositories/abstract.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { Payment_items, Payments } from '@prisma/client';
+import { CourseTierType } from 'src/common/constants/enum';
 
 @Injectable()
 export class PaymentItemRepository extends AbstractRepository<Payment_items> {
@@ -105,6 +106,14 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
       // add student course for first time enrollee
       if (!studentCourse) await this.prisma.student_courses.create({ data: studentCourseData });
 
+      // update student course tier if not full access already
+      if (studentCourse && studentCourse?.course_tier !== CourseTierType.FULL) {
+        await this.prisma.student_courses.update({
+          where: { id: studentCourse.id },
+          data: { course_tier: CourseTierType.FULL },
+        });
+      }
+
       // update student course to expired course
       if (studentCourse && !hasStudCourse) {
         let newExpDate = new Date(studentCourse.expiration_date);
@@ -113,21 +122,19 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
         const modulePerCourse = parseInt(process.env.MODULE_PER_COURSE);
         const newModuleQuantity = studentCourse.module_quantity + modulePerCourse;
 
-        let newStudentCourseData : any = {
+        let newStudentCourseData: any = {
           expiration_date: newExpDate,
           module_quantity: newModuleQuantity,
           // course_tier: product_item.course_tier,
         };
-        if(product_item.course_tier == 1) newStudentCourseData.course_tier = product_item.course_tier
-        
+        if (product_item.course_tier == 1) newStudentCourseData.course_tier = product_item.course_tier;
+
         await this.prisma.student_courses.update({ where: { id: studentCourse.id }, data: newStudentCourseData });
       }
-      
     }
 
     // insert all course if pro account
-    if(product.pro_access === true) await this.addPro(studentId)
-
+    if (product.pro_access === true) await this.addPro(studentId);
 
     // } catch (error) {
     //   return { success: false, error: error.message };
@@ -179,8 +186,8 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
           starting_date: startingDate,
           expiration_date: expirationDate,
         };
-        
-        await this.prisma.student_courses.create({ data: studentCourseData })
+
+        await this.prisma.student_courses.create({ data: studentCourseData });
       }
     }
   }
