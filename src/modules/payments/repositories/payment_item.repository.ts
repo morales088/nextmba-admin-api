@@ -113,12 +113,13 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
         const modulePerCourse = parseInt(process.env.MODULE_PER_COURSE);
         const newModuleQuantity = studentCourse.module_quantity + modulePerCourse;
 
-        const newStudentCourseData = {
+        let newStudentCourseData : any = {
           expiration_date: newExpDate,
           module_quantity: newModuleQuantity,
-          course_tier: product_item.course_tier,
+          // course_tier: product_item.course_tier,
         };
-
+        if(product_item.course_tier == 1) newStudentCourseData.course_tier = product_item.course_tier
+        
         await this.prisma.student_courses.update({ where: { id: studentCourse.id }, data: newStudentCourseData });
       }
       
