@@ -18,27 +18,20 @@ import { StudentsModule } from './modules/students/students.module';
 import { AwsService } from './common/aws/aws.service';
 import { AwsS3Service } from './common/aws/aws_s3.service';
 import { AffiliatesModule } from './modules/affiliates/affiliates.module';
-import { SendMailService } from './common/utils/send-mail.service';
 import { GiftsModule } from './modules/gifts/gifts.module';
 import { MeetingsModule } from './modules/meetings/meetings.module';
 import { AppliedStudiesModule } from './modules/applied_studies/applied_studies.module';
 import { BillingsModule } from './modules/billings/billings.module';
 import { CertificatesModule } from './modules/certificates/certificates.module';
-import { ScheduleModule } from '@nestjs/schedule';
-import { CronModule } from './modules/cron/cron.module';
-import { MailerliteCronService } from './modules/cron/services/mailerlite-cron.service';
-import * as dotenv from 'dotenv';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 import { MailerliteModule } from './common/mailerlite/mailerlite.module';
 import { SubscriberGroupsModule } from './modules/subscriber_groups/subscriber-groups.module';
 import { GoogleModule } from './common/google/google.module';
+import * as dotenv from 'dotenv';
 
 dotenv.config();
 
 @Module({
   imports: [
-    // ScheduleModule.forRoot(),
     MailerModule.forRoot({
       transport: {
         host: process.env.MAIL_HOST,
@@ -53,9 +46,6 @@ dotenv.config();
         from: `"${process.env.MAIL_FROM_NAME}" <${process.env.MAIL_FROM_ADDRESS}>`,
       },
     }),
-    // ServeStaticModule.forRoot({
-    //   rootPath: join(__dirname, '..', 'src/common/files'), // Adjust the path as needed
-    // }),
     AuthModule,
     UserModule,
     CloudinaryModule,
@@ -77,12 +67,11 @@ dotenv.config();
     AppliedStudiesModule,
     BillingsModule,
     CertificatesModule,
-    // CronModule,
     MailerliteModule,
     SubscriberGroupsModule,
     GoogleModule,
   ],
   controllers: [],
-  providers: [SendMailService],
+  providers: [],
 })
 export class AppModule {}
