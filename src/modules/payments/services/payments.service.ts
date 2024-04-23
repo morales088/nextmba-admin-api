@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PaymentRepository } from '../repositories/payment.repository';
 import { StudentRepository } from 'src/modules/students/repositories/student.repository';
 import { StudentsService } from 'src/modules/students/services/students.service';
@@ -126,7 +126,7 @@ export class PaymentsService {
       this.logger.error(`An error occurred while processing payment:`);
       this.logger.error(`Email: ${data.email}`);
       this.logger.error(`Error: ${error.message}`);
-      throw new Error(error.message);
+      throw new BadRequestException(error.message);
     }
   }
 
