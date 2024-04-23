@@ -42,7 +42,7 @@ export class StudentsService {
 
     // send email credential if student is created
     if (createdStudent) {
-      this.sendMailService.emailLoginCredentials(createdStudent.email, password);
+      await this.sendMailService.emailLoginCredentials(createdStudent.email, password);
     }
 
     return createdStudent;
