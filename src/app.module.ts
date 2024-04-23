@@ -38,7 +38,7 @@ dotenv.config();
 
 @Module({
   imports: [
-    ScheduleModule.forRoot(),
+    // ScheduleModule.forRoot(),
     MailerModule.forRoot({
       transport: {
         host: process.env.MAIL_HOST,
@@ -77,7 +77,7 @@ dotenv.config();
     AppliedStudiesModule,
     BillingsModule,
     CertificatesModule,
-    CronModule,
+    // CronModule,
     MailerliteModule,
     SubscriberGroupsModule,
     GoogleModule,
