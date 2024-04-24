@@ -26,7 +26,6 @@ import { CertificatesModule } from './modules/certificates/certificates.module';
 import { MailerliteModule } from './common/mailerlite/mailerlite.module';
 import { SubscriberGroupsModule } from './modules/subscriber_groups/subscriber-groups.module';
 import { GoogleModule } from './common/google/google.module';
-import { StripeModule } from './modules/stripe/stripe.module';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -71,7 +70,6 @@ dotenv.config();
     MailerliteModule,
     SubscriberGroupsModule,
     GoogleModule,
-    StripeModule,
   ],
   controllers: [],
   providers: [],
