@@ -19,7 +19,7 @@ export class PaymentsService {
     private readonly paymentAffiliateRepository: PaymentAffiliateRepository,
     private readonly studentsService: StudentsService,
     private readonly sendMailService: SendMailService
-  ) {}
+  ) { }
 
   async getPayment(id: number) {
     return this.paymentRepository.findById(id);
@@ -100,23 +100,25 @@ export class PaymentsService {
 
       if (createPayment) {
         // email payment information
-        const paymentInfoData = {
-          ...createPayment,
-          productName: product.name,
-        };
+        // const paymentInfoData = {
+        //   ...createPayment,
+        //   productName: product.name,
+        // };
 
-        await this.sendMailService.emailPaymentInformation(paymentInfoData);
+        // await this.sendMailService.emailPaymentInformation(paymentInfoData);
 
         // email courses info to student
-        const coursesName = await this.productRepository.coursesPerProduct(data.product_code);
+        if (findStudent) {
+          const coursesName = await this.productRepository.coursesPerProduct(data.product_code);
 
-        const emailCourseData = {
-          student: data.name,
-          productName: product.name,
-          courses: coursesName,
-        };
+          const emailCourseData = {
+            student: data.name,
+            productName: product.name,
+            courses: coursesName,
+          };
 
-        await this.sendMailService.emailCourseInformation(data.email, emailCourseData);
+          await this.sendMailService.emailCourseInformation(data.email, emailCourseData);
+        }
       }
 
       //return payment details
