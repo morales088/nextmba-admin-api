@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Query,
+  Redirect,
   Request,
   Res,
   UseGuards,
@@ -30,6 +31,7 @@ export class PaymentsController {
   ) {}
 
   @Get('/upgrade')
+  @Redirect('https://staging-members.nextmba.com/home')
   async upgradePayment(@Query() upgradePaymentDto: UpgradePaymentDTO) {
     console.log('💡 ~ upgradePaymentDto:', upgradePaymentDto);
     try {
