@@ -33,14 +33,15 @@ export class PaymentsController {
   @Get('/upgrade')
   // @Redirect('https://staging-members.nextmba.com/home')
   async upgradePayment(@Query() upgradePaymentDto: UpgradePaymentDTO, @Res() res: Response) {
-    console.log('💡 ~ upgradePaymentDto:', upgradePaymentDto);
-    try {
-      await this.paymentsService.createPayment({ ...upgradePaymentDto });
-
-      return res.redirect('https://staging-members.nextmba.com/home')
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
+    return res.redirect('https://google.com')
+    // console.log('💡 ~ upgradePaymentDto:', upgradePaymentDto);
+    // try {
+    //   await this.paymentsService.createPayment({ ...upgradePaymentDto });
+      
+    //   return res.redirect('https://staging-members.nextmba.com/home')
+    // } catch (error) {
+    //   throw new BadRequestException(error.message);
+    // }
   }
 
   @Get('/generate/:paymentId')
