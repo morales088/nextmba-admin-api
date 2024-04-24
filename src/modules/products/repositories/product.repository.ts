@@ -108,7 +108,7 @@ export class ProductRepository extends AbstractRepository<Products> {
   }
 
   async findByCode(code: string) {
-    return await this.prisma.products.findFirst({
+    return this.prisma.products.findFirst({
       where: { code: code, status: 1 },
       include: { product_items: true },
     });

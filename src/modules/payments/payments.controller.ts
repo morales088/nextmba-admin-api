@@ -1,4 +1,16 @@
-import { Body, Controller, Get, Param, Post, Put, Query, Request, Res, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Request,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { PaymentsService } from './services/payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
@@ -6,6 +18,7 @@ import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { PdfService } from 'src/common/utils/pdf.service';
 import { Response } from 'express';
 import { BillingRepository } from '../billings/repositories/billing.repository';
+import { UpgradePaymentDTO } from './dto/upgrade-payment.dto';
 
 @Controller('payments')
 // @UseGuards(AuthGuard('jwt'))
@@ -15,6 +28,16 @@ export class PaymentsController {
     private readonly pdfService: PdfService,
     private readonly billingRepository: BillingRepository
   ) {}
+
+  @Get('/upgrade')
+  async upgradePayment(@Query() upgradePaymentDto: UpgradePaymentDTO) {
+    console.log('💡 ~ upgradePaymentDto:', upgradePaymentDto);
+    try {
+      return this.paymentsService.createPayment({ ...upgradePaymentDto });
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
 
   @Get('/generate/:paymentId')
   async generatePdf(@Res() res: Response, @Param('paymentId') paymentId: number): Promise<void> {

@@ -13,71 +13,71 @@ export class CronService {
     // private readonly courseTierCronService: CourseTierCronService
   ) {}
 
-  @Cron(CronExpression.EVERY_DAY_AT_NOON, {
-    name: 'export-students-data',
-    timeZone: 'Asia/Manila',
-  })
-  async runExportStudentData() {
-    try {
-      console.log('');
-      this.logger.log('Running: Export students data');
-      await this.mailerliteCronService.exportStudentData();
-      this.delay(1000);
+  // @Cron(CronExpression.EVERY_DAY_AT_NOON, {
+  //   name: 'export-students-data',
+  //   timeZone: 'Asia/Manila',
+  // })
+  // async runExportStudentData() {
+  //   try {
+  //     console.log('');
+  //     this.logger.log('Running: Export students data');
+  //     await this.mailerliteCronService.exportStudentData();
+  //     this.delay(1000);
 
-      console.log('');
-      this.logger.log('Running: Export expired students course');
-      await this.mailerliteCronService.exportExpiredStudentCourse();
-      this.delay(1000);
+  //     console.log('');
+  //     this.logger.log('Running: Export expired students course');
+  //     await this.mailerliteCronService.exportExpiredStudentCourse();
+  //     this.delay(1000);
       
-      console.log('');
-      this.logger.log('Running: Export completed students courses');
-      await this.mailerliteCronService.exportCompletedStudentsCourses();
-      this.delay(1000);
+  //     console.log('');
+  //     this.logger.log('Running: Export completed students courses');
+  //     await this.mailerliteCronService.exportCompletedStudentsCourses();
+  //     this.delay(1000);
 
-      console.log('');
-      this.logger.log('Cron job is done.');
+  //     console.log('');
+  //     this.logger.log('Cron job is done.');
 
-      const job = this.schedulerRegistry.getCronJob('export-students-data');
-      this.logger.log(`Next Scheduled Date: ${job.nextDate()}`);
+  //     const job = this.schedulerRegistry.getCronJob('export-students-data');
+  //     this.logger.log(`Next Scheduled Date: ${job.nextDate()}`);
 
-    } catch (error) {
-      this.logger.error(`Error in export-students-data cron job: ${error.message}`);
-    }
-  }
+  //   } catch (error) {
+  //     this.logger.error(`Error in export-students-data cron job: ${error.message}`);
+  //   }
+  // }
 
-  // This cron job executes every 5 minutes from 12 midnight to 11 AM, and then from 1 PM to 11 PM.
-  @Cron('*/5 0-11,13-23 * * *', {
-    name: 'process-student-data',
-    timeZone: 'Asia/Manila',
-  })
-  async runProcessStudentData() {
-    try {
-      console.log('');
-      this.logger.log('Running: Process student data');
+  // // This cron job executes every 5 minutes from 12 midnight to 11 AM, and then from 1 PM to 11 PM.
+  // @Cron('*/5 0-11,13-23 * * *', {
+  //   name: 'process-student-data',
+  //   timeZone: 'Asia/Manila',
+  // })
+  // async runProcessStudentData() {
+  //   try {
+  //     console.log('');
+  //     this.logger.log('Running: Process student data');
 
-      console.log('');
-      this.logger.log('Running: Add student to groups');
-      await this.mailerliteCronService.addStudentsToGroups();
-      this.delay(1000);
+  //     console.log('');
+  //     this.logger.log('Running: Add student to groups');
+  //     await this.mailerliteCronService.addStudentsToGroups();
+  //     this.delay(1000);
 
-      console.log('');
-      this.logger.log('Running: Remove students to group');
-      await this.mailerliteCronService.removeStudentsToGroups();
+  //     console.log('');
+  //     this.logger.log('Running: Remove students to group');
+  //     await this.mailerliteCronService.removeStudentsToGroups();
       
-      // console.log('');
-      // this.logger.log('Running: Remove students with completed courses to group');
-      // await this.mailerliteCronService.removeCompletedStudentsToGroups();
-      // this.delay(1000);
+  //     // console.log('');
+  //     // this.logger.log('Running: Remove students with completed courses to group');
+  //     // await this.mailerliteCronService.removeCompletedStudentsToGroups();
+  //     // this.delay(1000);
 
-      console.log('');
-      this.logger.log('Cron job is done.');
+  //     console.log('');
+  //     this.logger.log('Cron job is done.');
 
-      const job = this.schedulerRegistry.getCronJob('process-student-data');
-      this.logger.log(`Next Scheduled Date: ${job.nextDate()}`);
-    } catch (error) {
-      this.logger.error(`Error in process-student-data cron job: ${error.message}`);
-    }
-  }
+  //     const job = this.schedulerRegistry.getCronJob('process-student-data');
+  //     this.logger.log(`Next Scheduled Date: ${job.nextDate()}`);
+  //   } catch (error) {
+  //     this.logger.error(`Error in process-student-data cron job: ${error.message}`);
+  //   }
+  // }
 
   // @Cron(CronExpression.EVERY_30_MINUTES, {
   //   name: 'process-course-tier',
