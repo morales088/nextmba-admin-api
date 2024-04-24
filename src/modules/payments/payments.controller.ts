@@ -31,10 +31,8 @@ export class PaymentsController {
   ) {}
 
   @Get('/upgrade')
-  // @Redirect('https://staging-members.nextmba.com/home?upgrade/home?upgrade=success')
   @Redirect(`${process.env.STUDENT_ROUTE}/home?upgrade=success`)
-  async upgradePayment(@Query() upgradePaymentDto: UpgradePaymentDTO, @Res() res: Response) {
-    console.log('💡 ~ upgradePaymentDto:', upgradePaymentDto);
+  async upgradePayment(@Query() upgradePaymentDto: UpgradePaymentDTO) {
     try {
       return this.paymentsService.createPayment({ ...upgradePaymentDto });
     } catch (error) {

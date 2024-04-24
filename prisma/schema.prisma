@@ -38,6 +38,7 @@ model Courses {
   price                       Decimal                @db.Decimal(9, 2)
   telegram_link               String?
   upgrade_link                String?
+  upgrade_amount              Decimal?               @default(0) @db.Decimal(9, 2)
   paid                        Int                    @default(1)
   is_displayed                Int                    @default(1)
   status                      Int                    @default(1)
@@ -411,5 +412,5 @@ model Subscriber_groups {
   status           Int       @default(1)
   createdAt        DateTime  @default(now())
   updatedAt        DateTime? @updatedAt
-  course           Courses?   @relation(fields: [course_id], references: [id])
+  course           Courses?  @relation(fields: [course_id], references: [id])
 }
