@@ -31,11 +31,13 @@ export class PaymentsController {
   ) {}
 
   @Get('/upgrade')
-  @Redirect('https://staging-members.nextmba.com/home')
-  async upgradePayment(@Query() upgradePaymentDto: UpgradePaymentDTO) {
+  // @Redirect('https://staging-members.nextmba.com/home')
+  async upgradePayment(@Query() upgradePaymentDto: UpgradePaymentDTO, @Res() res: Response) {
     console.log('💡 ~ upgradePaymentDto:', upgradePaymentDto);
     try {
-      return this.paymentsService.createPayment({ ...upgradePaymentDto });
+      await this.paymentsService.createPayment({ ...upgradePaymentDto });
+
+      return res.redirect('https://staging-members.nextmba.com/home')
     } catch (error) {
       throw new BadRequestException(error.message);
     }
