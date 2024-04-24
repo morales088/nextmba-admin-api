@@ -31,17 +31,15 @@ export class PaymentsController {
   ) {}
 
   @Get('/upgrade')
-  // @Redirect('https://staging-members.nextmba.com/home')
+  // @Redirect('https://staging-members.nextmba.com/home?upgrade/home?upgrade=success')
+  @Redirect(`${process.env.STUDENT_ROUTE}/home?upgrade=success`)
   async upgradePayment(@Query() upgradePaymentDto: UpgradePaymentDTO, @Res() res: Response) {
-    return res.redirect('https://google.com')
-    // console.log('💡 ~ upgradePaymentDto:', upgradePaymentDto);
-    // try {
-    //   await this.paymentsService.createPayment({ ...upgradePaymentDto });
-      
-    //   return res.redirect('https://staging-members.nextmba.com/home')
-    // } catch (error) {
-    //   throw new BadRequestException(error.message);
-    // }
+    console.log('💡 ~ upgradePaymentDto:', upgradePaymentDto);
+    try {
+      return this.paymentsService.createPayment({ ...upgradePaymentDto });
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 
   @Get('/generate/:paymentId')
@@ -56,7 +54,7 @@ export class PaymentsController {
     const billingEmail =
       studentBillingInfo && studentBillingInfo.email ? studentBillingInfo.email : studentInfo.student.email;
     const billingAddress =
-      studentBillingInfo && studentBillingInfo.address ? studentBillingInfo.address : (studentInfo.student.country ?? '');
+      studentBillingInfo && studentBillingInfo.address ? studentBillingInfo.address : studentInfo.student.country ?? '';
 
     const options = {
       year: 'numeric',
