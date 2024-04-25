@@ -62,7 +62,9 @@ export class PaymentsService {
           account_type: product.pro_access === true ? 3 : 1,
         };
 
-        const createStudent = await this.studentsService.createStudent(studentData);
+        // const createStudent = await this.studentsService.createStudent(studentData);
+        // use Interactive Transaction
+        const createStudent = await this.studentsService.createStudentTx(studentData);
 
         studentId = createStudent.id;
       }

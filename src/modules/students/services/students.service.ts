@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { StudentRepository } from '../repositories/student.repository';
 import { HashService } from 'src/common/utils/hash.service';
 import { PaymentRepository } from 'src/modules/payments/repositories/payment.repository';
@@ -6,10 +6,12 @@ import { StudentCoursesRepository } from '../repositories/student_courses.reposi
 import { SendMailService } from 'src/common/utils/send-mail.service';
 import { FilterOptions } from '../interfaces/student.interface';
 import { currentTime, last24Hours, previousEndOfDay, previousStartOfDay } from 'src/common/helpers/date.helper';
+import { PrismaService } from 'src/common/prisma/prisma.service';
 
 @Injectable()
 export class StudentsService {
   constructor(
+    private readonly prismaService: PrismaService,
     private readonly hashService: HashService,
     private readonly sendMailService: SendMailService,
     private readonly studentRepository: StudentRepository,
@@ -46,6 +48,44 @@ export class StudentsService {
     }
 
     return createdStudent;
+  }
+
+  async createStudentTx(data) {
+    try {
+      return await this.prismaService.$transaction(async (tx) => {
+        const password = data.password ?? this.generateRandomString(8);
+        const hashedPassword = await this.hashService.hashPassword(password);
+
+        const studentData = {
+          ...data,
+          password: hashedPassword,
+        };
+
+        const existingStudent = await tx.students.findFirst({
+          where: {
+            email: {
+              equals: data.email,
+              mode: 'insensitive',
+            },
+          },
+        });
+
+        if (existingStudent) {
+          throw new BadRequestException('Student already exists.');
+        }
+
+        const createdStudent = await tx.students.create({ data: studentData });
+
+        // send email credential if student is created
+        if (createdStudent) {
+          await this.sendMailService.emailLoginCredentials(createdStudent.email, password);
+        }
+
+        return createdStudent;
+      });
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 
   async updateStudent(id: number, data) {
