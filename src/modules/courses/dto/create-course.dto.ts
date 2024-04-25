@@ -59,4 +59,8 @@ export class CreateCourseDto {
   @IsOptional()
   @IsString()
   upgrade_link: number;
+  
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  upgrade_amount: number;
 }

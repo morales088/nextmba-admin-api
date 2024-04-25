@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Query,
+  Redirect,
   Request,
   Res,
   UseGuards,
@@ -30,8 +31,8 @@ export class PaymentsController {
   ) {}
 
   @Get('/upgrade')
+  @Redirect(`${process.env.STUDENT_ROUTE}/home?upgrade=success`)
   async upgradePayment(@Query() upgradePaymentDto: UpgradePaymentDTO) {
-    console.log('💡 ~ upgradePaymentDto:', upgradePaymentDto);
     try {
       return this.paymentsService.createPayment({ ...upgradePaymentDto });
     } catch (error) {
@@ -51,7 +52,7 @@ export class PaymentsController {
     const billingEmail =
       studentBillingInfo && studentBillingInfo.email ? studentBillingInfo.email : studentInfo.student.email;
     const billingAddress =
-      studentBillingInfo && studentBillingInfo.address ? studentBillingInfo.address : (studentInfo.student.country ?? '');
+      studentBillingInfo && studentBillingInfo.address ? studentBillingInfo.address : studentInfo.student.country ?? '';
 
     const options = {
       year: 'numeric',
