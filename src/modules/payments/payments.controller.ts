@@ -32,7 +32,7 @@ export class PaymentsController {
 
   @Get('/upgrade')
   // @Redirect(`${process.env.STUDENT_ROUTE}/home?upgrade=success`)
-  async upgradePayment(@Res res: Response, @Query() upgradePaymentDto: UpgradePaymentDTO) {
+  async upgradePayment(@Res() res: Response, @Query() upgradePaymentDto: UpgradePaymentDTO) {
     try {
       await this.paymentsService.createPayment({ ...upgradePaymentDto });
       return res.redirect(`${process.env.STUDENT_ROUTE}/home?upgrade=success&payment_id=${upgradePaymentDto.reference_id}&product_code=${upgradePaymentDto.product_code}`);
