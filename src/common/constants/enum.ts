@@ -26,3 +26,8 @@ export enum CourseTierType {
   FULL = 1,
   LIMITED = 2,
 }
+
+export enum AssignmentsType {
+  INDIVIDUAL = 1,
+  GROUP = 2,
+}

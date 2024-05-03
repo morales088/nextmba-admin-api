@@ -57,6 +57,8 @@ model Courses {
   student_certificates        Student_certificates[]
   student_courses             Student_courses[]
   subscriber_groups           Subscriber_groups[]
+  student_groups              Student_groups[]
+  assignments                 Assignments[]
 }
 
 model Modules {
@@ -83,6 +85,7 @@ model Modules {
   course              Courses        @relation(fields: [course_id], references: [id])
   topics              Topics[]
   translations        Translations[]
+  assignments         Assignments[]
 }
 
 model Speakers {
@@ -172,41 +175,43 @@ model Medias {
 }
 
 model Students {
-  id                   Int                    @id @default(autoincrement())
-  name                 String                 @db.VarChar(255)
-  email                String                 @unique @db.VarChar(255)
-  password             String                 @db.VarChar(255)
-  phone                String?
-  country              String?
-  industry             String?
-  company              String?
-  position             String?
-  language             String                 @default("en")
-  last_login           DateTime?
-  profile_picture      String?
-  chat_moderator       Boolean                @default(false)
-  chat_access          Boolean                @default(true)
-  library_access       Int                    @default(0)
-  account_type         Int                    @default(1)
-  affiliate_access     Int                    @default(0)
-  website              String?
-  linkedIn             String?
-  instagram            String?
-  telegram             String?
-  status               Int                    @default(1)
-  createdAt            DateTime               @default(now())
-  updatedAt            DateTime?              @updatedAt
-  created_by           Int?                   @default(0)
-  email_sent           Boolean                @default(false)
-  is_translator        Boolean                @default(false)
-  is_speaker           Boolean                @default(false)
-  affilate_withdraws   Affilate_withdraws[]
-  affiliates           Affiliates[]
-  billing_infos        Billing_infos[]
-  gifts                Gifts[]
-  payments             Payments[]
-  student_certificates Student_certificates[]
-  student_courses      Student_courses[]
+  id                    Int                     @id @default(autoincrement())
+  name                  String                  @db.VarChar(255)
+  email                 String                  @unique @db.VarChar(255)
+  password              String                  @db.VarChar(255)
+  phone                 String?
+  country               String?
+  industry              String?
+  company               String?
+  position              String?
+  language              String                  @default("en")
+  last_login            DateTime?
+  profile_picture       String?
+  chat_moderator        Boolean                 @default(false)
+  chat_access           Boolean                 @default(true)
+  library_access        Int                     @default(0)
+  account_type          Int                     @default(1)
+  affiliate_access      Int                     @default(0)
+  website               String?
+  linkedIn              String?
+  instagram             String?
+  telegram              String?
+  status                Int                     @default(1)
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime?               @updatedAt
+  created_by            Int?                    @default(0)
+  email_sent            Boolean                 @default(false)
+  is_translator         Boolean                 @default(false)
+  is_speaker            Boolean                 @default(false)
+  affilate_withdraws    Affilate_withdraws[]
+  affiliates            Affiliates[]
+  billing_infos         Billing_infos[]
+  gifts                 Gifts[]
+  payments              Payments[]
+  student_certificates  Student_certificates[]
+  student_courses       Student_courses[]
+  Idividual_submissions Idividual_submissions[]
+  Group_items           Group_items[]
 }
 
 model Student_courses {
@@ -413,4 +418,68 @@ model Subscriber_groups {
   createdAt        DateTime  @default(now())
   updatedAt        DateTime? @updatedAt
   course           Courses?  @relation(fields: [course_id], references: [id])
+}
+
+model Student_groups {
+  id        Int       @id @default(autoincrement())
+  course_id Int
+  name      String
+  link      String?
+  is_public Boolean   @default(false)
+  status    Int       @default(1)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  course    Courses?  @relation(fields: [course_id], references: [id])
+}
+
+model Assignments {
+  id                    Int                     @id @default(autoincrement())
+  course_id             Int
+  module_id             Int
+  name                  String
+  type                  Int                     @default(1)
+  details               String?
+  status                Int                     @default(1)
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime?               @updatedAt
+  course                Courses?                @relation(fields: [course_id], references: [id])
+  module                Modules?                @relation(fields: [module_id], references: [id])
+  idividual_submissions Idividual_submissions[]
+  group_submissions     Group_submissions[]
+}
+
+model Idividual_submissions {
+  id              Int          @id @default(autoincrement())
+  assignment_id   Int
+  submitted_by    Int
+  submission_date DateTime     @default(now())
+  answer_details  String?
+  answer_feedback String?
+  status          Int          @default(2)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime?    @updatedAt
+  assignment      Assignments? @relation(fields: [assignment_id], references: [id])
+  student         Students?    @relation(fields: [submitted_by], references: [id])
+}
+
+model Group_submissions {
+  id                Int           @id @default(autoincrement())
+  assignment_id     Int
+  presentation_link String?
+  status            Int           @default(1)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime?     @updatedAt
+  assignment        Assignments?  @relation(fields: [assignment_id], references: [id])
+  group_items       Group_items[]
+}
+
+model Group_items {
+  id                Int                @id @default(autoincrement())
+  group_id          Int
+  student_id        Int
+  status            Int                @default(1)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime?          @updatedAt
+  group_submissions Group_submissions? @relation(fields: [group_id], references: [id])
+  student           Students?          @relation(fields: [student_id], references: [id])
 }
