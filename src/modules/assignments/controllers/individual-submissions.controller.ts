@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { IndividualSubmissionsService } from '../services/individual-submissions.service';
+import { UpdateIndividualSubmissionDto } from '../dto/update-individual-submission.dto';
 
 @Controller('individual-submissions')
 @UseGuards(AuthGuard('jwt'))
@@ -30,15 +31,15 @@ export class IndividualSubmissionsController {
     //   return await this.assignmentsService.createAssignment(assignmentData);
     // }
 
-    // @Put('/:assignmentId')
-    // async updateBilling(
-    //   @Param('assignmentId') assignmentId: number,
-    //   @Body() updateAssignmentDto: UpdateAssignmentDto,
-    // ) {
-    //   const assignmentData = {
-    //     ...updateAssignmentDto,
-    //   };
+    @Put('/:submissionId')
+    async updateSubmission(
+      @Param('submissionId') submissionId: number,
+      @Body() updateIndividualSubmissionDto: UpdateIndividualSubmissionDto,
+    ) {
+      const submissionData = {
+        ...updateIndividualSubmissionDto,
+      };
       
-    //   return await this.assignmentsService.updateAssignment(assignmentId, assignmentData);
-    // }
+      return await this.individualSubmissionsService.updateSubmission(submissionId, submissionData);
+    }
 }
