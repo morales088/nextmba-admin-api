@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
-import { AssignmentsService } from './services/assignments.service';
-import { CreateAssignmentDto } from './dto/create-assignment.dto';
-import { UpdateAssignmentDto } from './dto/update-assignment.dto';
+import { AssignmentsService } from '../services/assignments.service';
+import { CreateAssignmentDto } from '../dto/create-assignment.dto';
+import { UpdateAssignmentDto } from '../dto/update-assignment.dto';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('assignments')
@@ -12,17 +12,17 @@ export class AssignmentsController {
     ) {}
 
     @Get('/')
-    async getAppliedStudies() {
+    async getAssignments() {
       return await this.assignmentsService.getAssignments();
     }
 
     @Get('/:assignmentId')
-    async getAppliedStudy(@Param('assignmentId') assignmentId: number) {
+    async getAssignment(@Param('assignmentId') assignmentId: number) {
       return await this.assignmentsService.getAssignment(assignmentId);
     }
 
     @Post('/')
-    async createBilling(
+    async createAssignment(
       @Body() createAssignmentDto: CreateAssignmentDto,
     ) {
       const assignmentData = {
@@ -33,7 +33,7 @@ export class AssignmentsController {
     }
 
     @Put('/:assignmentId')
-    async updateBilling(
+    async updateAssignment(
       @Param('assignmentId') assignmentId: number,
       @Body() updateAssignmentDto: UpdateAssignmentDto,
     ) {
