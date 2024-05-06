@@ -2,15 +2,15 @@ import { Transform } from 'class-transformer';
 import { IsBoolean, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateAssignmentDto {
-  @IsOptional()
+  @IsNotEmpty()
   @Transform(({ value }) => parseInt(value))
   course_id: number;
 
-  @IsOptional()
+  @IsNotEmpty()
   @Transform(({ value }) => parseInt(value))
   module_id: number;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   name: string;
 
