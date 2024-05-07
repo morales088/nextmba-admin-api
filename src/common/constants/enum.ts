@@ -26,3 +26,8 @@ export enum CourseTierType {
   FULL = 1,
   LIMITED = 2,
 }
+
+export enum PaymentOrigin {
+  NextMba = 1,
+  NextUni = 2,
+}

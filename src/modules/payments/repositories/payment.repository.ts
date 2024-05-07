@@ -71,7 +71,7 @@ export class PaymentRepository extends AbstractRepository<Payments> {
     const createPayment = await this.prisma[this.modelName].create({ data: paymentData });
 
     // insert payment items
-    const createPaymentItems = await this.paymentItemRepository.insert(studentId, createPayment.id, data.product_code);
+    const createPaymentItems = await this.paymentItemRepository.insert(studentId, createPayment.id, data.product_code, data.origin);
 
     return await this.findById(createPayment.id);
   }

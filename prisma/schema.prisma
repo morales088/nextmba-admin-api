@@ -260,6 +260,7 @@ model Payments {
   reference_id          String?
   price                 Decimal               @db.Decimal(9, 2)
   payment_method        Int                   @default(1)
+  origin                Int                   @default(1)
   name                  String                @db.VarChar(255)
   email                 String                @db.VarChar(255)
   contact_number        String?
