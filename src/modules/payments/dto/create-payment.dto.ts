@@ -24,7 +24,7 @@ export class CreatePaymentDto {
   // payment_method: number;
 
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
   @IsIn([1, 2]) 
   origin: number;
 
