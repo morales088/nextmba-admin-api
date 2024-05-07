@@ -23,10 +23,10 @@ export class CreatePaymentDto {
   // @IsIn([1, 2]) 
   // payment_method: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   @IsIn([1, 2]) 
-  from: number;
+  origin: number;
 
   @IsNotEmpty()
   @IsString()
