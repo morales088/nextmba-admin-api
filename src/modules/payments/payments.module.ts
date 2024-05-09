@@ -36,5 +36,21 @@ import { BillingRepository } from '../billings/repositories/billing.repository';
     BillingRepository,
     PdfService
   ],
+  exports: [
+    PaymentsService,
+    PaymentRepository,
+    PaymentItemRepository,
+    StudentRepository,
+    ProductRepository,
+    ProductItemRepository,
+    StudentsService,
+    HashService,
+    SendMailService,
+    ApiKeyGuard,
+    StudentCoursesRepository,
+    PaymentAffiliateRepository,
+    BillingRepository,
+    PdfService
+  ],
 })
 export class PaymentsModule {}
