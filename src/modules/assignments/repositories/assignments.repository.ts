@@ -17,6 +17,7 @@ export class AssignmentsRepository extends AbstractRepository<Assignments> {
   async find(): Promise<Assignments> {
     return this.prisma[this.modelName].findMany({
       where: { status: 1 },
+      include: { idividual_submissions: { where: { status: { in: [1, 2] } } } },
       orderBy: [
         {
           id: 'asc',
