@@ -8,8 +8,8 @@ export class IndividualSubmissionsService {
       private readonly individualSubmmisionsRepository: IndividualSubmmisionsRepository,
     ) {}
 
-    async getSubmissions() {
-      return await this.individualSubmmisionsRepository.find();
+    async getSubmissions(search:string, assignmentId:number, status:number) {
+      return await this.individualSubmmisionsRepository.find(search, assignmentId, status);
     }
 
     async getSubmission(id:number) {

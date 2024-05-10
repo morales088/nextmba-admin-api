@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { AssignmentsService } from '../services/assignments.service';
 import { CreateAssignmentDto } from '../dto/create-assignment.dto';
 import { UpdateAssignmentDto } from '../dto/update-assignment.dto';
@@ -12,8 +12,9 @@ export class AssignmentsController {
     ) {}
 
     @Get('/')
-    async getAssignments() {
-      return await this.assignmentsService.getAssignments();
+    async getAssignments(
+      @Query('search') search?: string,) {
+      return await this.assignmentsService.getAssignments(search);
     }
 
     @Get('/:assignmentId')

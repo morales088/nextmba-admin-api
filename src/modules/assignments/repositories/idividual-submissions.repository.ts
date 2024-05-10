@@ -14,9 +14,39 @@ export class IndividualSubmmisionsRepository extends AbstractRepository<Idividua
     return 'Idividual_submissions'; // Specify the Prisma model name for entity
   }
 
-  async find(): Promise<Idividual_submissions> {
+  async find(search: string, assignmentId: number, status: number): Promise<Idividual_submissions> {
+    interface WhereCondition {
+      status?: any;
+      assignment_id?: number;
+      OR?: any;
+    }
+
+    let whereCondition: WhereCondition = { status: 1 };
+
+    if (status) whereCondition.status = status;
+    if (assignmentId) whereCondition.assignment_id = assignmentId;
+    if (search)
+      whereCondition.OR = [
+        {
+          student: {
+            name: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+        },
+        {
+          assignment: {
+            name: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+        },
+      ];
+      
     return this.prisma[this.modelName].findMany({
-      where: { status: 1 },
+      where: whereCondition,
       include: { student: true, assignment: { include: { course: true, module: true } } },
       orderBy: [
         {
