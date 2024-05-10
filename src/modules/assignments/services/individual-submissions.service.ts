@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { IndividualSubmmisionsRepository } from '../repositories/idividual-submissions.repository';
+import { IndividualSubmmisionsRepository } from '../repositories/individual-submissions.repository';
 import { UpdateIndividualSubmissionDto } from '../dto/update-individual-submission.dto';
 
 @Injectable()
