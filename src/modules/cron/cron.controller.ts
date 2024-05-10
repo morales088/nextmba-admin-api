@@ -40,4 +40,10 @@ export class CronController {
   // async processCourseTier() {
   //   return this.cronService.runProcessCourseTier();
   // }
+
+  // @Public()
+  // @Get('/process-payment-leads')
+  // async processPaymentLeads() {
+  //   return this.cronService.runProcessPaymentLeads();
+  // }
 }

@@ -6,11 +6,13 @@ import { StudentsModule } from '../students/students.module';
 import { CoursesModule } from '../courses/courses.module';
 import { SubscriberGroupsModule } from '../subscriber_groups/subscriber-groups.module';
 import { CourseTierCronService } from './services/course_tier-cron.service';
+import { PaymentsModule } from '../payments/payments.module';
+import { PaymentLeadsCronService } from './services/payment-leads-cron.service';
 
 @Module({
-  imports: [StudentsModule, CoursesModule, SubscriberGroupsModule],
+  imports: [PaymentsModule, StudentsModule, CoursesModule, SubscriberGroupsModule],
   controllers: [CronController],
-  providers: [CronService, MailerliteCronService, CourseTierCronService],
-  exports: [CronService]
+  providers: [CronService, MailerliteCronService, CourseTierCronService, PaymentLeadsCronService],
+  exports: [CronService],
 })
 export class CronModule {}

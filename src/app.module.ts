@@ -28,11 +28,14 @@ import { SubscriberGroupsModule } from './modules/subscriber_groups/subscriber-g
 import { GoogleModule } from './common/google/google.module';
 import { AssignmentsModule } from './modules/assignments/assignments.module';
 import * as dotenv from 'dotenv';
+import { CronModule } from './modules/cron/cron.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 dotenv.config();
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     MailerModule.forRoot({
       transport: {
         host: process.env.MAIL_HOST,
@@ -72,6 +75,7 @@ dotenv.config();
     SubscriberGroupsModule,
     GoogleModule,
     AssignmentsModule,
+    CronModule,
   ],
   controllers: [],
   providers: [],
