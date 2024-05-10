@@ -21,7 +21,7 @@ export class IndividualSubmmisionsRepository extends AbstractRepository<Individu
       OR?: any;
     }
 
-    let whereCondition: WhereCondition = { status: 1 };
+    let whereCondition: WhereCondition = {  };
 
     if (status) whereCondition.status = status;
     if (assignmentId) whereCondition.assignment_id = assignmentId;
