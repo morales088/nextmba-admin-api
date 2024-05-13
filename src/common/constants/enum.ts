@@ -31,3 +31,9 @@ export enum AssignmentsType {
   INDIVIDUAL = 1,
   GROUP = 2,
 }
+
+export enum ModuleTierType {
+  FULL = 1,
+  LIMITED = 2,
+  ALL = 3
+}

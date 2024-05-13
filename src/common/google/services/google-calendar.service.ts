@@ -1,13 +1,14 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { google } from 'googleapis';
 import * as fs from 'fs';
 import { CalendarEvent } from '../interfaces/calendar-event.interface';
+import { Calendar } from '../interfaces/calendar-data.interface';
+import { Modules } from '@prisma/client';
+import { ModuleType } from 'src/common/constants/enum';
 
 @Injectable()
 export class GoogleCalendarService {
   private readonly logger = new Logger(GoogleCalendarService.name);
-
-  private readonly calendarId = process.env.GOOGLE_CALENDAR_ID;
   private readonly calendar;
 
   constructor() {
@@ -22,10 +23,42 @@ export class GoogleCalendarService {
     this.calendar = google.calendar({ version: 'v3', auth: auth });
   }
 
-  async getEvents() {
+  async getCalendar(courseId: number, moduleTier: number) {
     try {
+      const calendarData = JSON.parse(fs.readFileSync('src/common/files/json/calendar-data.json', 'utf-8'));
+      const calendars: Calendar[] = calendarData.calendars;
+
+      const calendar = calendars.find((calendar) => {
+        return calendar.courseId === courseId && calendar.moduleTier === moduleTier;
+      });
+
+      return calendar;
+    } catch (error) {
+      this.logger.error(error.message);
+    }
+  }
+
+  async getCalendars(courseId: number, moduleTier: number) {
+    try {
+      const calendarData = JSON.parse(fs.readFileSync('src/common/files/json/calendar-data.json', 'utf-8'));
+      const allCalendars: Calendar[] = calendarData.calendars;
+
+      const calendars = allCalendars.filter((calendar) => {
+        return calendar.courseId === courseId && calendar.moduleTier === moduleTier;
+      });
+
+      return calendars;
+    } catch (error) {
+      this.logger.error(error.message);
+    }
+  }
+
+  async getEvents(courseId: number, moduleTier: number) {
+    try {
+      const calendar = await this.getCalendar(courseId, moduleTier);
+
       const events = await this.calendar.events.list({
-        calendarId: this.calendarId,
+        calendarId: calendar.calendarId,
       });
 
       return events.data;
@@ -35,21 +68,30 @@ export class GoogleCalendarService {
     }
   }
 
-  async getEvent(eventId: string) {
+  async getEvent(courseId: number, moduleTier: number, eventId: string) {
     try {
+      const calendar = await this.getCalendar(courseId, moduleTier);
+
+      // if (!calendar) this.logger.debug('Calendar not found skipping')
+
       const event = await this.calendar.events.get({
-        calendarId: this.calendarId,
+        calendarId: calendar.calendarId,
         eventId: eventId,
       });
 
       return event.data;
     } catch (error) {
-      this.logger.error(`Error fetching events: ${error.message}`);
-      throw error;
+      this.logger.error(`Error fetching event: ${error.message}`);
     }
   }
 
-  async createEvent(eventData: CalendarEvent): Promise<any> {
+  async createEvent(eventData: CalendarEvent, calendarID?: string): Promise<any> {
+    let calendarId = calendarID;
+    if (!calendarID) {
+      const calendar = await this.getCalendar(eventData.courseId, eventData.moduleTier);
+      calendarId = calendar.calendarId;
+    }
+
     const calendarEvent = {
       summary: eventData.name,
       description: eventData.description,
@@ -67,7 +109,7 @@ export class GoogleCalendarService {
 
     try {
       const event = await this.calendar.events.insert({
-        calendarId: this.calendarId,
+        calendarId: calendarId,
         resource: calendarEvent,
       });
 
@@ -80,6 +122,8 @@ export class GoogleCalendarService {
   }
 
   async updateEvent(eventId: string, eventData: CalendarEvent): Promise<any> {
+    const calendar = await this.getCalendar(eventData.courseId, eventData.moduleTier);
+
     const calendarEvent = {
       summary: eventData.name,
       description: eventData.description,
@@ -95,7 +139,7 @@ export class GoogleCalendarService {
 
     try {
       const event = await this.calendar.events.update({
-        calendarId: this.calendarId,
+        calendarId: calendar.calendarId,
         eventId: eventId,
         requestBody: calendarEvent,
       });
@@ -108,10 +152,12 @@ export class GoogleCalendarService {
     }
   }
 
-  async deleteEvent(eventId: string): Promise<any> {
+  async deleteEvent(courseId: number, moduleTier: number, eventId: string): Promise<any> {
     try {
+      const calendar = await this.getCalendar(courseId, moduleTier);
+
       await this.calendar.events.delete({
-        calendarId: this.calendarId,
+        calendarId: calendar.calendarId,
         eventId: eventId,
       });
 
@@ -121,5 +167,37 @@ export class GoogleCalendarService {
       this.logger.error(`Error deleting event: ${error.message}`);
       throw error;
     }
+  }
+
+  async updateModuleCalendarEvent(module: Modules) {
+    let moduleEvent;
+
+    const eventData = {
+      courseId: module.course_id,
+      moduleTier: module.tier,
+      name: module.name,
+      description: module.description,
+      startTime: module.start_date.toISOString(),
+      endTime: module.end_date.toISOString(),
+    };
+
+    const isEventExists =
+      module.event_id !== null ? await this.getEvent(module.course_id, module.tier, module.event_id) : false;
+
+    if (!isEventExists) {
+      const createdEvent = await this.createEvent(eventData);
+      moduleEvent = createdEvent;
+    }
+
+    const { DELETED, DRAFT } = ModuleType;
+
+    if (module.status !== DELETED && module.status !== DRAFT) {
+      await this.updateEvent(module.event_id, eventData);
+    } else {
+      this.deleteEvent(module.course_id, module.tier, module.event_id);
+      moduleEvent = null;
+    }
+
+    return moduleEvent;
   }
 }

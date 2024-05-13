@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { GoogleCalendarService } from './services/google-calendar.service';
 import { CalendarEvent } from './interfaces/calendar-event.interface';
 
@@ -7,9 +7,9 @@ export class GoogleCalendarController {
   constructor(private readonly googleCalendarService: GoogleCalendarService) {}
 
   @Get('/events')
-  async getEvents() {
+  async getEvents(@Query('courseId') courseId: number, @Query('moduleTier') moduleTier: number) {
     try {
-      const events = await this.googleCalendarService.getEvents();
+      const events = await this.googleCalendarService.getEvents(courseId, moduleTier);
       return { success: true, events };
     } catch (error) {
       return { success: false, error: error.message };
@@ -27,7 +27,7 @@ export class GoogleCalendarController {
   }
 
   @Put('events/:eventId')
-  async updateEvent(@Param('eventId') eventId: any, @Body() eventData: any) {
+  async updateEvent(@Param('eventId') eventId: any, @Body() eventData: CalendarEvent) {
     try {
       const event = await this.googleCalendarService.updateEvent(eventId, eventData);
       return { success: true, event };
@@ -37,9 +37,13 @@ export class GoogleCalendarController {
   }
 
   @Delete('events/:eventId')
-  async deleteEvent(@Param('eventId') eventId: any) {
+  async deleteEvent(
+    @Param('eventId') eventId: string,
+    @Query('courseId') courseId: number,
+    @Query('moduleTier') moduleTier: number
+  ) {
     try {
-      const event = await this.googleCalendarService.deleteEvent(eventId);
+      const event = await this.googleCalendarService.deleteEvent(courseId, moduleTier, eventId);
       return { success: true, event };
     } catch (error) {
       return { success: false, error: error.message };

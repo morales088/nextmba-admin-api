@@ -20,6 +20,7 @@ import { AwsS3Service } from 'src/common/aws/aws_s3.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GoogleCalendarService } from 'src/common/google/services/google-calendar.service';
 import { ModuleType } from 'src/common/constants/enum';
+import { ModuleTierType } from '../../common/constants/enum';
 
 @Controller('modules')
 @UseGuards(AuthGuard('jwt'))
@@ -68,29 +69,10 @@ export class ModulesController {
   async updateModule(@Param('moduleId') moduleId: number, @Body() updateModuleDto: UpdateModuleDto) {
     let updatedModule = await this.modulesService.updateModule(moduleId, updateModuleDto);
 
-    const eventData = {
-      name: updatedModule.name,
-      description: updatedModule.description,
-      startTime: updatedModule.start_date.toISOString(),
-      endTime: updatedModule.end_date.toISOString(),
-    };
+    const moduleEvent = await this.googleCalendarService.updateModuleCalendarEvent(updatedModule);
+    const eventId = moduleEvent !== null ? moduleEvent.id : null;
 
-    const isEventExists =
-      updatedModule.event_id !== null ? await this.googleCalendarService.getEvent(updatedModule.event_id) : false;
-
-    if (!isEventExists) {
-      const createdEvent = await this.googleCalendarService.createEvent(eventData);
-      updatedModule = await this.modulesService.updateModule(updatedModule.id, { event_id: createdEvent.id });
-    }
-
-    const { DELETED, DRAFT } = ModuleType;
-    
-    if (updatedModule.status !== DELETED && updatedModule.status !== DRAFT) {
-      await this.googleCalendarService.updateEvent(updatedModule.event_id, eventData);
-    } else {
-      this.googleCalendarService.deleteEvent(updatedModule.event_id);
-      updatedModule = await this.modulesService.updateModule(updatedModule.id, { event_id: null });
-    }
+    updatedModule = await this.modulesService.updateModule(updatedModule.id, { event_id: eventId });
 
     return updatedModule;
   }
@@ -124,7 +106,10 @@ export class ModulesController {
     const result: any[] = [];
 
     for (const upcomingModule of upcomingModules) {
+      console.log('💡 ~ upcomingModule:', upcomingModule);
       const eventData = {
+        courseId: upcomingModule.course_id,
+        moduleTier: upcomingModule.tier,
         name: upcomingModule.name,
         description: upcomingModule.description,
         startTime: upcomingModule.start_date.toISOString(),
@@ -133,14 +118,61 @@ export class ModulesController {
 
       let updatedModule;
 
-      const isEventExists =
-        upcomingModule.event_id !== null ? await this.googleCalendarService.getEvent(upcomingModule.event_id) : false;
+      if (upcomingModule.tier !== ModuleTierType.ALL) {
+        const isEventExists =
+          upcomingModule.event_id !== null
+            ? await this.googleCalendarService.getEvent(
+                upcomingModule.course_id,
+                upcomingModule.tier,
+                upcomingModule.event_id
+              )
+            : false;
 
-      if (!isEventExists) {
-        const createdEvent = await this.googleCalendarService.createEvent(eventData);
-        updatedModule = await this.modulesService.updateModule(upcomingModule.id, { event_id: createdEvent.id });
+        if (!isEventExists) {
+          const createdEvent = await this.googleCalendarService.createEvent(eventData);
+          updatedModule = await this.modulesService.updateModule(upcomingModule.id, { event_id: createdEvent.id });
+          console.log('💡 ~ updatedModule:', updatedModule);
 
-        result.push(updatedModule);
+          result.push(updatedModule);
+        }
+      } else {
+        if (upcomingModule.event_id !== null) {
+          const eventIds = upcomingModule.event_id.split('-');
+          console.log('💡 ~ evenIds:', eventIds);
+
+          for (const eventId of eventIds) {
+            const isEventExists =
+              upcomingModule.event_id !== null
+                ? await this.googleCalendarService.getEvent(upcomingModule.course_id, upcomingModule.tier, eventId)
+                : false;
+
+            if (!isEventExists) {
+              const createdEvent = await this.googleCalendarService.createEvent(eventData);
+              updatedModule = await this.modulesService.updateModule(upcomingModule.id, { event_id: createdEvent.id });
+              console.log('💡 ~ updatedModule:', updatedModule);
+
+              result.push(updatedModule);
+            }
+          }
+        } else {
+          const calendars = await this.googleCalendarService.getCalendars(upcomingModule.course_id, upcomingModule.tier)
+          console.log("💡 ~ calendars:", calendars)
+
+          for (const calendar of calendars) {
+            const newEventData = {
+              courseId: upcomingModule.course_id,
+              moduleTier: upcomingModule.tier,
+              name: upcomingModule.name,
+              description: upcomingModule.description,
+              startTime: upcomingModule.start_date.toISOString(),
+              endTime: upcomingModule.end_date.toISOString(),
+            };
+          }
+
+          const createdEvent = await this.googleCalendarService.createEvent(eventData);
+
+
+        }
       }
     }
 

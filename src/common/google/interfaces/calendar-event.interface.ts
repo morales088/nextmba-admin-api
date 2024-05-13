@@ -1,4 +1,6 @@
 export interface CalendarEvent {
+  courseId: number,
+  moduleTier: number,
   name: string;
   description?: string;
   startTime: string;
