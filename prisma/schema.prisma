@@ -210,7 +210,7 @@ model Students {
   payments              Payments[]
   student_certificates  Student_certificates[]
   student_courses       Student_courses[]
-  Idividual_submissions Idividual_submissions[]
+  idividual_submissions Individual_submissions[]
   Group_items           Group_items[]
 }
 
@@ -444,11 +444,11 @@ model Assignments {
   updatedAt             DateTime?               @updatedAt
   course                Courses?                @relation(fields: [course_id], references: [id])
   module                Modules?                @relation(fields: [module_id], references: [id])
-  idividual_submissions Idividual_submissions[]
+  idividual_submissions Individual_submissions[]
   group_submissions     Group_submissions[]
 }
 
-model Idividual_submissions {
+model Individual_submissions {
   id              Int          @id @default(autoincrement())
   assignment_id   Int
   submitted_by    Int

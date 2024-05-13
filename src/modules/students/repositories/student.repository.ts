@@ -54,7 +54,7 @@ export class StudentRepository extends AbstractRepository<Students> {
     const searchData = search ?? '';
 
     interface WhereCondition {
-      OR: any;
+      OR?: any;
       NOT?: any;
       created_by?: any;
       student_courses?: any;
@@ -64,35 +64,35 @@ export class StudentRepository extends AbstractRepository<Students> {
       position?: string;
     }
 
-    let whereCondition: WhereCondition = {
-      OR: [
-        {
-          email: {
-            startsWith: searchData,
-            mode: 'insensitive',
-          },
-        },
-        {
-          email: {
-            endsWith: searchData,
-            mode: 'insensitive',
-          },
-        },
-        {
-          name: {
-            startsWith: searchData,
-            mode: 'insensitive',
-          },
-        },
-        {
-          name: {
-            endsWith: searchData,
-            mode: 'insensitive',
-          },
-        },
-      ],
-    };
+    let whereCondition: WhereCondition = {};
 
+    if (searchData)
+      whereCondition.OR = [
+        {
+          email: {
+            startsWith: searchData,
+            mode: 'insensitive',
+          },
+        },
+        {
+          email: {
+            endsWith: searchData,
+            mode: 'insensitive',
+          },
+        },
+        {
+          name: {
+            startsWith: searchData,
+            mode: 'insensitive',
+          },
+        },
+        {
+          name: {
+            endsWith: searchData,
+            mode: 'insensitive',
+          },
+        },
+      ];
     if (filters.country) whereCondition.country = filters.country;
     if (filters.company) whereCondition.company = filters.company;
     if (filters.phone) whereCondition.phone = filters.phone;
@@ -105,7 +105,7 @@ export class StudentRepository extends AbstractRepository<Students> {
       whereCondition.NOT = [{ student_courses: { some: { course_id: { in: JSON.parse(filters.not_enrolled_to) } } } }];
 
     if (admin.role === 2) whereCondition.created_by = { in: [admin.userId] };
-
+    
     return this.prisma[this.modelName].findMany({
       where: whereCondition,
       include: { student_courses: { where: { status: 1 }, include: { course: true } } },
@@ -121,11 +121,11 @@ export class StudentRepository extends AbstractRepository<Students> {
 
   async insert(data: Partial<Students>): Promise<any> {
     const existingStudent = await this.prisma[this.modelName].findFirst({
-      where: { 
-        email: { 
-          equals: data.email, 
-          mode: 'insensitive' 
-        } 
+      where: {
+        email: {
+          equals: data.email,
+          mode: 'insensitive',
+        },
       },
     });
 

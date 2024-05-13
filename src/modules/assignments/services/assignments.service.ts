@@ -9,8 +9,8 @@ export class AssignmentsService {
       private readonly assignmentsRepository: AssignmentsRepository,
     ) {}
 
-    async getAssignments() {
-      return await this.assignmentsRepository.find();
+    async getAssignments(search:string) {
+      return await this.assignmentsRepository.find(search);
     }
 
     async getAssignment(id:number) {

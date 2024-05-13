@@ -14,9 +14,26 @@ export class AssignmentsRepository extends AbstractRepository<Assignments> {
     return 'Assignments'; // Specify the Prisma model name for entity
   }
 
-  async find(): Promise<Assignments> {
+  async find(search: string): Promise<Assignments> {
+    interface WhereCondition {
+      status?: any;
+      OR?: any;
+    }
+
+    let whereCondition: WhereCondition = { status: 1 };
+
+    if (search)
+      whereCondition.OR = [
+        {
+          name: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+      ];
     return this.prisma[this.modelName].findMany({
-      where: { status: 1 },
+      where: whereCondition,
+      include: { idividual_submissions: { where: { status: { in: [1, 2] } } } },
       orderBy: [
         {
           id: 'asc',

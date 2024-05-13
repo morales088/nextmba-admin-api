@@ -3,7 +3,7 @@ import { AssignmentsController } from './controllers/assignments.controller';
 import { AssignmentsService } from './services/assignments.service';
 import { AssignmentsRepository } from './repositories/assignments.repository';
 import { PrismaModule } from 'src/common/prisma/prisma.module';
-import { IndividualSubmmisionsRepository } from './repositories/idividual-submissions.repository';
+import { IndividualSubmmisionsRepository } from './repositories/individual-submissions.repository';
 import { IndividualSubmissionsController } from './controllers/individual-submissions.controller';
 import { IndividualSubmissionsService } from './services/individual-submissions.service';
 

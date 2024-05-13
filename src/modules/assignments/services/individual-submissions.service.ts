@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { IndividualSubmmisionsRepository } from '../repositories/idividual-submissions.repository';
+import { IndividualSubmmisionsRepository } from '../repositories/individual-submissions.repository';
 import { UpdateIndividualSubmissionDto } from '../dto/update-individual-submission.dto';
 
 @Injectable()
@@ -8,8 +8,8 @@ export class IndividualSubmissionsService {
       private readonly individualSubmmisionsRepository: IndividualSubmmisionsRepository,
     ) {}
 
-    async getSubmissions() {
-      return await this.individualSubmmisionsRepository.find();
+    async getSubmissions(search:string, assignmentId:number, status:number) {
+      return await this.individualSubmmisionsRepository.find(search, assignmentId, status);
     }
 
     async getSubmission(id:number) {
