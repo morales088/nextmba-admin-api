@@ -58,7 +58,7 @@ export class IndividualSubmmisionsRepository extends AbstractRepository<Individu
 
   async submission(id: number): Promise<Individual_submissions> {
     return this.prisma[this.modelName].findFirst({
-      where: { id, status: 1 },
+      where: { id },
       include: { student: true, assignment: { include: { course: true, module: true } } },
       orderBy: [
         {
