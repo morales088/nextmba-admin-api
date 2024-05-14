@@ -16,10 +16,10 @@ export class GoogleCalendarController {
     }
   }
 
-  @Post('/events')
-  async createEvent(@Body() eventData: CalendarEvent) {
+  @Post('/events/:calendarId')
+  async createEvent(@Param('calendarId') calendarId: string, @Body() eventData: CalendarEvent) {
     try {
-      const event = await this.googleCalendarService.createEvent(eventData);
+      const event = await this.googleCalendarService.createEvent(eventData, calendarId);
       return { success: true, event };
     } catch (error) {
       return { success: false, error: error.message };

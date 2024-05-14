@@ -25,7 +25,7 @@ export class GoogleCalendarService {
 
   async getCalendar(courseId: number, moduleTier: number) {
     try {
-      const calendarData = JSON.parse(fs.readFileSync('src/common/files/json/calendar-data.json', 'utf-8'));
+      const calendarData = JSON.parse(fs.readFileSync(process.env.GOOGLE_CALENDAR_DATA_PATH, 'utf-8'));
       const calendars: Calendar[] = calendarData.calendars;
 
       const calendar = calendars.find((calendar) => {
@@ -34,13 +34,13 @@ export class GoogleCalendarService {
 
       return calendar;
     } catch (error) {
-      this.logger.error(error.message);
+      this.logger.error('Error occurred getting calendar', error.message);
     }
   }
 
   async getCalendars(courseId: number, moduleTier: number) {
     try {
-      const calendarData = JSON.parse(fs.readFileSync('src/common/files/json/calendar-data.json', 'utf-8'));
+      const calendarData = JSON.parse(fs.readFileSync(process.env.GOOGLE_CALENDAR_KEY_PATH, 'utf-8'));
       const allCalendars: Calendar[] = calendarData.calendars;
 
       const calendars = allCalendars.filter((calendar) => {
@@ -72,8 +72,6 @@ export class GoogleCalendarService {
     try {
       const calendar = await this.getCalendar(courseId, moduleTier);
 
-      // if (!calendar) this.logger.debug('Calendar not found skipping')
-
       const event = await this.calendar.events.get({
         calendarId: calendar.calendarId,
         eventId: eventId,
@@ -85,13 +83,7 @@ export class GoogleCalendarService {
     }
   }
 
-  async createEvent(eventData: CalendarEvent, calendarID?: string): Promise<any> {
-    let calendarId = calendarID;
-    if (!calendarID) {
-      const calendar = await this.getCalendar(eventData.courseId, eventData.moduleTier);
-      calendarId = calendar.calendarId;
-    }
-
+  async createEvent(eventData: CalendarEvent, calendarId: string): Promise<any> {
     const calendarEvent = {
       summary: eventData.name,
       description: eventData.description,
@@ -184,8 +176,10 @@ export class GoogleCalendarService {
     const isEventExists =
       module.event_id !== null ? await this.getEvent(module.course_id, module.tier, module.event_id) : false;
 
+    const calendar = await this.getCalendar(eventData.courseId, eventData.moduleTier);
+
     if (!isEventExists) {
-      const createdEvent = await this.createEvent(eventData);
+      const createdEvent = await this.createEvent(eventData, calendar.calendarId);
       moduleEvent = createdEvent;
     }
 

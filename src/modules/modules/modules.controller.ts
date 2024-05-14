@@ -21,6 +21,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { GoogleCalendarService } from 'src/common/google/services/google-calendar.service';
 import { ModuleType } from 'src/common/constants/enum';
 import { ModuleTierType } from '../../common/constants/enum';
+import { delayMs } from 'src/common/helpers/date.helper';
 
 @Controller('modules')
 @UseGuards(AuthGuard('jwt'))
@@ -106,7 +107,6 @@ export class ModulesController {
     const result: any[] = [];
 
     for (const upcomingModule of upcomingModules) {
-      console.log('💡 ~ upcomingModule:', upcomingModule);
       const eventData = {
         courseId: upcomingModule.course_id,
         moduleTier: upcomingModule.tier,
@@ -117,6 +117,8 @@ export class ModulesController {
       };
 
       let updatedModule;
+
+      const calendar = await this.googleCalendarService.getCalendar(eventData.courseId, eventData.moduleTier);
 
       if (upcomingModule.tier !== ModuleTierType.ALL) {
         const isEventExists =
@@ -129,7 +131,7 @@ export class ModulesController {
             : false;
 
         if (!isEventExists) {
-          const createdEvent = await this.googleCalendarService.createEvent(eventData);
+          const createdEvent = await this.googleCalendarService.createEvent(eventData, calendar.calendarId);
           updatedModule = await this.modulesService.updateModule(upcomingModule.id, { event_id: createdEvent.id });
           console.log('💡 ~ updatedModule:', updatedModule);
 
@@ -140,6 +142,7 @@ export class ModulesController {
           const eventIds = upcomingModule.event_id.split('-');
           console.log('💡 ~ evenIds:', eventIds);
 
+          const newlyCreatedEventIds = [];
           for (const eventId of eventIds) {
             const isEventExists =
               upcomingModule.event_id !== null
@@ -147,33 +150,39 @@ export class ModulesController {
                 : false;
 
             if (!isEventExists) {
-              const createdEvent = await this.googleCalendarService.createEvent(eventData);
-              updatedModule = await this.modulesService.updateModule(upcomingModule.id, { event_id: createdEvent.id });
-              console.log('💡 ~ updatedModule:', updatedModule);
-
-              result.push(updatedModule);
+              const createdEvent = await this.googleCalendarService.createEvent(eventData, calendar.calendarId);
+              newlyCreatedEventIds.push(createdEvent.id);
             }
+
+            const concatenatedEventId = newlyCreatedEventIds.join('-');
+            updatedModule = await this.modulesService.updateModule(upcomingModule.id, {
+              event_id: concatenatedEventId,
+            });
+
+            result.push(updatedModule);
           }
         } else {
-          const calendars = await this.googleCalendarService.getCalendars(upcomingModule.course_id, upcomingModule.tier)
-          console.log("💡 ~ calendars:", calendars)
+          const calendars = await this.googleCalendarService.getCalendars(
+            upcomingModule.course_id,
+            upcomingModule.tier
+          );
 
+          const newlyCreatedEventIds = [];
           for (const calendar of calendars) {
-            const newEventData = {
-              courseId: upcomingModule.course_id,
-              moduleTier: upcomingModule.tier,
-              name: upcomingModule.name,
-              description: upcomingModule.description,
-              startTime: upcomingModule.start_date.toISOString(),
-              endTime: upcomingModule.end_date.toISOString(),
-            };
+            const createdEvent = await this.googleCalendarService.createEvent(eventData, calendar.calendarId);
+            newlyCreatedEventIds.push(createdEvent.id);
           }
 
-          const createdEvent = await this.googleCalendarService.createEvent(eventData);
+          const concatenatedEventId = newlyCreatedEventIds.join('-');
+          updatedModule = await this.modulesService.updateModule(upcomingModule.id, {
+            event_id: concatenatedEventId,
+          });
 
-
+          result.push(updatedModule);
         }
       }
+
+      await delayMs(1000);
     }
 
     return result;
