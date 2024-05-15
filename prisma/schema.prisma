@@ -85,7 +85,7 @@ model Modules {
   course              Courses        @relation(fields: [course_id], references: [id])
   topics              Topics[]
   translations        Translations[]
-  assignments         Assignments[]
+  assignment          Assignments[]
 }
 
 model Speakers {
@@ -175,34 +175,34 @@ model Medias {
 }
 
 model Students {
-  id                    Int                     @id @default(autoincrement())
-  name                  String                  @db.VarChar(255)
-  email                 String                  @unique @db.VarChar(255)
-  password              String                  @db.VarChar(255)
+  id                    Int                      @id @default(autoincrement())
+  name                  String                   @db.VarChar(255)
+  email                 String                   @unique @db.VarChar(255)
+  password              String                   @db.VarChar(255)
   phone                 String?
   country               String?
   industry              String?
   company               String?
   position              String?
-  language              String                  @default("en")
+  language              String                   @default("en")
   last_login            DateTime?
   profile_picture       String?
-  chat_moderator        Boolean                 @default(false)
-  chat_access           Boolean                 @default(true)
-  library_access        Int                     @default(0)
-  account_type          Int                     @default(1)
-  affiliate_access      Int                     @default(0)
+  chat_moderator        Boolean                  @default(false)
+  chat_access           Boolean                  @default(true)
+  library_access        Int                      @default(0)
+  account_type          Int                      @default(1)
+  affiliate_access      Int                      @default(0)
   website               String?
   linkedIn              String?
   instagram             String?
   telegram              String?
-  status                Int                     @default(1)
-  createdAt             DateTime                @default(now())
-  updatedAt             DateTime?               @updatedAt
-  created_by            Int?                    @default(0)
-  email_sent            Boolean                 @default(false)
-  is_translator         Boolean                 @default(false)
-  is_speaker            Boolean                 @default(false)
+  status                Int                      @default(1)
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime?                @updatedAt
+  created_by            Int?                     @default(0)
+  email_sent            Boolean                  @default(false)
+  is_translator         Boolean                  @default(false)
+  is_speaker            Boolean                  @default(false)
   affilate_withdraws    Affilate_withdraws[]
   affiliates            Affiliates[]
   billing_infos         Billing_infos[]
@@ -433,17 +433,17 @@ model Student_groups {
 }
 
 model Assignments {
-  id                    Int                     @id @default(autoincrement())
+  id                    Int                      @id @default(autoincrement())
   course_id             Int
-  module_id             Int
+  module_id             Int?
   name                  String
-  type                  Int                     @default(1)
+  type                  Int                      @default(1)
   details               String?
-  status                Int                     @default(1)
-  createdAt             DateTime                @default(now())
-  updatedAt             DateTime?               @updatedAt
-  course                Courses?                @relation(fields: [course_id], references: [id])
-  module                Modules?                @relation(fields: [module_id], references: [id])
+  status                Int                      @default(1)
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime?                @updatedAt
+  course                Courses?                 @relation(fields: [course_id], references: [id])
+  module                Modules?                 @relation(fields: [module_id], references: [id])
   idividual_submissions Individual_submissions[]
   group_submissions     Group_submissions[]
 }
