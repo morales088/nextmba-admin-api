@@ -1,26 +1,79 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { google } from 'googleapis';
+import { calendar_v3, google } from 'googleapis';
 import * as fs from 'fs';
 import { CalendarEvent } from '../interfaces/calendar-event.interface';
 import { Calendar } from '../interfaces/calendar-data.interface';
 import { Modules } from '@prisma/client';
 import { ModuleType } from 'src/common/constants/enum';
+import { OAuth2Client } from 'google-auth-library';
+import { getStoredTokensPath } from 'src/common/helpers/path.helper';
 
 @Injectable()
 export class GoogleCalendarService {
   private readonly logger = new Logger(GoogleCalendarService.name);
-  private readonly calendar;
+  private readonly oauth2Client: OAuth2Client;
+  private readonly calendar: calendar_v3.Calendar;
 
   constructor() {
-    const fileKey = fs.readFileSync(process.env.GOOGLE_CALENDAR_KEY_PATH, 'utf-8');
-    const credentials = JSON.parse(fileKey);
-
-    const auth = new google.auth.GoogleAuth({
-      credentials,
-      scopes: ['https://www.googleapis.com/auth/calendar'],
+    this.oauth2Client = new google.auth.OAuth2({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      redirectUri: process.env.GOOGLE_REDIRECT_URI,
     });
 
-    this.calendar = google.calendar({ version: 'v3', auth: auth });
+    // Load stored credentials from your storage
+    const storedTokens = this.loadStoredTokens(); // Implement this method to get tokens from your database or secure storage
+    if (storedTokens) {
+      this.oauth2Client.setCredentials(storedTokens);
+    }
+
+    this.calendar = google.calendar({ version: 'v3', auth: this.oauth2Client });
+
+    this.oauth2Client.on('tokens', (tokens) => {
+      if (tokens.refresh_token) {
+        this.storeTokens(tokens); // Implement this method to store the refresh token securely
+        this.logger.log('Refresh token used');
+      }
+      this.logger.log('New access token obtained');
+    });
+  }
+
+  // Generates the URL for OAuth2 consent screen
+  getAuthUrl() {
+    const scopes = [
+      'https://www.googleapis.com/auth/calendar',
+      'https://www.googleapis.com/auth/calendar.events',
+      'https://www.googleapis.com/auth/admin.directory.resource.calendar',
+    ];
+
+    return this.oauth2Client.generateAuthUrl({
+      access_type: 'offline', // Indicates that your application needs to refresh tokens
+      scope: scopes,
+      prompt: 'consent',
+    });
+  }
+
+  // Exchange the authorization code for tokens
+  async handleAuthCallback(code: string) {
+    const { tokens } = await this.oauth2Client.getToken(code);
+    this.oauth2Client.setCredentials(tokens);
+    this.storeTokens(tokens); // Store tokens when you first get them
+  }
+
+  // Implement this method to store tokens securely
+  private storeTokens(tokens: any) {
+    fs.writeFileSync(getStoredTokensPath(), JSON.stringify(tokens));
+  }
+
+  // Implement this method to load tokens from your storage
+  private loadStoredTokens() {
+    try {
+      const tokens = fs.readFileSync(getStoredTokensPath(), 'utf-8');
+      return JSON.parse(tokens);
+    } catch (error) {
+      this.logger.error('Error loading stored tokens', error);
+      return null;
+    }
   }
 
   async getCalendar(courseId: number, moduleTier: number) {
@@ -40,14 +93,25 @@ export class GoogleCalendarService {
 
   async getCalendars(courseId: number, moduleTier: number) {
     try {
-      const calendarData = JSON.parse(fs.readFileSync(process.env.GOOGLE_CALENDAR_KEY_PATH, 'utf-8'));
-      const allCalendars: Calendar[] = calendarData.calendars;
+      const calendarData = JSON.parse(fs.readFileSync(process.env.GOOGLE_CALENDAR_DATA_PATH, 'utf-8'));
+      const allCalendars = calendarData.calendars;
+
+      const findTiers = moduleTier === 3 ? [1, 2] : [moduleTier];
 
       const calendars = allCalendars.filter((calendar) => {
-        return calendar.courseId === courseId && calendar.moduleTier === moduleTier;
+        return calendar.courseId === courseId && findTiers.includes(calendar.moduleTier);
       });
 
       return calendars;
+    } catch (error) {
+      this.logger.error(error.message);
+    }
+  }
+
+  async getCalendarList() {
+    try {
+      const calendars = await this.calendar.calendarList.list();
+      return calendars.data;
     } catch (error) {
       this.logger.error(error.message);
     }
@@ -67,6 +131,8 @@ export class GoogleCalendarService {
       throw error;
     }
   }
+
+  // TODO: Find causing multiple module tier type all, 
 
   async getEvent(courseId: number, moduleTier: number, eventId: string) {
     try {
@@ -102,7 +168,7 @@ export class GoogleCalendarService {
     try {
       const event = await this.calendar.events.insert({
         calendarId: calendarId,
-        resource: calendarEvent,
+        requestBody: calendarEvent,
       });
 
       this.logger.log(`Event created: ${event.data.summary}`);

@@ -4,7 +4,7 @@ import { PrismaService } from 'src/common/prisma/prisma.service';
 import { Modules } from '@prisma/client';
 import { UpdateModuleDto } from '../dto/update-module.dto';
 import { currentTime } from 'src/common/helpers/date.helper';
-import { ModuleType } from 'src/common/constants/enum';
+import { CourseTierType, ModuleTierType, ModuleType } from 'src/common/constants/enum';
 
 @Injectable()
 export class ModuleRepository extends AbstractRepository<Modules> {
@@ -128,10 +128,13 @@ export class ModuleRepository extends AbstractRepository<Modules> {
 
     const upcomingModules: Modules[] = await this.prisma.modules.findMany({
       where: {
+        course_id: 1,
+        tier: ModuleTierType.ALL,
         status: { in: [OFFLINE, LIVE] },
         start_date: { gte: currentDate },
       },
       orderBy: { start_date: 'asc' },
+      take: 2,
     });
 
     return upcomingModules;

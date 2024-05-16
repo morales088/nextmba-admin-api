@@ -22,6 +22,7 @@ import { GoogleCalendarService } from 'src/common/google/services/google-calenda
 import { ModuleType } from 'src/common/constants/enum';
 import { ModuleTierType } from '../../common/constants/enum';
 import { delayMs } from 'src/common/helpers/date.helper';
+import { GenerateEventService } from 'src/common/google/services/generate-event-service';
 
 @Controller('modules')
 @UseGuards(AuthGuard('jwt'))
@@ -29,7 +30,7 @@ export class ModulesController {
   constructor(
     private readonly modulesService: ModulesService,
     private readonly awsS3Service: AwsS3Service,
-    private readonly googleCalendarService: GoogleCalendarService
+    private readonly generateEventService: GenerateEventService
   ) {}
 
   @Get('/:moduleId')
@@ -70,10 +71,10 @@ export class ModulesController {
   async updateModule(@Param('moduleId') moduleId: number, @Body() updateModuleDto: UpdateModuleDto) {
     let updatedModule = await this.modulesService.updateModule(moduleId, updateModuleDto);
 
-    const moduleEvent = await this.googleCalendarService.updateModuleCalendarEvent(updatedModule);
-    const eventId = moduleEvent !== null ? moduleEvent.id : null;
+    // const moduleEvent = await this.googleCalendarService.updateModuleCalendarEvent(updatedModule);
+    // const eventId = moduleEvent !== null ? moduleEvent.id : null;
 
-    updatedModule = await this.modulesService.updateModule(updatedModule.id, { event_id: eventId });
+    // updatedModule = await this.modulesService.updateModule(updatedModule.id, { event_id: eventId });
 
     return updatedModule;
   }
@@ -103,87 +104,8 @@ export class ModulesController {
   @Post('/generate-events')
   async generateEventsForUpcomingModules() {
     const upcomingModules = await this.modulesService.getUpcomingModules();
-
-    const result: any[] = [];
-
-    for (const upcomingModule of upcomingModules) {
-      const eventData = {
-        courseId: upcomingModule.course_id,
-        moduleTier: upcomingModule.tier,
-        name: upcomingModule.name,
-        description: upcomingModule.description,
-        startTime: upcomingModule.start_date.toISOString(),
-        endTime: upcomingModule.end_date.toISOString(),
-      };
-
-      let updatedModule;
-
-      const calendar = await this.googleCalendarService.getCalendar(eventData.courseId, eventData.moduleTier);
-
-      if (upcomingModule.tier !== ModuleTierType.ALL) {
-        const isEventExists =
-          upcomingModule.event_id !== null
-            ? await this.googleCalendarService.getEvent(
-                upcomingModule.course_id,
-                upcomingModule.tier,
-                upcomingModule.event_id
-              )
-            : false;
-
-        if (!isEventExists) {
-          const createdEvent = await this.googleCalendarService.createEvent(eventData, calendar.calendarId);
-          updatedModule = await this.modulesService.updateModule(upcomingModule.id, { event_id: createdEvent.id });
-          console.log('💡 ~ updatedModule:', updatedModule);
-
-          result.push(updatedModule);
-        }
-      } else {
-        if (upcomingModule.event_id !== null) {
-          const eventIds = upcomingModule.event_id.split('-');
-          console.log('💡 ~ evenIds:', eventIds);
-
-          const newlyCreatedEventIds = [];
-          for (const eventId of eventIds) {
-            const isEventExists =
-              upcomingModule.event_id !== null
-                ? await this.googleCalendarService.getEvent(upcomingModule.course_id, upcomingModule.tier, eventId)
-                : false;
-
-            if (!isEventExists) {
-              const createdEvent = await this.googleCalendarService.createEvent(eventData, calendar.calendarId);
-              newlyCreatedEventIds.push(createdEvent.id);
-            }
-
-            const concatenatedEventId = newlyCreatedEventIds.join('-');
-            updatedModule = await this.modulesService.updateModule(upcomingModule.id, {
-              event_id: concatenatedEventId,
-            });
-
-            result.push(updatedModule);
-          }
-        } else {
-          const calendars = await this.googleCalendarService.getCalendars(
-            upcomingModule.course_id,
-            upcomingModule.tier
-          );
-
-          const newlyCreatedEventIds = [];
-          for (const calendar of calendars) {
-            const createdEvent = await this.googleCalendarService.createEvent(eventData, calendar.calendarId);
-            newlyCreatedEventIds.push(createdEvent.id);
-          }
-
-          const concatenatedEventId = newlyCreatedEventIds.join('-');
-          updatedModule = await this.modulesService.updateModule(upcomingModule.id, {
-            event_id: concatenatedEventId,
-          });
-
-          result.push(updatedModule);
-        }
-      }
-
-      await delayMs(1000);
-    }
+    
+    const result = await this.generateEventService.createNewModuleEvent(upcomingModules)
 
     return result;
   }
