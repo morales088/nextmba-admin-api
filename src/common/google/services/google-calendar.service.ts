@@ -1,12 +1,10 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { calendar_v3, google } from 'googleapis';
-import * as fs from 'fs';
 import { CalendarEvent } from '../interfaces/calendar-event.interface';
 import { Calendar } from '../interfaces/calendar-data.interface';
-import { Modules } from '@prisma/client';
-import { ModuleType } from 'src/common/constants/enum';
 import { OAuth2Client } from 'google-auth-library';
 import { getStoredTokensPath } from 'src/common/helpers/path.helper';
+import * as fs from 'fs';
 
 @Injectable()
 export class GoogleCalendarService {
@@ -21,8 +19,7 @@ export class GoogleCalendarService {
       redirectUri: process.env.GOOGLE_REDIRECT_URI,
     });
 
-    // Load stored credentials from your storage
-    const storedTokens = this.loadStoredTokens(); // Implement this method to get tokens from your database or secure storage
+    const storedTokens = this.loadStoredTokens(); 
     if (storedTokens) {
       this.oauth2Client.setCredentials(storedTokens);
     }
@@ -31,7 +28,7 @@ export class GoogleCalendarService {
 
     this.oauth2Client.on('tokens', (tokens) => {
       if (tokens.refresh_token) {
-        this.storeTokens(tokens); // Implement this method to store the refresh token securely
+        this.storeTokens(tokens);
         this.logger.log('Refresh token used');
       }
       this.logger.log('New access token obtained');
@@ -47,7 +44,7 @@ export class GoogleCalendarService {
     ];
 
     return this.oauth2Client.generateAuthUrl({
-      access_type: 'offline', // Indicates that your application needs to refresh tokens
+      access_type: 'offline',
       scope: scopes,
       prompt: 'consent',
     });
@@ -60,12 +57,10 @@ export class GoogleCalendarService {
     this.storeTokens(tokens); // Store tokens when you first get them
   }
 
-  // Implement this method to store tokens securely
   private storeTokens(tokens: any) {
     fs.writeFileSync(getStoredTokensPath(), JSON.stringify(tokens));
   }
 
-  // Implement this method to load tokens from your storage
   private loadStoredTokens() {
     try {
       const tokens = fs.readFileSync(getStoredTokensPath(), 'utf-8');
@@ -132,24 +127,21 @@ export class GoogleCalendarService {
     }
   }
 
-  // TODO: Find causing multiple module tier type all, 
-
-  async getEvent(courseId: number, moduleTier: number, eventId: string) {
+  async getEvent(calendarId: string, eventId: string) {
     try {
-      const calendar = await this.getCalendar(courseId, moduleTier);
-
       const event = await this.calendar.events.get({
-        calendarId: calendar.calendarId,
+        calendarId: calendarId,
         eventId: eventId,
       });
 
       return event.data;
     } catch (error) {
-      this.logger.error(`Error fetching event: ${error.message}`);
+      this.logger.error(`Error fetching event: ${eventId}, ${error.message}`);
+      return null;
     }
   }
 
-  async createEvent(eventData: CalendarEvent, calendarId: string): Promise<any> {
+  async createEvent(eventData: CalendarEvent, calendarId: string) {
     const calendarEvent = {
       summary: eventData.name,
       description: eventData.description,
@@ -175,13 +167,11 @@ export class GoogleCalendarService {
       return event.data;
     } catch (error) {
       this.logger.error(`Error creating event: ${error.message}`);
-      throw error;
+      return null
     }
   }
 
-  async updateEvent(eventId: string, eventData: CalendarEvent): Promise<any> {
-    const calendar = await this.getCalendar(eventData.courseId, eventData.moduleTier);
-
+  async updateEvent(eventId: string, calendarId: string, eventData: CalendarEvent) {
     const calendarEvent = {
       summary: eventData.name,
       description: eventData.description,
@@ -197,67 +187,29 @@ export class GoogleCalendarService {
 
     try {
       const event = await this.calendar.events.update({
-        calendarId: calendar.calendarId,
+        calendarId: calendarId,
         eventId: eventId,
         requestBody: calendarEvent,
       });
 
-      this.logger.log(`Event updated: ${event.data.htmlLink}`);
+      this.logger.log(`Event updated: ${event.data.summary}`);
       return event.data;
     } catch (error) {
       this.logger.error(`Error updating event: ${error.message}`);
-      throw error;
     }
   }
 
-  async deleteEvent(courseId: number, moduleTier: number, eventId: string): Promise<any> {
+  async deleteEvent(calendarId: string, eventId: string): Promise<any> {
     try {
-      const calendar = await this.getCalendar(courseId, moduleTier);
-
       await this.calendar.events.delete({
-        calendarId: calendar.calendarId,
+        calendarId: calendarId,
         eventId: eventId,
       });
 
       this.logger.log(`Event deleted: ${eventId}`);
-      return { success: true };
+      return { success: true, message: 'Event deleted successfully.' };
     } catch (error) {
       this.logger.error(`Error deleting event: ${error.message}`);
-      throw error;
     }
-  }
-
-  async updateModuleCalendarEvent(module: Modules) {
-    let moduleEvent;
-
-    const eventData = {
-      courseId: module.course_id,
-      moduleTier: module.tier,
-      name: module.name,
-      description: module.description,
-      startTime: module.start_date.toISOString(),
-      endTime: module.end_date.toISOString(),
-    };
-
-    const isEventExists =
-      module.event_id !== null ? await this.getEvent(module.course_id, module.tier, module.event_id) : false;
-
-    const calendar = await this.getCalendar(eventData.courseId, eventData.moduleTier);
-
-    if (!isEventExists) {
-      const createdEvent = await this.createEvent(eventData, calendar.calendarId);
-      moduleEvent = createdEvent;
-    }
-
-    const { DELETED, DRAFT } = ModuleType;
-
-    if (module.status !== DELETED && module.status !== DRAFT) {
-      await this.updateEvent(module.event_id, eventData);
-    } else {
-      this.deleteEvent(module.course_id, module.tier, module.event_id);
-      moduleEvent = null;
-    }
-
-    return moduleEvent;
   }
 }

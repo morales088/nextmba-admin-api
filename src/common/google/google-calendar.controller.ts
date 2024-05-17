@@ -56,10 +56,14 @@ export class GoogleCalendarController {
     }
   }
 
-  @Put('events/:eventId')
-  async updateEvent(@Param('eventId') eventId: any, @Body() eventData: CalendarEvent) {
+  @Put('events/:eventId/:calendarId')
+  async updateEvent(
+    @Param('eventId') eventId: string,
+    @Param('calendarId') calendarId: string,
+    @Body() eventData: CalendarEvent
+  ) {
     try {
-      const event = await this.googleCalendarService.updateEvent(eventId, eventData);
+      const event = await this.googleCalendarService.updateEvent(eventId, calendarId, eventData);
       return { success: true, event };
     } catch (error) {
       return { success: false, error: error.message };
@@ -67,13 +71,9 @@ export class GoogleCalendarController {
   }
 
   @Delete('events/:eventId')
-  async deleteEvent(
-    @Param('eventId') eventId: string,
-    @Query('courseId') courseId: number,
-    @Query('moduleTier') moduleTier: number
-  ) {
+  async deleteEvent(@Query('calendarId') calendarId: string, @Param('eventId') eventId: string) {
     try {
-      const event = await this.googleCalendarService.deleteEvent(courseId, moduleTier, eventId);
+      const event = await this.googleCalendarService.deleteEvent(calendarId, eventId);
       return { success: true, event };
     } catch (error) {
       return { success: false, error: error.message };

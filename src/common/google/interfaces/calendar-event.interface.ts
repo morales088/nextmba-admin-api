@@ -5,7 +5,7 @@ export interface CalendarEvent {
   description?: string;
   startTime: string;
   endTime: string;
-  attendees?: string[]; // Array of attendee email addresses
+  attendees?: string[];
   reminders?: {
     useDefault: boolean;
     overrides?: {

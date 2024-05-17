@@ -18,10 +18,6 @@ import { CreateModuleDto } from './dto/create-module.dto';
 import { UpdateModuleDto } from './dto/update-module.dto';
 import { AwsS3Service } from 'src/common/aws/aws_s3.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { GoogleCalendarService } from 'src/common/google/services/google-calendar.service';
-import { ModuleType } from 'src/common/constants/enum';
-import { ModuleTierType } from '../../common/constants/enum';
-import { delayMs } from 'src/common/helpers/date.helper';
 import { GenerateEventService } from 'src/common/google/services/generate-event-service';
 
 @Controller('modules')
@@ -71,10 +67,8 @@ export class ModulesController {
   async updateModule(@Param('moduleId') moduleId: number, @Body() updateModuleDto: UpdateModuleDto) {
     let updatedModule = await this.modulesService.updateModule(moduleId, updateModuleDto);
 
-    // const moduleEvent = await this.googleCalendarService.updateModuleCalendarEvent(updatedModule);
-    // const eventId = moduleEvent !== null ? moduleEvent.id : null;
-
-    // updatedModule = await this.modulesService.updateModule(updatedModule.id, { event_id: eventId });
+    const moduleEventId = await this.generateEventService.updateModuleCalendarEvent(updatedModule);
+    updatedModule = await this.modulesService.updateModule(updatedModule.id, { event_id: moduleEventId });
 
     return updatedModule;
   }

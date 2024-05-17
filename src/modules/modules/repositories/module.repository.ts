@@ -128,13 +128,12 @@ export class ModuleRepository extends AbstractRepository<Modules> {
 
     const upcomingModules: Modules[] = await this.prisma.modules.findMany({
       where: {
-        course_id: 1,
-        tier: ModuleTierType.ALL,
+        // course_id: 1,
+        // tier: ModuleTierType.FULL,
         status: { in: [OFFLINE, LIVE] },
         start_date: { gte: currentDate },
       },
       orderBy: { start_date: 'asc' },
-      take: 2,
     });
 
     return upcomingModules;
