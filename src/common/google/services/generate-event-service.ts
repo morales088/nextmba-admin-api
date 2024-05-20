@@ -93,7 +93,7 @@ export class GenerateEventService {
       this.logger.log('');
       await delayMs(10000);
     }
-    
+
     this.logger.log('Generated events successfully!');
     return result;
   }
@@ -146,6 +146,17 @@ export class GenerateEventService {
     }
 
     return moduleEventId;
+  }
+
+  async deleteExistingModuleEvents(module: Modules) {
+    const calendars = await this.googleCalendarService.getCalendars(module.course_id, module.tier);
+    if (module.event_id) {
+      for (const calendar of calendars) {
+        await this.deleteExistingEvents(calendar.calendarId, module.event_id);
+      }
+    }
+
+    return true;
   }
 
   async deleteExistingEvents(calendarId: string, eventIds: string) {

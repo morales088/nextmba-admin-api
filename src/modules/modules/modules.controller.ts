@@ -19,6 +19,7 @@ import { UpdateModuleDto } from './dto/update-module.dto';
 import { AwsS3Service } from 'src/common/aws/aws_s3.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GenerateEventService } from 'src/common/google/services/generate-event-service';
+import { ModuleType } from 'src/common/constants/enum';
 
 @Controller('modules')
 @UseGuards(AuthGuard('jwt'))
@@ -67,8 +68,15 @@ export class ModulesController {
   async updateModule(@Param('moduleId') moduleId: number, @Body() updateModuleDto: UpdateModuleDto) {
     let updatedModule = await this.modulesService.updateModule(moduleId, updateModuleDto);
 
-    const moduleEventId = await this.generateEventService.updateModuleCalendarEvent(updatedModule);
-    updatedModule = await this.modulesService.updateModule(updatedModule.id, { event_id: moduleEventId });
+    const { DELETED, DRAFT } = ModuleType;
+    if (updatedModule.status !== DELETED && updatedModule.status !== DRAFT) {
+      const moduleEventId = await this.generateEventService.updateModuleCalendarEvent(updatedModule);
+      updatedModule = await this.modulesService.updateModule(updatedModule.id, { event_id: moduleEventId });
+    } else {
+      this.generateEventService.deleteExistingModuleEvents(updatedModule);
+      updatedModule = await this.modulesService.updateModule(updatedModule.id, { event_id: null });
+    }
+
 
     return updatedModule;
   }
