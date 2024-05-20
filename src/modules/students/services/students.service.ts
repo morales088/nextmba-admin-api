@@ -82,7 +82,7 @@ export class StudentsService {
         }
 
         return createdStudent;
-      });
+      }, { timeout: 120000 });
     } catch (error) {
       throw new Error(error.message);
     }

@@ -37,6 +37,9 @@ lerna-debug.log*
 
 # remove env
 .env
+.env-local
+.env-dev
+.env-prod
 
 # # Exclude specific CSV files
 # src/common/files/csv/students-to-add.csv

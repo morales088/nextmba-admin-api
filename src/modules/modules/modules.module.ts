@@ -10,5 +10,6 @@ import { AwsService } from 'src/common/aws/aws.service';
   imports: [PrismaModule],
   controllers: [ModulesController],
   providers: [ModulesService, ModuleRepository, AwsService, AwsS3Service],
+  exports: [ModulesService, ModuleRepository, AwsService, AwsS3Service],
 })
 export class ModulesModule {}

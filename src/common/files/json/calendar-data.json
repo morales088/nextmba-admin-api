@@ -1,0 +1,60 @@
+{
+  "calendars": [
+    {
+      "name": "Marketing Course - Full",
+      "courseId": 1,
+      "moduleTier": 1,
+      "calendarId": "c_41248e3f79b3fb7a3c1385fdfa2ea80b5e0c5bb23412d3553fc376813e0b1f48@group.calendar.google.com",
+      "publicLink": "https://calendar.google.com/calendar/u/0?cid=Y180MTI0OGUzZjc5YjNmYjdhM2MxMzg1ZmRmYTJlYTgwYjVlMGM1YmIyMzQxMmQzNTUzZmMzNzY4MTNlMGIxZjQ4QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20"
+    },
+    {
+      "name": "Marketing Course - Lite",
+      "courseId": 1,
+      "moduleTier": 2,
+      "calendarId": "c_db9d6ce4c80b605839f274f1b8dae3a70945efb0cb02d40d7f5edcf07faa231f@group.calendar.google.com",
+      "publicLink": "https://calendar.google.com/calendar/u/0?cid=Y19kYjlkNmNlNGM4MGI2MDU4MzlmMjc0ZjFiOGRhZTNhNzA5NDVlZmIwY2IwMmQ0MGQ3ZjVlZGNmMDdmYWEyMzFmQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20"
+    },
+    {
+      "name": "Executive Course - Full",
+      "courseId": 2,
+      "moduleTier": 1,
+      "calendarId": "c_638c039f3990b78689ca105003f49fd02ad23281f3af881f2c6ff2b81360d915@group.calendar.google.com",
+      "publicLink": "https://calendar.google.com/calendar/u/0?cid=Y182MzhjMDM5ZjM5OTBiNzg2ODljYTEwNTAwM2Y0OWZkMDJhZDIzMjgxZjNhZjg4MWYyYzZmZjJiODEzNjBkOTE1QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20"
+    },
+    {
+      "name": "Executive Course - Lite",
+      "courseId": 2,
+      "moduleTier": 2,
+      "calendarId": "c_306a06dcde7dece50f7d2480e4856c3754815d6c1b37a53b3cfbf6b5fb2c3183@group.calendar.google.com",
+      "publicLink": "https://calendar.google.com/calendar/u/0?cid=Y18zMDZhMDZkY2RlN2RlY2U1MGY3ZDI0ODBlNDg1NmMzNzU0ODE1ZDZjMWIzN2E1M2IzY2ZiZjZiNWZiMmMzMTgzQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20"
+    },
+    {
+      "name": "Global Mastermind Course - Full",
+      "courseId": 6,
+      "moduleTier": 1,
+      "calendarId": "c_1095f477cd81b4017994c6c8ab103c9d73705baf8f32eff6efb01617ca7ac655@group.calendar.google.com",
+      "publicLink": "https://calendar.google.com/calendar/u/0?cid=Y18xMDk1ZjQ3N2NkODFiNDAxNzk5NGM2YzhhYjEwM2M5ZDczNzA1YmFmOGYzMmVmZjZlZmIwMTYxN2NhN2FjNjU1QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20"
+    },
+    {
+      "name": "Global Mastermind Course - Lite",
+      "courseId": 6,
+      "moduleTier": 2,
+      "calendarId": "c_1d130d9a0ba88fb46d64108a3c794f557d9ce561da1afc34cd19abe457fd8bde@group.calendar.google.com",
+      "publicLink": "https://calendar.google.com/calendar/u/0?cid=Y18xZDEzMGQ5YTBiYTg4ZmI0NmQ2NDEwOGEzYzc5NGY1NTdkOWNlNTYxZGExYWZjMzRjZDE5YWJlNDU3ZmQ4YmRlQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20"
+    },
+    {
+      "name": "AI For Business Course - Full",
+      "courseId": 7,
+      "moduleTier": 1,
+      "calendarId": "c_38ed9917820925f597d2bd71430b998d1b96754a5c00b9eedbfe1bb6039f786c@group.calendar.google.com",
+      "publicLink": "https://calendar.google.com/calendar/u/0?cid=Y18zOGVkOTkxNzgyMDkyNWY1OTdkMmJkNzE0MzBiOTk4ZDFiOTY3NTRhNWMwMGI5ZWVkYmZlMWJiNjAzOWY3ODZjQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20"
+    },
+    {
+      "name": "AI For Business Course - Lite",
+      "courseId": 7,
+      "moduleTier": 2,
+      "calendarId": "c_6fe9de475aa375730d9e7b3fc98862488f4e9a55c6b44fa7314910b02e707970@group.calendar.google.com",
+      "publicLink": "https://calendar.google.com/calendar/u/0?cid=Y182ZmU5ZGU0NzVhYTM3NTczMGQ5ZTdiM2ZjOTg4NjI0ODhmNGU5YTU1YzZiNDRmYTczMTQ5MTBiMDJlNzA3OTcwQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20"
+    }
+  ]
+}
