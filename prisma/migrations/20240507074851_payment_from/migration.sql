@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Payments" ADD COLUMN     "from" INTEGER NOT NULL DEFAULT 1;

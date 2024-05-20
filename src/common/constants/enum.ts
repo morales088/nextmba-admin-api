@@ -27,6 +27,11 @@ export enum CourseTierType {
   LIMITED = 2,
 }
 
+export enum PaymentOrigin {
+  NextMba = 1,
+  NextUni = 2,
+}
+
 export enum AssignmentsType {
   INDIVIDUAL = 1,
   GROUP = 2,
