@@ -86,6 +86,7 @@ model Modules {
   topics              Topics[]
   translations        Translations[]
   assignment          Assignments[]
+  quiz                Quiz[]
 }
 
 model Speakers {
@@ -212,6 +213,7 @@ model Students {
   student_courses       Student_courses[]
   idividual_submissions Individual_submissions[]
   Group_items           Group_items[]
+  takes                 Takes[]
 }
 
 model Student_courses {
@@ -482,4 +484,85 @@ model Group_items {
   updatedAt         DateTime?          @updatedAt
   group_submissions Group_submissions? @relation(fields: [group_id], references: [id])
   student           Students?          @relation(fields: [student_id], references: [id])
+}
+
+model Questions {
+  id             Int              @id @default(autoincrement())
+  name           String
+  description    String?
+  difficulty     Int              @default(1)
+  active         Int              @default(1)
+  status         Int              @default(1)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime?        @updatedAt
+  answers        Answers[]
+  quiz           Quiz[]
+  quiz_questions Quiz_questions[]
+  take_asnwers   Take_asnwers[]
+}
+
+model Answers {
+  id           Int            @id @default(autoincrement())
+  question_id  Int
+  name         String
+  description  String?
+  correct      Int            @default(1)
+  active       Int            @default(1)
+  status       Int            @default(1)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime?      @updatedAt
+  questions    Questions?     @relation(fields: [question_id], references: [id])
+  take_asnwers Take_asnwers[]
+}
+
+model Quiz {
+  id             Int              @id @default(autoincrement())
+  module_id      Int
+  question_id    Int
+  name           String
+  description    String?
+  status         Int              @default(1)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime?        @updatedAt
+  modules        Modules?         @relation(fields: [module_id], references: [id])
+  questions      Questions?       @relation(fields: [question_id], references: [id])
+  quiz_questions Quiz_questions[]
+  takes          Takes[]
+}
+
+model Quiz_questions {
+  id          Int        @id @default(autoincrement())
+  quiz_id     Int
+  question_id Int
+  status      Int        @default(1)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime?  @updatedAt
+  quiz        Quiz?      @relation(fields: [quiz_id], references: [id])
+  questions   Questions? @relation(fields: [question_id], references: [id])
+}
+
+model Takes {
+  id           Int            @id @default(autoincrement())
+  quiz_id      Int
+  student_id   Int
+  score        Int
+  status       Int            @default(1)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime?      @updatedAt
+  quiz         Quiz?          @relation(fields: [quiz_id], references: [id])
+  students     Students?      @relation(fields: [student_id], references: [id])
+  take_asnwers Take_asnwers[]
+}
+
+model Take_asnwers {
+  id          Int        @id @default(autoincrement())
+  take_id     Int
+  question_id Int
+  answer_id   Int
+  status      Int        @default(1)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime?  @updatedAt
+  takes       Takes?     @relation(fields: [take_id], references: [id])
+  questions   Questions? @relation(fields: [question_id], references: [id])
+  answers     Answers?   @relation(fields: [answer_id], references: [id])
 }

@@ -31,3 +31,14 @@ export enum AssignmentsType {
   INDIVIDUAL = 1,
   GROUP = 2,
 }
+
+export enum Difficulty {
+  EAST = 1,
+  MEDIUM = 2,
+  HARD = 3,
+}
+
+export const Active = {
+  INCLUDED : true,
+  EXCLUDED : false,
+}
