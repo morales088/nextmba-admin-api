@@ -98,14 +98,19 @@ export class StudentRepository extends AbstractRepository<Students> {
     if (filters.phone) whereCondition.phone = filters.phone;
     if (filters.position) whereCondition.position = filters.position;
 
-    if (filters.enrolled_to)
-      whereCondition.student_courses = { some: { course_id: { in: JSON.parse(filters.enrolled_to) } } };
+    if (filters.enrolled_to) {
+      whereCondition.student_courses = { some: { course_id: filters.enrolled_to } };
+      // whereCondition.student_courses = { some: { course_id: { in: JSON.parse(filters.enrolled_to) } } };
+      if(filters.course_tier)
+      whereCondition.student_courses = { some: { course_id: filters.enrolled_to, course_tier: filters.course_tier } };
+    }
 
     if (filters.not_enrolled_to)
-      whereCondition.NOT = [{ student_courses: { some: { course_id: { in: JSON.parse(filters.not_enrolled_to) } } } }];
+      whereCondition.NOT = [{ student_courses: { some: { course_id: filters.not_enrolled_to } } }];
+    // whereCondition.NOT = [{ student_courses: { some: { course_id: { in: JSON.parse(filters.not_enrolled_to) } } } }];
 
     if (admin.role === 2) whereCondition.created_by = { in: [admin.userId] };
-    
+
     return this.prisma[this.modelName].findMany({
       where: whereCondition,
       include: { student_courses: { where: { status: 1 }, include: { course: true } } },

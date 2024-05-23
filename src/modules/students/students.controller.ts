@@ -24,13 +24,14 @@ export class StudentsController {
     @Query('search') search?: string,
     @Query('page_number') page_number?: number,
     @Query('per_page') per_page?: number,
-    @Query('enrolled_to') enrolled_to?: string,
-    @Query('not_enrolled_to') not_enrolled_to?: string,
+    @Query('enrolled_to') enrolled_to?: number,
+    @Query('not_enrolled_to') not_enrolled_to?: number,
     @Query('country') country?: string,
     @Query('company') company?: string,
     @Query('phone') phone?: string,
     @Query('position') position?: string,
-    @Query('account_type') account_type?: number
+    @Query('account_type') account_type?: number,
+    @Query('course_tier') course_tier?: number
   ) {
     const admin = req.user;
     const pageNumber = page_number ? page_number : 1;
@@ -43,6 +44,7 @@ export class StudentsController {
       phone,
       position,
       account_type,
+      course_tier
     };
 
     return await this.studentsService.getStudents(admin, search, filters, pageNumber, perPage);
