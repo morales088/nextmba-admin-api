@@ -93,6 +93,7 @@ export class StudentRepository extends AbstractRepository<Students> {
           },
         },
       ];
+
     if (filters.country) whereCondition.country = filters.country;
     if (filters.company) whereCondition.company = filters.company;
     if (filters.phone) whereCondition.phone = filters.phone;
@@ -101,8 +102,8 @@ export class StudentRepository extends AbstractRepository<Students> {
     if (filters.enrolled_to) {
       whereCondition.student_courses = { some: { course_id: filters.enrolled_to } };
       // whereCondition.student_courses = { some: { course_id: { in: JSON.parse(filters.enrolled_to) } } };
-      if(filters.course_tier)
-      whereCondition.student_courses = { some: { course_id: filters.enrolled_to, course_tier: filters.course_tier } };
+      if (filters.course_tier)
+        whereCondition.student_courses = { some: { course_id: filters.enrolled_to, course_tier: filters.course_tier } };
     }
 
     if (filters.not_enrolled_to)
@@ -111,6 +112,9 @@ export class StudentRepository extends AbstractRepository<Students> {
 
     if (admin.role === 2) whereCondition.created_by = { in: [admin.userId] };
 
+    // console.log('💡 ~ whereCondition:', whereCondition);
+    // console.log('💡 ~ skipAmount:', skipAmount);
+    // console.log('💡 ~ perPage:', perPage);
     return this.prisma[this.modelName].findMany({
       where: whereCondition,
       include: { student_courses: { where: { status: 1 }, include: { course: true } } },
