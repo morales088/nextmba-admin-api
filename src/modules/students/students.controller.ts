@@ -141,7 +141,6 @@ export class StudentsController {
       allStudents = allStudents.concat(students);
       page++;
     }
-    console.log('💡 ~ allStudents:', allStudents.length);
 
     const workbook = new excel.Workbook();
     const worksheet = workbook.addWorksheet('Sheet1');
@@ -166,13 +165,11 @@ export class StudentsController {
 
     const results = allStudents as [any];
 
-    results.forEach((student, index) => {
+    results.forEach((student) => {
       const status = student.status == 1 ? 'active' : 'deleted';
       const affiliate_access = student.affiliate_access == 1 ? true : false;
 
       const courses = student.student_courses.map((obj) => obj.course.name).join(', ');
-
-      // console.log('💡 ~ index:', index);
 
       worksheet.addRow({
         id: student.id,
@@ -195,7 +192,7 @@ export class StudentsController {
     res.setHeader('Content-Disposition', 'attachment; filename=student.csv');
 
     // Stream the workbook to the response
-    workbook.csv.write(res);
+    await workbook.csv.write(res);
 
     // End the response
     res.end();
