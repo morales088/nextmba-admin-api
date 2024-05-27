@@ -54,6 +54,7 @@ export class StudentRepository extends AbstractRepository<Students> {
     const searchData = search ?? '';
 
     interface WhereCondition {
+      AND?: any;
       OR?: any;
       NOT?: any;
       created_by?: any;
@@ -110,11 +111,27 @@ export class StudentRepository extends AbstractRepository<Students> {
       whereCondition.NOT = [{ student_courses: { some: { course_id: filters.not_enrolled_to } } }];
     // whereCondition.NOT = [{ student_courses: { some: { course_id: { in: JSON.parse(filters.not_enrolled_to) } } } }];
 
+    // Student Course: start_date filter
+    if (filters.start_date) {
+      whereCondition.AND = [
+        {
+          student_courses: {
+            every: {
+              starting_date: {
+                gte: filters.start_date,
+                lte: filters.end_date,
+              },
+            },
+          },
+        },
+      ];
+    }
+
     if (admin.role === 2) whereCondition.created_by = { in: [admin.userId] };
 
-    // console.log('💡 ~ whereCondition:', whereCondition);
-    // console.log('💡 ~ skipAmount:', skipAmount);
-    // console.log('💡 ~ perPage:', perPage);
+    console.log('💡 ~ whereCondition:', JSON.stringify(whereCondition, null, 2));
+    console.log('💡 ~ skipAmount:', skipAmount);
+    console.log('💡 ~ perPage:', perPage);
     return this.prisma[this.modelName].findMany({
       where: whereCondition,
       include: { student_courses: { where: { status: 1 }, include: { course: true } } },

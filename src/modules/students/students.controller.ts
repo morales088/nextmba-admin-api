@@ -7,6 +7,7 @@ import { UpdateStudentCourseDto } from './dto/update-studentCourse.dto';
 import { CreateStudentCourseDto } from './dto/create-studentCourse.dto';
 import { Response } from 'express';
 import * as excel from 'exceljs';
+import { ExportStudentFilterDTO } from './dto/filter-student.dto';
 
 @Controller('students')
 @UseGuards(AuthGuard('jwt'))
@@ -105,30 +106,9 @@ export class StudentsController {
   }
 
   @Get('/download/csv')
-  async downloadStudents(
-    @Res() res: Response,
-    @Request() req: any,
-    @Query('search') search?: string,
-    @Query('enrolled_to') enrolled_to?: string,
-    @Query('not_enrolled_to') not_enrolled_to?: string,
-    @Query('country') country?: string,
-    @Query('company') company?: string,
-    @Query('phone') phone?: string,
-    @Query('position') position?: string,
-    @Query('account_type') account_type?: number,
-    @Query('course_tier') course_tier?: number
-  ) {
+  async downloadStudents(@Res() res: Response, @Request() req: any, @Query() filterQueryDto: ExportStudentFilterDTO) {
     const admin = req.user;
-    const filters = {
-      enrolled_to: parseInt(enrolled_to, 10),
-      not_enrolled_to: parseInt(not_enrolled_to, 10),
-      country,
-      company,
-      phone,
-      position,
-      account_type,
-      course_tier,
-    };
+    const { search, ...filters } = filterQueryDto;
 
     let allStudents = [];
     let page = 1;
