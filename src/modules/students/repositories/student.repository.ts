@@ -107,14 +107,8 @@ export class StudentRepository extends AbstractRepository<Students> {
       // whereCondition.student_courses = { some: { course_id: { in: JSON.parse(filters.enrolled_to) } } };
       if (filters.course_tier)
         whereCondition.student_courses = { some: { course_id: filters.enrolled_to, course_tier: filters.course_tier } };
-    }
 
-    if (filters.not_enrolled_to)
-      whereCondition.NOT = [{ student_courses: { some: { course_id: filters.not_enrolled_to } } }];
-    // whereCondition.NOT = [{ student_courses: { some: { course_id: { in: JSON.parse(filters.not_enrolled_to) } } } }];
-
-    // Student Course: start_date filter
-    if (startDate && endDate) {
+      // Student Course: start_date filter
       whereCondition.OR = [
         {
           student_courses: {
@@ -129,6 +123,10 @@ export class StudentRepository extends AbstractRepository<Students> {
         },
       ];
     }
+
+    if (filters.not_enrolled_to)
+      whereCondition.NOT = [{ student_courses: { some: { course_id: filters.not_enrolled_to } } }];
+    // whereCondition.NOT = [{ student_courses: { some: { course_id: { in: JSON.parse(filters.not_enrolled_to) } } } }];
 
     if (admin.role === 2) whereCondition.created_by = { in: [admin.userId] };
 
