@@ -116,7 +116,8 @@ export class StudentRepository extends AbstractRepository<Students> {
       whereCondition.AND = [
         {
           student_courses: {
-            every: {
+            some: {
+              course_id: filters.enrolled_to,
               starting_date: {
                 gte: filters.start_date,
                 lte: filters.end_date,
@@ -129,9 +130,9 @@ export class StudentRepository extends AbstractRepository<Students> {
 
     if (admin.role === 2) whereCondition.created_by = { in: [admin.userId] };
 
-    console.log('💡 ~ whereCondition:', JSON.stringify(whereCondition, null, 2));
-    console.log('💡 ~ skipAmount:', skipAmount);
-    console.log('💡 ~ perPage:', perPage);
+    // console.log('💡 ~ whereCondition:', JSON.stringify(whereCondition, null, 2));
+    // console.log('💡 ~ skipAmount:', skipAmount);
+    // console.log('💡 ~ perPage:', perPage);
     return this.prisma[this.modelName].findMany({
       where: whereCondition,
       include: { student_courses: { where: { status: 1 }, include: { course: true } } },

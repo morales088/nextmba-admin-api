@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Query, Request, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, Request, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { StudentsService } from './services/students.service';
 import { CreateStudentDto } from './dto/create-student.dto';
@@ -113,6 +113,7 @@ export class StudentsController {
     let allStudents = [];
     let page = 1;
     let perPage = 1000;
+    
     while (true) {
       const students = await this.studentsService.getStudents(admin, search, filters, page, perPage);
 
@@ -124,7 +125,7 @@ export class StudentsController {
 
     const workbook = new excel.Workbook();
     const worksheet = workbook.addWorksheet('Sheet1');
-
+    
     // Add data to the worksheet
     worksheet.columns = [
       { header: 'ID', key: 'id', width: 10 },
@@ -169,7 +170,7 @@ export class StudentsController {
 
     // Set up the response headers
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename=student.csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="students.csv"');
 
     // Stream the workbook to the response
     await workbook.csv.write(res);
