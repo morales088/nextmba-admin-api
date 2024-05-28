@@ -2,8 +2,8 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { AbstractRepository } from 'src/common/repositories/abstract.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { Students } from '@prisma/client';
-import { UpdateStudentDto } from '../dto/update-student.dto';
 import { FilterOptions } from '../interfaces/student.interface';
+import { currentTime, oneMonthAgo } from 'src/common/helpers/date.helper';
 
 @Injectable()
 export class StudentRepository extends AbstractRepository<Students> {
@@ -52,6 +52,8 @@ export class StudentRepository extends AbstractRepository<Students> {
   ): Promise<Students[]> {
     const skipAmount = (pageNumber - 1) * perPage;
     const searchData = search ?? '';
+    const startDate = filters.start_date ?? oneMonthAgo().toISOString();
+    const endDate = filters.end_date ?? currentTime().toISOString();
 
     interface WhereCondition {
       AND?: any;
@@ -112,14 +114,15 @@ export class StudentRepository extends AbstractRepository<Students> {
     // whereCondition.NOT = [{ student_courses: { some: { course_id: { in: JSON.parse(filters.not_enrolled_to) } } } }];
 
     // Student Course: start_date filter
-    if (filters.start_date) {
+    if (startDate && endDate) {
       whereCondition.AND = [
         {
           student_courses: {
-            every: {
+            some: {
+              course_id: filters.enrolled_to,
               starting_date: {
-                gte: filters.start_date,
-                lte: filters.end_date,
+                gte: startDate,
+                lte: endDate,
               },
             },
           },
@@ -129,9 +132,6 @@ export class StudentRepository extends AbstractRepository<Students> {
 
     if (admin.role === 2) whereCondition.created_by = { in: [admin.userId] };
 
-    console.log('💡 ~ whereCondition:', JSON.stringify(whereCondition, null, 2));
-    console.log('💡 ~ skipAmount:', skipAmount);
-    console.log('💡 ~ perPage:', perPage);
     return this.prisma[this.modelName].findMany({
       where: whereCondition,
       include: { student_courses: { where: { status: 1 }, include: { course: true } } },

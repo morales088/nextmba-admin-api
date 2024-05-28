@@ -1,12 +1,7 @@
 import { Transform } from 'class-transformer';
-import { IsDateString, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class ExportStudentFilterDTO {
-  @IsOptional()
-  @IsNotEmpty()
-  @IsString()
-  search: string;
-
+export class StudentFilterDTO {
   @IsOptional()
   @Transform(({ value }) => parseInt(value, 10))
   enrolled_to: number;
@@ -14,21 +9,6 @@ export class ExportStudentFilterDTO {
   @IsOptional()
   @Transform(({ value }) => parseInt(value, 10))
   not_enrolled_to: number;
-
-  @IsOptional()
-  @IsNotEmpty()
-  @IsString()
-  country?: string;
-
-  @IsOptional()
-  @IsNotEmpty()
-  @IsString()
-  company?: string;
-
-  @IsOptional()
-  @IsNotEmpty()
-  @IsString()
-  phone?: string;
 
   @IsOptional()
   @Transform(({ value }) => parseInt(value, 10))
@@ -46,3 +26,33 @@ export class ExportStudentFilterDTO {
   @Transform(({ value }) => new Date(value))
   end_date: Date;
 }
+
+export class SearchStudentFilterDTO extends StudentFilterDTO {
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  search: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  country?: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  company?: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  phone?: string;
+
+  @IsOptional()
+  page_number: number;
+
+  @IsOptional()
+  per_page: number;
+}
+
+export class ExportStudentFilterDTO extends SearchStudentFilterDTO {}
