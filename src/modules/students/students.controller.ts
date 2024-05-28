@@ -26,7 +26,10 @@ export class StudentsController {
     const pageNumber = page_number ? page_number : 1;
     const perPage = per_page ? per_page : 10;
 
-    return await this.studentsService.getStudents(admin, search, filters, pageNumber, perPage);
+    const students = await this.studentsService.getStudents(admin, search, filters, pageNumber, perPage);
+    const studentsCount = await this.studentsService.getAllStudentsCount();
+
+    return { students, studentsCount };
   }
 
   @Post('/')

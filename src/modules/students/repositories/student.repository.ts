@@ -14,10 +14,14 @@ export class StudentRepository extends AbstractRepository<Students> {
     return 'Students'; // Specify the Prisma model name for entity
   }
 
-  async countAllStudents(): Promise<number> {
+  async countAllActiveStudents(): Promise<number> {
     return this.prisma.students.count({
       where: { status: 1 },
     });
+  }
+
+  async countAllStudents(): Promise<number> {
+    return this.prisma.students.count();
   }
 
   async find(): Promise<Students> {
@@ -106,6 +110,13 @@ export class StudentRepository extends AbstractRepository<Students> {
         whereCondition.student_courses = { some: { course_id: filters.enrolled_to, course_tier: filters.course_tier } };
     }
 
+    if (filters.not_enrolled_to)
+      whereCondition.NOT = [{ student_courses: { some: { course_id: filters.not_enrolled_to } } }];
+    // whereCondition.NOT = [{ student_courses: { some: { course_id: { in: JSON.parse(filters.not_enrolled_to) } } } }];
+    }
+
+    // Student Course: start_date filter
+    if (filters.start_date && filters.end_date) {
     // Student Course: start_date filter
     if (filters.start_date && filters.end_date) {
       whereCondition.OR = [
@@ -122,10 +133,6 @@ export class StudentRepository extends AbstractRepository<Students> {
         },
       ];
     }
-
-    if (filters.not_enrolled_to)
-      whereCondition.NOT = [{ student_courses: { some: { course_id: filters.not_enrolled_to } } }];
-    // whereCondition.NOT = [{ student_courses: { some: { course_id: { in: JSON.parse(filters.not_enrolled_to) } } } }];
 
     if (admin.role === 2) whereCondition.created_by = { in: [admin.userId] };
 
