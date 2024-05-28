@@ -115,7 +115,7 @@ export class StudentRepository extends AbstractRepository<Students> {
 
     // Student Course: start_date filter
     if (startDate && endDate) {
-      whereCondition.AND = [
+      whereCondition.OR = [
         {
           student_courses: {
             some: {
