@@ -7,7 +7,7 @@ import { UpdateStudentCourseDto } from './dto/update-studentCourse.dto';
 import { CreateStudentCourseDto } from './dto/create-studentCourse.dto';
 import { Response } from 'express';
 import * as excel from 'exceljs';
-import { ExportStudentFilterDTO } from './dto/filter-student.dto';
+import { ExportStudentFilterDTO, SearchStudentFilterDTO } from './dto/filter-student.dto';
 
 @Controller('students')
 @UseGuards(AuthGuard('jwt'))
@@ -20,33 +20,11 @@ export class StudentsController {
   }
 
   @Get('/')
-  async getStudents(
-    @Request() req: any,
-    @Query('search') search?: string,
-    @Query('page_number') page_number?: number,
-    @Query('per_page') per_page?: number,
-    @Query('enrolled_to') enrolled_to?: number,
-    @Query('not_enrolled_to') not_enrolled_to?: number,
-    @Query('country') country?: string,
-    @Query('company') company?: string,
-    @Query('phone') phone?: string,
-    @Query('position') position?: string,
-    @Query('account_type') account_type?: number,
-    @Query('course_tier') course_tier?: number
-  ) {
+  async getStudents(@Request() req: any, @Query() searchFilterDto: SearchStudentFilterDTO) {
     const admin = req.user;
+    const { per_page, page_number, search, ...filters } = searchFilterDto;
     const pageNumber = page_number ? page_number : 1;
     const perPage = per_page ? per_page : 10;
-    const filters = {
-      enrolled_to,
-      not_enrolled_to,
-      country,
-      company,
-      phone,
-      position,
-      account_type,
-      course_tier,
-    };
 
     return await this.studentsService.getStudents(admin, search, filters, pageNumber, perPage);
   }
@@ -113,7 +91,7 @@ export class StudentsController {
     let allStudents = [];
     let page = 1;
     let perPage = 1000;
-    
+
     while (true) {
       const students = await this.studentsService.getStudents(admin, search, filters, page, perPage);
 
@@ -125,7 +103,7 @@ export class StudentsController {
 
     const workbook = new excel.Workbook();
     const worksheet = workbook.addWorksheet('Sheet1');
-    
+
     // Add data to the worksheet
     worksheet.columns = [
       { header: 'ID', key: 'id', width: 10 },
