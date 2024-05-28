@@ -29,23 +29,15 @@ export class StudentFilterDTO {
 
 export class SearchStudentFilterDTO extends StudentFilterDTO {
   @IsOptional()
-  @IsNotEmpty()
-  @IsString()
   search: string;
 
   @IsOptional()
-  @IsNotEmpty()
-  @IsString()
   country?: string;
 
   @IsOptional()
-  @IsNotEmpty()
-  @IsString()
   company?: string;
 
   @IsOptional()
-  @IsNotEmpty()
-  @IsString()
   phone?: string;
 
   @IsOptional()
