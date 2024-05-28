@@ -113,10 +113,7 @@ export class StudentRepository extends AbstractRepository<Students> {
     if (filters.not_enrolled_to)
       whereCondition.NOT = [{ student_courses: { some: { course_id: filters.not_enrolled_to } } }];
     // whereCondition.NOT = [{ student_courses: { some: { course_id: { in: JSON.parse(filters.not_enrolled_to) } } } }];
-    }
 
-    // Student Course: start_date filter
-    if (filters.start_date && filters.end_date) {
     // Student Course: start_date filter
     if (filters.start_date && filters.end_date) {
       whereCondition.OR = [
