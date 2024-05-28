@@ -3,7 +3,6 @@ import { AbstractRepository } from 'src/common/repositories/abstract.repository'
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { Students } from '@prisma/client';
 import { FilterOptions } from '../interfaces/student.interface';
-import { currentTime, oneMonthAgo } from 'src/common/helpers/date.helper';
 
 @Injectable()
 export class StudentRepository extends AbstractRepository<Students> {
@@ -15,10 +14,14 @@ export class StudentRepository extends AbstractRepository<Students> {
     return 'Students'; // Specify the Prisma model name for entity
   }
 
-  async countAllStudents(): Promise<number> {
+  async countAllActiveStudents(): Promise<number> {
     return this.prisma.students.count({
       where: { status: 1 },
     });
+  }
+
+  async countAllStudents(): Promise<number> {
+    return this.prisma.students.count();
   }
 
   async find(): Promise<Students> {
@@ -52,8 +55,6 @@ export class StudentRepository extends AbstractRepository<Students> {
   ): Promise<Students[]> {
     const skipAmount = (pageNumber - 1) * perPage;
     const searchData = search ?? '';
-    const startDate = filters.start_date ?? oneMonthAgo().toISOString();
-    const endDate = filters.end_date ?? currentTime().toISOString();
 
     interface WhereCondition {
       AND?: any;
@@ -107,26 +108,28 @@ export class StudentRepository extends AbstractRepository<Students> {
       // whereCondition.student_courses = { some: { course_id: { in: JSON.parse(filters.enrolled_to) } } };
       if (filters.course_tier)
         whereCondition.student_courses = { some: { course_id: filters.enrolled_to, course_tier: filters.course_tier } };
+    }
 
-      // Student Course: start_date filter
+    if (filters.not_enrolled_to)
+      whereCondition.NOT = [{ student_courses: { some: { course_id: filters.not_enrolled_to } } }];
+    // whereCondition.NOT = [{ student_courses: { some: { course_id: { in: JSON.parse(filters.not_enrolled_to) } } } }];
+
+    // Student Course: start_date filter
+    if (filters.start_date && filters.end_date) {
       whereCondition.OR = [
         {
           student_courses: {
             some: {
               course_id: filters.enrolled_to,
               starting_date: {
-                gte: startDate,
-                lte: endDate,
+                gte: filters.start_date,
+                lte: filters.end_date,
               },
             },
           },
         },
       ];
     }
-
-    if (filters.not_enrolled_to)
-      whereCondition.NOT = [{ student_courses: { some: { course_id: filters.not_enrolled_to } } }];
-    // whereCondition.NOT = [{ student_courses: { some: { course_id: { in: JSON.parse(filters.not_enrolled_to) } } } }];
 
     if (admin.role === 2) whereCondition.created_by = { in: [admin.userId] };
 
