@@ -19,7 +19,11 @@ export class StudentsService {
     private readonly studentCoursesRepository: StudentCoursesRepository
   ) {}
 
-  async getStudentsCount() {
+  async getActiveStudentsCount() {
+    return this.studentRepository.countAllActiveStudents();
+  }
+
+  async getAllStudentsCount() {
     return this.studentRepository.countAllStudents();
   }
 
