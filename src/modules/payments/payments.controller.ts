@@ -108,6 +108,7 @@ export class PaymentsController {
     @Query('page_number') page_number?: number,
     @Query('per_page') per_page?: number
   ) {
+    console.log("💡 ~ search:", search)
     const user = req.user;
     const pageNumber = page_number ? page_number : 1;
     const perPage = per_page ? per_page : 10;

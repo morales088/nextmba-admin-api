@@ -69,7 +69,7 @@ export class StudentRepository extends AbstractRepository<Students> {
 
     let whereCondition: WhereCondition = {};
 
-    if (searchData)
+    if (searchData) {
       whereCondition.OR = [
         {
           email: {
@@ -77,18 +77,18 @@ export class StudentRepository extends AbstractRepository<Students> {
             mode: 'insensitive',
           },
         },
-        {
-          email: {
-            startsWith: searchData,
-            mode: 'insensitive',
-          },
-        },
-        {
-          email: {
-            endsWith: searchData,
-            mode: 'insensitive',
-          },
-        },
+        // {
+        //   email: {
+        //     startsWith: searchData,
+        //     mode: 'insensitive',
+        //   },
+        // },
+        // {
+        //   email: {
+        //     endsWith: searchData,
+        //     mode: 'insensitive',
+        //   },
+        // },
         {
           name: {
             startsWith: searchData,
@@ -102,6 +102,7 @@ export class StudentRepository extends AbstractRepository<Students> {
           },
         },
       ];
+    }
 
     if (filters.country) whereCondition.country = filters.country;
     if (filters.company) whereCondition.company = filters.company;

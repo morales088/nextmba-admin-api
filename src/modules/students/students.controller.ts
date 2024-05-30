@@ -31,8 +31,6 @@ export class StudentsController {
       page_number,
       per_page
     );
-    // const studentsCount = await this.studentsService.getAllStudentsCount();
-
     return { students, studentsCount: totalResult };
   }
 
@@ -94,6 +92,7 @@ export class StudentsController {
   async downloadStudents(@Res() res: Response, @Request() req: any, @Query() filterQueryDto: ExportStudentFilterDTO) {
     const admin = req.user;
     const { search, ...filters } = filterQueryDto;
+    console.log("💡 ~ search:", search)
 
     let allStudents = [];
     let page = 1;
