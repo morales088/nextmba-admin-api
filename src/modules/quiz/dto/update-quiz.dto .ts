@@ -1,16 +1,12 @@
 import { Transform } from 'class-transformer';
 import { IsIn, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 
-export class CreateQuizDto {
-  @IsNotEmpty()
-  @Transform(({ value }) => parseInt(value))
-  module_id: number;
-
+export class UpdateQuizDto {
   // @IsNotEmpty()
   // @Transform(({ value }) => parseInt(value))
-  // question_id: number;
+  // module_id: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   name: string;
 
@@ -18,11 +14,16 @@ export class CreateQuizDto {
   @IsString()
   description: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @Transform(({ value }) => parseInt(value))
   score: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @Transform(({ value }) => parseInt(value))
   question_qty: number;
+
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  @IsIn([0, 1, 2]) // 0 - delete, 1 - active, 2 - published
+  status: number;
 }

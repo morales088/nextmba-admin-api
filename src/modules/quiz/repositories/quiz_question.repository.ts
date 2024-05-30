@@ -13,6 +13,15 @@ export class QuizQuestionRepository extends AbstractRepository<Quiz_questions> {
     return 'Quiz_questions'; // Specify the Prisma model name for entity
   }
 
+  async findById(id: number): Promise<Quiz_questions> {
+    return this.prisma[this.modelName].findFirst({
+      include: {
+        // quiz_questions : { where: { status: 1 } }
+      },
+      where: { id },
+    });
+  }
+
   async find(): Promise<Quiz_questions> {
     return this.prisma[this.modelName].findMany({
       where: { status: 1 },

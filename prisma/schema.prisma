@@ -496,7 +496,6 @@ model Questions {
   createdAt      DateTime         @default(now())
   updatedAt      DateTime?        @updatedAt
   answers        Answers[]
-  quiz           Quiz[]
   quiz_questions Quiz_questions[]
   take_asnwers   Take_asnwers[]
 }
@@ -518,14 +517,15 @@ model Answers {
 model Quiz {
   id             Int              @id @default(autoincrement())
   module_id      Int
-  question_id    Int
+  // question_id    Int
   name           String
   description    String?
+  score          Int
   status         Int              @default(1)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime?        @updatedAt
   modules        Modules?         @relation(fields: [module_id], references: [id])
-  questions      Questions?       @relation(fields: [question_id], references: [id])
+  // questions      Questions?       @relation(fields: [question_id], references: [id])
   quiz_questions Quiz_questions[]
   takes          Takes[]
 }

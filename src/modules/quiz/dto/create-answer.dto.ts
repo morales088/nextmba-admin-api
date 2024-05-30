@@ -10,7 +10,7 @@ export class CreateAnswerDto {
   @IsString()
   name: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   description: string;
 

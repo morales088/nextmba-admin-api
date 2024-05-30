@@ -42,3 +42,9 @@ export const Active = {
   INCLUDED : true,
   EXCLUDED : false,
 }
+
+export enum QuizStatus {
+  DELETED = 0,
+  ACTIVE = 1,
+  PUBLISHED = 2,
+}

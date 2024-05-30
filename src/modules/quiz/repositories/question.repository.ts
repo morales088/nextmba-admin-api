@@ -14,7 +14,16 @@ export class QuestionRepository extends AbstractRepository<Questions> {
     return 'Questions'; // Specify the Prisma model name for entity
   }
 
-  async find(): Promise<Questions> {
+  async findById(id: number): Promise<Questions> {
+    return this.prisma[this.modelName].findFirst({
+      include: {
+        // quiz_questions : { where: { status: 1 } }
+      },
+      where: { id },
+    });
+  }
+
+  async find(): Promise<Questions[]> {
     return this.prisma[this.modelName].findMany({
       where: { status: 1 },
       orderBy: [

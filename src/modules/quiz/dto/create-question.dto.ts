@@ -6,7 +6,7 @@ export class CreateQuestionDto {
   @IsString()
   name: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   description: string;
 
@@ -18,8 +18,4 @@ export class CreateQuestionDto {
   @IsOptional()
   @Transform(({ value }) => value === 'true')
   active: boolean;
-
-  @IsOptional()
-  @Transform(({ value }) => parseInt(value))
-  question_qty: number;
 }
