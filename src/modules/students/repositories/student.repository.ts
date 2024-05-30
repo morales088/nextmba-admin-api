@@ -52,12 +52,11 @@ export class StudentRepository extends AbstractRepository<Students> {
     filters,
     pageNumber: number = 1,
     perPage: number = 10
-  ): Promise<Students[]> {
+  ): Promise<{ students: Students[]; totalResult: number }> {
     const skipAmount = (pageNumber - 1) * perPage;
     const searchData = search ?? '';
 
     interface WhereCondition {
-      AND?: any;
       OR?: any;
       NOT?: any;
       created_by?: any;
@@ -72,6 +71,12 @@ export class StudentRepository extends AbstractRepository<Students> {
 
     if (searchData)
       whereCondition.OR = [
+        {
+          email: {
+            contains: searchData,
+            mode: 'insensitive',
+          },
+        },
         {
           email: {
             startsWith: searchData,
@@ -132,8 +137,9 @@ export class StudentRepository extends AbstractRepository<Students> {
     }
 
     if (admin.role === 2) whereCondition.created_by = { in: [admin.userId] };
+    // console.log('💡 ~ whereCondition:', JSON.stringify(whereCondition, null, 2));
 
-    return this.prisma[this.modelName].findMany({
+    const students = await this.prisma[this.modelName].findMany({
       where: whereCondition,
       include: { student_courses: { where: { status: 1 }, include: { course: true } } },
       orderBy: [
@@ -144,6 +150,13 @@ export class StudentRepository extends AbstractRepository<Students> {
       skip: skipAmount,
       take: perPage,
     });
+
+    // Fetch total count of matching students
+    const totalResult = await this.prisma[this.modelName].count({
+      where: whereCondition,
+    });
+
+    return { students, totalResult };
   }
 
   async insert(data: Partial<Students>): Promise<any> {
