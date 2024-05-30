@@ -71,36 +71,12 @@ export class StudentRepository extends AbstractRepository<Students> {
 
     if (searchData) {
       whereCondition.OR = [
-        {
-          email: {
-            contains: searchData,
-            mode: 'insensitive',
-          },
-        },
-        // {
-        //   email: {
-        //     startsWith: searchData,
-        //     mode: 'insensitive',
-        //   },
-        // },
-        // {
-        //   email: {
-        //     endsWith: searchData,
-        //     mode: 'insensitive',
-        //   },
-        // },
-        {
-          name: {
-            startsWith: searchData,
-            mode: 'insensitive',
-          },
-        },
-        {
-          name: {
-            endsWith: searchData,
-            mode: 'insensitive',
-          },
-        },
+        { email: { contains: searchData, mode: 'insensitive' } },
+        { email: { startsWith: searchData, mode: 'insensitive' } },
+        { email: { endsWith: searchData, mode: 'insensitive' } },
+        { name: { contains: searchData, mode: 'insensitive' } },
+        { name: { startsWith: searchData, mode: 'insensitive' } },
+        { name: { endsWith: searchData, mode: 'insensitive' } },
       ];
     }
 
@@ -138,7 +114,6 @@ export class StudentRepository extends AbstractRepository<Students> {
     }
 
     if (admin.role === 2) whereCondition.created_by = { in: [admin.userId] };
-    // console.log('💡 ~ whereCondition:', JSON.stringify(whereCondition, null, 2));
 
     const students = await this.prisma[this.modelName].findMany({
       where: whereCondition,

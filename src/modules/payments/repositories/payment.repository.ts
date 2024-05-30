@@ -35,16 +35,16 @@ export class PaymentRepository extends AbstractRepository<Payments> {
 
     let whereCondition = {
       OR: [
-        {
-          email: {
-            contains: searchData,
-            mode: 'insensitive',
-          },
-        },
+        { email: { contains: searchData, mode: 'insensitive' } },
+        { email: { startsWith: searchData, mode: 'insensitive' } },
         { email: { endsWith: searchData, mode: 'insensitive' } },
+        { name: { contains: searchData, mode: 'insensitive' } },
+        { name: { startsWith: searchData, mode: 'insensitive' } },
+        { name: { endsWith: searchData, mode: 'insensitive' } },
       ],
       created_by: {},
     };
+    
     if (user.role === 2) whereCondition.created_by = { in: [user.userId] };
 
     return this.prisma[this.modelName].findMany({
@@ -71,7 +71,12 @@ export class PaymentRepository extends AbstractRepository<Payments> {
     const createPayment = await this.prisma[this.modelName].create({ data: paymentData });
 
     // insert payment items
-    const createPaymentItems = await this.paymentItemRepository.insert(studentId, createPayment.id, data.product_code, data.origin);
+    const createPaymentItems = await this.paymentItemRepository.insert(
+      studentId,
+      createPayment.id,
+      data.product_code,
+      data.origin
+    );
 
     return await this.findById(createPayment.id);
   }
