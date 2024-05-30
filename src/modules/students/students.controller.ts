@@ -23,13 +23,17 @@ export class StudentsController {
   async getStudents(@Request() req: any, @Query() searchFilterDto: SearchStudentFilterDTO) {
     const admin = req.user;
     const { per_page, page_number, search, ...filters } = searchFilterDto;
-    const pageNumber = page_number ? page_number : 1;
-    const perPage = per_page ? per_page : 10;
 
-    const students = await this.studentsService.getStudents(admin, search, filters, pageNumber, perPage);
-    const studentsCount = await this.studentsService.getAllStudentsCount();
+    const { students, totalResult } = await this.studentsService.getStudents(
+      admin,
+      search,
+      filters,
+      page_number,
+      per_page
+    );
+    // const studentsCount = await this.studentsService.getAllStudentsCount();
 
-    return { students, studentsCount };
+    return { students, studentsCount: totalResult };
   }
 
   @Post('/')
@@ -96,7 +100,7 @@ export class StudentsController {
     let perPage = 1000;
 
     while (true) {
-      const students = await this.studentsService.getStudents(admin, search, filters, page, perPage);
+      const { students } = await this.studentsService.getStudents(admin, search, filters, page, perPage);
 
       if (students.length === 0) break;
 
