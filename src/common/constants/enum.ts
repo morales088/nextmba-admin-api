@@ -48,3 +48,9 @@ export enum QuizStatus {
   ACTIVE = 1,
   PUBLISHED = 2,
 }
+
+export enum TakeStatus {
+  DELETED = 0,
+  ACTIVE = 1,
+  FINISHED = 2,
+}
