@@ -35,7 +35,9 @@ export class PaymentsController {
   async upgradePayment(@Res() res: Response, @Query() upgradePaymentDto: UpgradePaymentDTO) {
     try {
       await this.paymentsService.createPayment({ ...upgradePaymentDto });
-      return res.redirect(`${process.env.STUDENT_ROUTE}/home?upgrade=success&payment_id=${upgradePaymentDto.reference_id}&product_code=${upgradePaymentDto.product_code}&name=${upgradePaymentDto.name}`);
+      return res.redirect(
+        `${process.env.STUDENT_ROUTE}/home?upgrade=success&payment_id=${upgradePaymentDto.reference_id}&product_code=${upgradePaymentDto.product_code}&name=${upgradePaymentDto.name}`
+      );
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -116,9 +118,11 @@ export class PaymentsController {
 
   @Post('/manual')
   @UseGuards(AuthGuard('jwt'))
-  async createPayment(@Body() createPaymentDto: CreatePaymentDto) {
+  async createPayment(@Request() req: any, @Body() createPaymentDto: CreatePaymentDto) {
+    const user = req.user;
     const paymentData = {
       ...createPaymentDto,
+      created_by: user.user.userId,
       payment_method: 2,
     };
     return await this.paymentsService.createPayment(paymentData);
