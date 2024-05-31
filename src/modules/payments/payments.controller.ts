@@ -119,7 +119,7 @@ export class PaymentsController {
     const user = req.user;
     const paymentData = {
       ...createPaymentDto,
-      created_by: user.user.userId,
+      created_by: user.userId,
       payment_method: 2,
     };
     return await this.paymentsService.createPayment(paymentData);
