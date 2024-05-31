@@ -25,8 +25,8 @@ export class PaymentsService {
     return this.paymentRepository.findById(id);
   }
 
-  async getPayments(user, search: string, page: number, per_page: number) {
-    return this.paymentRepository.payments(user, search, page, per_page);
+  async getPayments(user, searchFilter: any, page: number, per_page: number) {
+    return this.paymentRepository.payments(user, searchFilter, page, per_page);
   }
 
   async createPayment(data) {
