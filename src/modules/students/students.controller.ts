@@ -92,7 +92,6 @@ export class StudentsController {
   async downloadStudents(@Res() res: Response, @Request() req: any, @Query() filterQueryDto: ExportStudentFilterDTO) {
     const admin = req.user;
     const { search, ...filters } = filterQueryDto;
-    console.log("💡 ~ search:", search)
 
     let allStudents = [];
     let page = 1;
