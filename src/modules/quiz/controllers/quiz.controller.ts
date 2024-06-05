@@ -1,9 +1,10 @@
-import { Controller, UseGuards, Get, Param, Post, Body } from '@nestjs/common';
+import { Controller, UseGuards, Get, Param, Post, Body, Put, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { QuestionService } from '../services/question.service';
 import { CreateQuestionDto } from '../dto/create-question.dto';
 import { QuizService } from '../services/quiz.service';
 import { CreateQuizDto } from '../dto/create-quiz.dto';
+import { UpdateQuizDto } from '../dto/update-quiz.dto ';
 
 @Controller('quiz')
 @UseGuards(AuthGuard('jwt'))
@@ -27,5 +28,17 @@ export class QuizController {
     };
 
     return await this.quizService.createQuiz(quizData);
+  }
+
+  @Put('/:quizId')
+  async updateQuestion(
+    @Param('quizId') quizId: number,
+    @Request() req: any,
+    @Body() updateQuizDto: UpdateQuizDto
+  ) {
+    const quizData = {
+      ...updateQuizDto,
+    };
+    return await this.quizService.updateQuiz(quizId, quizData);
   }
 }
