@@ -60,6 +60,7 @@ export class PaymentsService {
           email: data.email,
           library_access: product.library_access === true ? 1 : 0,
           account_type: product.pro_access === true ? 3 : 1,
+          created_by: data.created_by
         };
 
         // const createStudent = await this.studentsService.createStudent(studentData);
