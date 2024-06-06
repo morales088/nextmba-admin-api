@@ -16,4 +16,8 @@ export class TakeService {
   async createTake(data) {
     return this.takeRepository.insert(data);
   }
+
+  async getTakePerQuiz(quizId: number) {
+    return this.takeRepository.findByQuiz(quizId);
+  }
 }

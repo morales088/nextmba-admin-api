@@ -15,10 +15,11 @@ import { TakeRepository } from './repositories/take.repository';
 import { TakeAnswerRepository } from './repositories/take_answer.repository';
 import { QuestionController } from './controllers/question.controller';
 import { AnswerController } from './controllers/answer.controller';
+import { TakeController } from './controllers/take.controller';
 
 @Module({
   imports: [PrismaModule],
-  controllers: [QuizController, QuestionController, AnswerController],
+  controllers: [QuizController, QuestionController, AnswerController, TakeController],
   providers: [
     QuizService, 
     QuestionService, 

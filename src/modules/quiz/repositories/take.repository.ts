@@ -33,20 +33,30 @@ export class TakeRepository extends AbstractRepository<Takes> {
     });
   }
 
+  async findByQuiz(quizId: number): Promise<Takes> {
+    return this.prisma[this.modelName].findFirst({
+      include: {
+        take_answers: { where: { status: 1 } },
+      },
+      where: { quiz_id: quizId, status: 1 },
+    });
+  }
+
   async insert(data: Partial<Takes>): Promise<Takes> {
     return this.prisma[this.modelName].create({ data });
   }
+  
 
-  // async updateSpeaker(id: number, data: UpdateSpeakerDto): Promise<Speakers> {
-  //   const speaker = await this.findById(id);
+  async updateTake(id: number, data: any): Promise<Takes> {
+    const take = await this.findById(id);
 
-  //   if (!speaker) {
-  //     throw new BadRequestException('Speaker does not exist.');
-  //   }
+    if (!take) {
+      throw new BadRequestException('take does not exist.');
+    }
 
-  //   return this.prisma[this.modelName].update({
-  //     where: { id: id },
-  //     data: data,
-  //   });
-  // }
+    return this.prisma[this.modelName].update({
+      where: { id: id },
+      data: data,
+    });
+  }
 }
