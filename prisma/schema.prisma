@@ -69,6 +69,8 @@ model Modules {
   live_link           String?
   external_link       String?
   host_email          String?
+  quiz_link           String?
+  quiz_result         String?
   start_date          DateTime
   end_date            DateTime
   display_topic       Boolean        @default(false)
