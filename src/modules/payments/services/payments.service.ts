@@ -25,8 +25,8 @@ export class PaymentsService {
     return this.paymentRepository.findById(id);
   }
 
-  async getPayments(user, search: string, page: number, per_page: number) {
-    return this.paymentRepository.payments(user, search, page, per_page);
+  async getPayments(user, searchFilter: any, page: number, per_page: number) {
+    return this.paymentRepository.payments(user, searchFilter, page, per_page);
   }
 
   async createPayment(data) {
@@ -60,6 +60,7 @@ export class PaymentsService {
           email: data.email,
           library_access: product.library_access === true ? 1 : 0,
           account_type: product.pro_access === true ? 3 : 1,
+          created_by: data.created_by
         };
 
         // const createStudent = await this.studentsService.createStudent(studentData);

@@ -45,7 +45,7 @@ export class CreatePaymentDto {
   country: string;
 
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
   created_by: number;
 
   @IsOptional()

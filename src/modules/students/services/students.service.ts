@@ -19,7 +19,11 @@ export class StudentsService {
     private readonly studentCoursesRepository: StudentCoursesRepository
   ) {}
 
-  async getStudentsCount() {
+  async getActiveStudentsCount() {
+    return this.studentRepository.countAllActiveStudents();
+  }
+
+  async getAllStudentsCount() {
     return this.studentRepository.countAllStudents();
   }
 
@@ -27,7 +31,7 @@ export class StudentsService {
     return this.studentRepository.findById(id);
   }
 
-  async getStudents(admin, search: string, filters, page: number, per_page: number) {
+  async getStudents(admin, search: string, filters, page: number = 1, per_page: number = 10) {
     return this.studentRepository.students(admin, search, filters, page, per_page);
   }
 

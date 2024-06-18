@@ -9,7 +9,7 @@ export class StudentsApiController {
 
   @Get('/count')
   async getStudentsCount() {
-    const studentsCount = await this.studentsService.getStudentsCount();
+    const studentsCount = await this.studentsService.getActiveStudentsCount();
 
     return { studentsCount };
   }
