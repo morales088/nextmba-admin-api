@@ -28,7 +28,7 @@ export class QuizService {
     const quiz = await this.quizRepository.insert(newData);
 
     //create quiz questions
-    const questions = await this.randomQuestions(data.question_qty);
+    const questions = await this.randomQuestions(data.question_qty, data.module_id);
     for (const data of questions) {
       const quizQuestionData = {
         quiz_id: quiz.id,
@@ -43,8 +43,8 @@ export class QuizService {
     }
   }
 
-  async randomQuestions(limit: number) {
-    const allQuestions = await this.questionRepository.find();
+  async randomQuestions(limit: number, moduleId: number) {
+    const allQuestions = await this.questionRepository.findByModuleId(moduleId);
     const shuffled = allQuestions.sort(() => 0.5 - Math.random());
     return shuffled.slice(0, limit);
   }

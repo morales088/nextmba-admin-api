@@ -23,6 +23,17 @@ export class QuestionRepository extends AbstractRepository<Questions> {
     });
   }
 
+  async findByModuleId(id: number): Promise<Questions[]> {
+    return this.prisma[this.modelName].findMany({
+      where: { status: 1, module_id: id },
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
+    });
+  }
+
   async find(): Promise<Questions[]> {
     return this.prisma[this.modelName].findMany({
       where: { status: 1 },

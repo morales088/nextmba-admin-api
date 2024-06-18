@@ -87,6 +87,7 @@ model Modules {
   translations        Translations[]
   assignment          Assignments[]
   quiz                Quiz[]
+  questions           Questions[]
 }
 
 model Speakers {
@@ -488,6 +489,7 @@ model Group_items {
 
 model Questions {
   id             Int              @id @default(autoincrement())
+  module_id      Int
   name           String
   description    String?
   difficulty     Int              @default(1)
@@ -495,6 +497,7 @@ model Questions {
   status         Int              @default(1)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime?        @updatedAt
+  modules        Modules?         @relation(fields: [module_id], references: [id])
   answers        Answers[]
   quiz_questions Quiz_questions[]
   take_answers   Take_answers[]
