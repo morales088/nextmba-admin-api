@@ -1,0 +1,49 @@
+import { Body, Controller, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { AssignmentsService } from '../services/assignments.service';
+import { CreateAssignmentDto } from '../dto/create-assignment.dto';
+import { UpdateAssignmentDto } from '../dto/update-assignment.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { StudentGroupService } from '../services/student-group.service';
+import { CreateStudentGroupDto } from '../dto/create-student-group.dto';
+import { UpdateStudentGroupDto } from '../dto/update-student-group.dto';
+
+@Controller('stud-group')
+@UseGuards(AuthGuard('jwt'))
+export class StudentGroupsController {
+    constructor(
+      private readonly studentGroupService: StudentGroupService,
+    ) {}
+
+    @Get('/')
+    async getGroups() {
+      return await this.studentGroupService.getGroups();
+    }
+
+    @Get('/:groupId')
+    async getAssignment(@Param('groupId') groupId: number) {
+      return await this.studentGroupService.getGroup(groupId);
+    }
+
+    @Post('/')
+    async createGroup(
+      @Body() createStudentGroupDto: CreateStudentGroupDto,
+    ) {
+      const groupData = {
+        ...createStudentGroupDto,
+      };
+  
+      return await this.studentGroupService.createGroup(groupData);
+    }
+
+    @Put('/:groupId')
+    async updateGroup(
+      @Param('groupId') groupId: number,
+      @Body() updateStudentGroupDto: UpdateStudentGroupDto,
+    ) {
+      const groupData = {
+        ...updateStudentGroupDto,
+      };
+      
+      return await this.studentGroupService.updateGroup(groupId, groupData);
+    }
+}
