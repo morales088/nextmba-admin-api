@@ -21,8 +21,8 @@ export class DailycoService {
             "enable_chat" : true,
             "enable_emoji_reactions" : true,
             "enable_advanced_chat" : true,
-            // "enable_recording" : "cloud",
-            "enable_recording" : "raw-tracks",
+            "enable_recording" : "cloud",
+            // "enable_recording" : "raw-tracks",
             // "recordings_bucket": {
             //     "bucket_name": this.bucket+'/Live-recordings',
             //     "bucket_region": this.region,
