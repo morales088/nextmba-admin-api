@@ -5,7 +5,7 @@ import { Student_groups } from '@prisma/client';
 import { UpdateStudentGroupDto } from '../dto/update-student-group.dto';
 
 @Injectable()
-export class StudentGroupRepository extends AbstractRepository<Student_groups> {
+export class StudentGroupsRepository extends AbstractRepository<Student_groups> {
   constructor(protected readonly prisma: PrismaService) {
     super(prisma);
   }
@@ -14,7 +14,7 @@ export class StudentGroupRepository extends AbstractRepository<Student_groups> {
     return 'Student_groups'; // Specify the Prisma model name for entity
   }
 
-  async find(): Promise<Student_groups> {
+  async find(): Promise<Student_groups[]> {
     return this.prisma[this.modelName].findMany({
       where: {status : 1},
       // include: { idividual_submissions: { where: { status: { in: [1, 2] } } } },

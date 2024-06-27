@@ -6,6 +6,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { StudentGroupService } from '../services/student-group.service';
 import { CreateStudentGroupDto } from '../dto/create-student-group.dto';
 import { UpdateStudentGroupDto } from '../dto/update-student-group.dto';
+import { CreateMemberDto } from '../dto/create-member.dto';
 
 @Controller('stud-group')
 @UseGuards(AuthGuard('jwt'))
@@ -45,5 +46,17 @@ export class StudentGroupsController {
       };
       
       return await this.studentGroupService.updateGroup(groupId, groupData);
+    }
+    
+
+    @Post('/')
+    async addMember(
+      @Body() createMemberDto: CreateMemberDto,
+    ) {
+      const memberData = {
+        ...createMemberDto,
+      };
+  
+      return await this.studentGroupService.addMember(memberData);
     }
 }

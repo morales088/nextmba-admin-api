@@ -214,6 +214,7 @@ model Students {
   student_courses       Student_courses[]
   idividual_submissions Individual_submissions[]
   Group_items           Group_items[]
+  student_group_member  Student_group_member[]
 }
 
 model Student_courses {
@@ -424,15 +425,26 @@ model Subscriber_groups {
 }
 
 model Student_groups {
-  id        Int       @id @default(autoincrement())
-  course_id Int
-  name      String
-  link      String?
-  is_public Boolean   @default(false)
-  status    Int       @default(1)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
-  course    Courses?  @relation(fields: [course_id], references: [id])
+  id                   Int                    @id @default(autoincrement())
+  course_id            Int?
+  name                 String
+  link                 String?
+  is_public            Boolean                @default(false)
+  status               Int                    @default(1)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime?              @updatedAt
+  course               Courses?               @relation(fields: [course_id], references: [id])
+  student_group_member Student_group_member[]
+}
+
+model Student_group_member {
+  id         Int            @id @default(autoincrement())
+  group_id   Int
+  student_id Int
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime?      @updatedAt
+  group      Student_groups @relation(fields: [group_id], references: [id])
+  student    Students       @relation(fields: [student_id], references: [id])
 }
 
 model Assignments {

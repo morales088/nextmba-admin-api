@@ -1,27 +1,64 @@
 import { Injectable } from '@nestjs/common';
-import { StudentGroupRepository } from '../repositories/student-groups.repository';
+import { StudentGroupsRepository } from '../repositories/student-groups.repository';
 import { CreateStudentGroupDto } from '../dto/create-student-group.dto';
 import { UpdateStudentGroupDto } from '../dto/update-student-group.dto';
+import { StudentGroupMembersRepository } from '../repositories/student-group-members.repository';
+import { CreateMemberDto } from '../dto/create-member.dto';
+import { StudentCoursesRepository } from 'src/modules/students/repositories/student_courses.repository';
+import { group } from 'console';
 
 @Injectable()
 export class StudentGroupService {
     constructor(
-      private readonly studentGroupRepository: StudentGroupRepository,
+      private readonly studentGroupsRepository: StudentGroupsRepository,
+      private readonly studentGroupMembersRepository: StudentGroupMembersRepository,
+      private readonly studentCoursesRepository: StudentCoursesRepository,
     ) {}
 
     async getGroups() {
-      return await this.studentGroupRepository.find();
+      const results = await this.studentGroupsRepository.find();
+      
+      for (const result of results) {
+        const members = await this.countMember(result)
+        
+        const group = result as any
+        group.members = members
+        return group
+      }
+
+      return results
     }
 
     async getGroup(id:number) {
-      return await this.studentGroupRepository.group(id);
+      const result = await this.studentGroupsRepository.group(id);
+      const members = await this.countMember(result)
+      
+      const group = result as any
+      group.members = members
+      return result
     }
 
     async createGroup(data: CreateStudentGroupDto) {
-        return await this.studentGroupRepository.insert(data)
+        return await this.studentGroupsRepository.insert(data)
     }
 
     async updateGroup(id:number, data: UpdateStudentGroupDto) {
-        return await this.studentGroupRepository.updateGroup(id, data)
+        return await this.studentGroupsRepository.updateGroup(id, data)
+    }
+
+    async addMember(data : CreateMemberDto){
+      return await this.studentGroupMembersRepository.insert(data)
+    }
+
+    async deleteMember(studentId : number){
+      return await this.studentGroupMembersRepository.deleteStudent(studentId)
+    }
+    
+    async countMember(group){
+      if(group.course_id){
+        return (await this.studentCoursesRepository.findByCourse(group.course_id)).length
+      }else{
+        return (await this.studentGroupMembersRepository.byGroupId(group.id)).length
+      }
     }
 }

@@ -2,7 +2,7 @@ import { Transform } from 'class-transformer';
 import { IsBoolean, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateStudentGroupDto {
-  @IsNotEmpty()
+  @IsOptional()
   @Transform(({ value }) => parseInt(value))
   course_id: number;
 

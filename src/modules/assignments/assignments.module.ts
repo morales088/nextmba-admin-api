@@ -8,7 +8,9 @@ import { IndividualSubmissionsController } from './controllers/individual-submis
 import { IndividualSubmissionsService } from './services/individual-submissions.service';
 import { StudentGroupsController } from './controllers/student-groups.controller';
 import { StudentGroupService } from './services/student-group.service';
-import { StudentGroupRepository } from './repositories/student-groups.repository';
+import { StudentGroupsRepository } from './repositories/student-groups.repository';
+import { StudentGroupMembersRepository } from './repositories/student-group-members.repository';
+import { StudentCoursesRepository } from '../students/repositories/student_courses.repository';
 
 @Module({
   imports: [PrismaModule],
@@ -19,7 +21,9 @@ import { StudentGroupRepository } from './repositories/student-groups.repository
     AssignmentsRepository,
     IndividualSubmmisionsRepository,
     StudentGroupService,
-    StudentGroupRepository,
+    StudentGroupsRepository,
+    StudentGroupMembersRepository,
+    StudentCoursesRepository
   ],
 })
 export class AssignmentsModule {}

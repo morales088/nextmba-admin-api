@@ -3,6 +3,10 @@ import { IsBoolean, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'cla
 
 export class UpdateStudentGroupDto {
   @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  course_id: number;
+
+  @IsOptional()
   @IsString()
   name: string;
 
