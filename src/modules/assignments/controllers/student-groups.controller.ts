@@ -59,11 +59,11 @@ export class StudentGroupsController {
       return await this.studentGroupService.addMember(memberData);
     }
 
-    @Delete('/member/:studentId')
+    @Delete('/member/:memberId')
     async deleteMember(
-      @Param('studentId') studentId: number,
+      @Param('memberId') memberId: number,
     ) {
   
-      return await this.studentGroupService.deleteMember(studentId);
+      return await this.studentGroupService.deleteMember(memberId);
     }
 }

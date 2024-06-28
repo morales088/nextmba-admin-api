@@ -50,8 +50,8 @@ export class StudentGroupService {
       return await this.studentGroupMembersRepository.insert(data)
     }
 
-    async deleteMember(studentId : number){
-      return await this.studentGroupMembersRepository.deleteStudent(studentId)
+    async deleteMember(memberId : number){
+      return await this.studentGroupMembersRepository.deleteStudent(memberId)
     }
     
     async countMember(group){
