@@ -42,7 +42,7 @@ export class DailycoService {
       console.log('1', response.data);
       const roomConfig = await this.roomConfig(roomName);
       
-      return roomConfig.data;
+      return response.data;
     } catch (error) {
       throw new Error(`Failed to create meeting room: ${error.message}`);
     }
