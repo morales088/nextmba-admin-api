@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { AssignmentsService } from '../services/assignments.service';
 import { CreateAssignmentDto } from '../dto/create-assignment.dto';
 import { UpdateAssignmentDto } from '../dto/update-assignment.dto';
@@ -47,7 +47,6 @@ export class StudentGroupsController {
       
       return await this.studentGroupService.updateGroup(groupId, groupData);
     }
-    
 
     @Post('/')
     async addMember(
@@ -58,5 +57,13 @@ export class StudentGroupsController {
       };
   
       return await this.studentGroupService.addMember(memberData);
+    }
+
+    @Delete('/:studentId')
+    async deleteMember(
+      @Param('studentId') studentId: number,
+    ) {
+  
+      return await this.studentGroupService.deleteMember(studentId);
     }
 }

@@ -23,12 +23,13 @@ export class DailycoService {
             "enable_advanced_chat" : true,
             // "enable_recording" : "cloud",
             "enable_recording" : "raw-tracks",
-            "recordings_bucket": {
-                "bucket_name": this.bucket+'/Live-recordings',
-                "bucket_region": this.region,
-                "assume_role_arn": "arn:aws:iam::339626983134:role/raw-tracks",
-                "allow_api_access": true
-            }
+            // "recordings_bucket": {
+            //     // "bucket_name": this.bucket+'/Live-recordings',
+            //     "bucket_name": 'next-mba-live-recordings',
+            //     "bucket_region": this.region,
+            //     "assume_role_arn": "arn:aws:iam::339626983134:role/raw-tracks2",
+            //     "allow_api_access": true
+            // }
           }
         },
         {
