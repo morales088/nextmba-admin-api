@@ -48,7 +48,7 @@ export class StudentGroupsController {
       return await this.studentGroupService.updateGroup(groupId, groupData);
     }
 
-    @Post('/add-member')
+    @Post('/member')
     async addMember(
       @Body() createMemberDto: CreateMemberDto,
     ) {
@@ -59,7 +59,7 @@ export class StudentGroupsController {
       return await this.studentGroupService.addMember(memberData);
     }
 
-    @Delete('/:studentId')
+    @Delete('/member/:studentId')
     async deleteMember(
       @Param('studentId') studentId: number,
     ) {
