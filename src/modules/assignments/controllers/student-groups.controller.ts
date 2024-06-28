@@ -48,7 +48,7 @@ export class StudentGroupsController {
       return await this.studentGroupService.updateGroup(groupId, groupData);
     }
 
-    @Post('/')
+    @Post('/add-member')
     async addMember(
       @Body() createMemberDto: CreateMemberDto,
     ) {
