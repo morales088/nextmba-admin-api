@@ -11,6 +11,7 @@ import { StudentGroupService } from './services/student-group.service';
 import { StudentGroupsRepository } from './repositories/student-groups.repository';
 import { StudentGroupMembersRepository } from './repositories/student-group-members.repository';
 import { StudentCoursesRepository } from '../students/repositories/student_courses.repository';
+import { StudentRepository } from '../students/repositories/student.repository';
 
 @Module({
   imports: [PrismaModule],
@@ -23,7 +24,8 @@ import { StudentCoursesRepository } from '../students/repositories/student_cours
     StudentGroupService,
     StudentGroupsRepository,
     StudentGroupMembersRepository,
-    StudentCoursesRepository
+    StudentCoursesRepository,
+    StudentRepository
   ],
 })
 export class AssignmentsModule {}

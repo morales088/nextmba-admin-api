@@ -6,6 +6,7 @@ import { StudentGroupMembersRepository } from '../repositories/student-group-mem
 import { CreateMemberDto } from '../dto/create-member.dto';
 import { StudentCoursesRepository } from 'src/modules/students/repositories/student_courses.repository';
 import { group } from 'console';
+import { StudentRepository } from 'src/modules/students/repositories/student.repository';
 
 @Injectable()
 export class StudentGroupService {
@@ -13,20 +14,19 @@ export class StudentGroupService {
       private readonly studentGroupsRepository: StudentGroupsRepository,
       private readonly studentGroupMembersRepository: StudentGroupMembersRepository,
       private readonly studentCoursesRepository: StudentCoursesRepository,
+      private readonly studentRepository: StudentRepository,
     ) {}
 
     async getGroups() {
       const results = await this.studentGroupsRepository.find();
+      const groups = results as any
       
-      for (const result of results) {
-        const members = await this.countMember(result)
-        
-        const group = result as any
-        group.members = members
-        return group
+      for (let group of groups) {
+        const members = await this.countMember(group)
+        group.member = members
       }
-
-      return results
+      
+      return groups
     }
 
     async getGroup(id:number) {
@@ -46,8 +46,14 @@ export class StudentGroupService {
         return await this.studentGroupsRepository.updateGroup(id, data)
     }
 
-    async addMember(data : CreateMemberDto){
-      return await this.studentGroupMembersRepository.insert(data)
+    async addMember(data){
+      const student = await this.studentRepository.findByEmail(data.email);
+      const memberData = {
+        group_id : data.group_id,
+        student_id : student.id
+      }
+
+      return await this.studentGroupMembersRepository.insert(memberData)
     }
 
     async deleteMember(memberId : number){
