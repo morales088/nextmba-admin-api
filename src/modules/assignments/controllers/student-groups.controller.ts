@@ -11,59 +11,59 @@ import { CreateMemberDto } from '../dto/create-member.dto';
 @Controller('stud-group')
 @UseGuards(AuthGuard('jwt'))
 export class StudentGroupsController {
-    constructor(
-      private readonly studentGroupService: StudentGroupService,
-    ) {}
+  constructor(private readonly studentGroupService: StudentGroupService) {}
 
-    @Get('/')
-    async getGroups() {
-      return await this.studentGroupService.getGroups();
-    }
+  @Get('/')
+  async getGroups() {
+    return await this.studentGroupService.getGroups();
+  }
 
-    @Get('/:groupId')
-    async getAssignment(@Param('groupId') groupId: number) {
-      return await this.studentGroupService.getGroup(groupId);
-    }
+  @Get('/:groupId')
+  async getGroup(@Param('groupId') groupId: number) {
+    return await this.studentGroupService.getGroup(groupId);
+  }
 
-    @Post('/')
-    async createGroup(
-      @Body() createStudentGroupDto: CreateStudentGroupDto,
-    ) {
-      const groupData = {
-        ...createStudentGroupDto,
-      };
-  
-      return await this.studentGroupService.createGroup(groupData);
-    }
+  @Get('/:groupId/members')
+  async getGroupMember(
+    @Param('groupId') groupId: number,
+    @Query('page_number') page_number?: number,
+    @Query('per_page') per_page?: number
+  ) {
+    const pageNumber = page_number ? page_number : 1;
+    const perPage = per_page ? per_page : 10;
 
-    @Put('/:groupId')
-    async updateGroup(
-      @Param('groupId') groupId: number,
-      @Body() updateStudentGroupDto: UpdateStudentGroupDto,
-    ) {
-      const groupData = {
-        ...updateStudentGroupDto,
-      };
-      
-      return await this.studentGroupService.updateGroup(groupId, groupData);
-    }
+    return await this.studentGroupService.getGroupMember(groupId, pageNumber, perPage);
+  }
 
-    @Post('/member')
-    async addMember(
-      @Body() createMemberDto: CreateMemberDto,
-    ) {
-      const memberData = {
-        ...createMemberDto,
-      };
-  
-      return await this.studentGroupService.addMember(memberData);
-    }
+  @Post('/')
+  async createGroup(@Body() createStudentGroupDto: CreateStudentGroupDto) {
+    const groupData = {
+      ...createStudentGroupDto,
+    };
 
-    @Delete('/member/:memberId')
-    async deleteMember(
-      @Param('memberId') memberId: number,
-    ) {
-  
-      return await this.studentGroupService.deleteMember(memberId);
-    }
+    return await this.studentGroupService.createGroup(groupData);
+  }
+
+  @Put('/:groupId')
+  async updateGroup(@Param('groupId') groupId: number, @Body() updateStudentGroupDto: UpdateStudentGroupDto) {
+    const groupData = {
+      ...updateStudentGroupDto,
+    };
+
+    return await this.studentGroupService.updateGroup(groupId, groupData);
+  }
+
+  @Post('/member')
+  async addMember(@Body() createMemberDto: CreateMemberDto) {
+    const memberData = {
+      ...createMemberDto,
+    };
+
+    return await this.studentGroupService.addMember(memberData);
+  }
+
+  @Delete('/member/:memberId')
+  async deleteMember(@Param('memberId') memberId: number) {
+    return await this.studentGroupService.deleteMember(memberId);
+  }
 }

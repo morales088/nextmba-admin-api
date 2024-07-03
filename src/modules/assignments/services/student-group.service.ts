@@ -10,61 +10,69 @@ import { StudentRepository } from 'src/modules/students/repositories/student.rep
 
 @Injectable()
 export class StudentGroupService {
-    constructor(
-      private readonly studentGroupsRepository: StudentGroupsRepository,
-      private readonly studentGroupMembersRepository: StudentGroupMembersRepository,
-      private readonly studentCoursesRepository: StudentCoursesRepository,
-      private readonly studentRepository: StudentRepository,
-    ) {}
+  constructor(
+    private readonly studentGroupsRepository: StudentGroupsRepository,
+    private readonly studentGroupMembersRepository: StudentGroupMembersRepository,
+    private readonly studentCoursesRepository: StudentCoursesRepository,
+    private readonly studentRepository: StudentRepository
+  ) {}
 
-    async getGroups() {
-      const results = await this.studentGroupsRepository.find();
-      const groups = results as any
-      
-      for (let group of groups) {
-        const members = await this.countMember(group)
-        group.member = members
-      }
-      
-      return groups
+  async getGroups() {
+    const results = await this.studentGroupsRepository.find();
+    const groups = results as any;
+
+    for (let group of groups) {
+      const members = (await this.getMembers(group)).length;
+      group.member = members;
     }
 
-    async getGroup(id:number) {
-      const result = await this.studentGroupsRepository.group(id);
-      const members = await this.countMember(result)
-      
-      const group = result as any
-      group.members = members
-      return result
-    }
+    return groups;
+  }
 
-    async createGroup(data: CreateStudentGroupDto) {
-        return await this.studentGroupsRepository.insert(data)
-    }
+  async getGroup(id: number) {
+    const result = await this.studentGroupsRepository.group(id);
+    const members = (await this.getMembers(result)).length;
 
-    async updateGroup(id:number, data: UpdateStudentGroupDto) {
-        return await this.studentGroupsRepository.updateGroup(id, data)
-    }
+    const group = result as any;
+    group.members = members;
+    return result;
+  }
 
-    async addMember(data){
-      const student = await this.studentRepository.findByEmail(data.email);
-      const memberData = {
-        group_id : data.group_id,
-        student_id : student.id
-      }
+  async getGroupMember(id: number, pageNumber: number = 1, perPage: number = 10) {
+    const group = await this.getGroup(id);
+    const members = await this.getMembers(group);
+    members.slice(pageNumber, pageNumber + perPage)
+    console.log(members);
+    return members
+  }
 
-      return await this.studentGroupMembersRepository.insert(memberData)
-    }
+  async createGroup(data: CreateStudentGroupDto) {
+    return await this.studentGroupsRepository.insert(data);
+  }
 
-    async deleteMember(memberId : number){
-      return await this.studentGroupMembersRepository.deleteStudent(memberId)
+  async updateGroup(id: number, data: UpdateStudentGroupDto) {
+    return await this.studentGroupsRepository.updateGroup(id, data);
+  }
+
+  async addMember(data) {
+    const student = await this.studentRepository.findByEmail(data.email);
+    const memberData = {
+      group_id: data.group_id,
+      student_id: student.id,
+    };
+
+    return await this.studentGroupMembersRepository.insert(memberData);
+  }
+
+  async deleteMember(memberId: number) {
+    return await this.studentGroupMembersRepository.deleteStudent(memberId);
+  }
+
+  async getMembers(group): Promise<{}[]> {
+    if (group.course_id) {
+      return await this.studentCoursesRepository.findByCourse(group.course_id);
+    } else {
+      return await this.studentGroupMembersRepository.byGroupId(group.id);
     }
-    
-    async countMember(group){
-      if(group.course_id){
-        return (await this.studentCoursesRepository.findByCourse(group.course_id)).length
-      }else{
-        return (await this.studentGroupMembersRepository.byGroupId(group.id)).length
-      }
-    }
+  }
 }
