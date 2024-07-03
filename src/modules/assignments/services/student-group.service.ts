@@ -42,7 +42,7 @@ export class StudentGroupService {
     const group = await this.getGroup(id);
     const members = await this.getMembers(group);
     members.slice(pageNumber, pageNumber + perPage)
-    console.log(members);
+    
     return members
   }
 
