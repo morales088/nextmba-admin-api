@@ -29,7 +29,7 @@ export class StudentGroupMembersRepository extends AbstractRepository<Student_gr
   async byGroupId(groupId : number): Promise<Student_group_member[]> {
     return this.prisma[this.modelName].findMany({
       where: {group_id : groupId},
-      // include: { idividual_submissions: { where: { status: { in: [1, 2] } } } },
+      include: { student: true },
       orderBy: [
         {
           id: 'asc',

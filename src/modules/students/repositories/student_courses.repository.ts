@@ -30,6 +30,7 @@ export class StudentCoursesRepository extends AbstractRepository<Student_courses
   async findByCourse(courseId:number): Promise<Student_courses[]> {
     return this.prisma[this.modelName].findMany({
       where: { status: 1, course_id : courseId },
+      include: { student: true },
       orderBy: [
         {
           id: 'asc',
