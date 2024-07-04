@@ -23,6 +23,11 @@ export class CreatePaymentDto {
   // @IsIn([1, 2]) 
   // payment_method: number;
 
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  @IsIn([1, 2]) 
+  origin: number;
+
   @IsNotEmpty()
   @IsString()
   name: string;
@@ -40,7 +45,7 @@ export class CreatePaymentDto {
   country: string;
 
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
   created_by: number;
 
   @IsOptional()

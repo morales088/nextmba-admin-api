@@ -27,6 +27,11 @@ export enum CourseTierType {
   LIMITED = 2,
 }
 
+export enum PaymentOrigin {
+  NextMba = 1,
+  NextUni = 2,
+}
+
 export enum AssignmentsType {
   INDIVIDUAL = 1,
   GROUP = 2,
@@ -53,4 +58,10 @@ export enum TakeStatus {
   DELETED = 0,
   ACTIVE = 1,
   FINISHED = 2,
+}
+
+export enum ModuleTierType {
+  FULL = 1,
+  LIMITED = 2,
+  ALL = 3
 }

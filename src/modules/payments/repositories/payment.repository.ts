@@ -29,25 +29,42 @@ export class PaymentRepository extends AbstractRepository<Payments> {
     });
   }
 
-  async payments(user, search: string = null, pageNumber: number = 1, perPage: number = 10): Promise<Payments> {
+  async payments(user, searchFilter: any, pageNumber: number = 1, perPage: number = 10): Promise<Payments[]> {
     const skipAmount = (pageNumber - 1) * perPage;
-    const searchData = search ?? '';
+    const { search: searchData = null, product_code = null, start_date, end_date } = searchFilter;
 
-    let whereCondition = {
-      OR: [
-        {
-          email: {
-            contains: searchData,
-            mode: 'insensitive',
-          },
-        },
+    interface WhereCondition {
+      OR?: any;
+      AND?: any;
+      NOT?: any;
+      created_by?: any;
+    }
+
+    let whereCondition: WhereCondition = {};
+
+    if (searchData) {
+      whereCondition.OR = [
+        { email: { contains: searchData, mode: 'insensitive' } },
+        { email: { startsWith: searchData, mode: 'insensitive' } },
         { email: { endsWith: searchData, mode: 'insensitive' } },
-      ],
-      created_by: {},
-    };
+        { name: { contains: searchData, mode: 'insensitive' } },
+        { name: { startsWith: searchData, mode: 'insensitive' } },
+        { name: { endsWith: searchData, mode: 'insensitive' } },
+        { reference_id: { contains: searchData, mode: 'insensitive' } },
+      ];
+    }
+
+    if (product_code) {
+      whereCondition.OR = [{ product_code: { contains: product_code, mode: 'insensitive' } }];
+    }
+
+    if (start_date && end_date) {
+      whereCondition.AND = [{ createdAt: { gte: start_date, lte: end_date } }];
+    }
+
     if (user.role === 2) whereCondition.created_by = { in: [user.userId] };
 
-    return this.prisma[this.modelName].findMany({
+    const payments = await this.prisma[this.modelName].findMany({
       where: whereCondition,
       include: { payment_items: true, product: true },
       orderBy: [
@@ -58,6 +75,12 @@ export class PaymentRepository extends AbstractRepository<Payments> {
       skip: skipAmount,
       take: perPage,
     });
+
+    // const totalResult = await this.prisma[this.modelName].count({
+    //   where: whereCondition,
+    // });
+
+    return payments;
   }
 
   async insert(studentId: number, productId: number, data: Partial<Payments>): Promise<any> {
@@ -71,7 +94,12 @@ export class PaymentRepository extends AbstractRepository<Payments> {
     const createPayment = await this.prisma[this.modelName].create({ data: paymentData });
 
     // insert payment items
-    const createPaymentItems = await this.paymentItemRepository.insert(studentId, createPayment.id, data.product_code);
+    const createPaymentItems = await this.paymentItemRepository.insert(
+      studentId,
+      createPayment.id,
+      data.product_code,
+      data.origin
+    );
 
     return await this.findById(createPayment.id);
   }

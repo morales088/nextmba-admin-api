@@ -53,3 +53,12 @@ export const endDayOfMonth = (date = currentTime()) => {
   const endOfMonth = DateTime.fromJSDate(date).toUTC().plus({ weeks: 1 }).endOf('month');
   return new Date(endOfMonth.toJSDate().setUTCHours(23, 59, 59, 999));
 };
+
+export const oneMonthAgo = (date = currentTime()) => {
+  const oneMonthAgo = DateTime.fromJSDate(date).minus({ months: 1 });
+  return new Date(oneMonthAgo.toJSDate());
+};
+
+export const delayMs = async (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

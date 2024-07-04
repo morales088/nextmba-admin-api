@@ -20,6 +20,9 @@ import { PdfService } from 'src/common/utils/pdf.service';
 import { Response } from 'express';
 import { BillingRepository } from '../billings/repositories/billing.repository';
 import { UpgradePaymentDTO } from './dto/upgrade-payment.dto';
+import { ExportPaymentFilterDTO, SearchPaymentFilterDTO } from './dto/filter-payment.dto';
+import * as excel from 'exceljs';
+import { Payments } from '@prisma/client';
 
 @Controller('payments')
 // @UseGuards(AuthGuard('jwt'))
@@ -35,7 +38,9 @@ export class PaymentsController {
   async upgradePayment(@Res() res: Response, @Query() upgradePaymentDto: UpgradePaymentDTO) {
     try {
       await this.paymentsService.createPayment({ ...upgradePaymentDto });
-      return res.redirect(`${process.env.STUDENT_ROUTE}/home?product_code=${upgradePaymentDto.product_code}&upgrade=success`);
+      return res.redirect(
+        `${process.env.STUDENT_ROUTE}/home?upgrade=success&payment_id=${upgradePaymentDto.reference_id}&product_code=${upgradePaymentDto.product_code}&name=${upgradePaymentDto.name}`
+      );
     } catch (error) {
       throw new BadRequestException(error.message);
     }
@@ -102,23 +107,19 @@ export class PaymentsController {
 
   @Get('/')
   @UseGuards(AuthGuard('jwt'))
-  async getPayments(
-    @Request() req: any,
-    @Query('search') search?: string,
-    @Query('page_number') page_number?: number,
-    @Query('per_page') per_page?: number
-  ) {
+  async getPayments(@Request() req: any, @Query() searchPaymentFilterDto: SearchPaymentFilterDTO) {
     const user = req.user;
-    const pageNumber = page_number ? page_number : 1;
-    const perPage = per_page ? per_page : 10;
-    return await this.paymentsService.getPayments(user, search, pageNumber, perPage);
+    const { per_page: perPage, page_number: pageNumber, ...searchFilter } = searchPaymentFilterDto;
+    return this.paymentsService.getPayments(user, searchFilter, pageNumber, perPage);
   }
 
   @Post('/manual')
   @UseGuards(AuthGuard('jwt'))
-  async createPayment(@Body() createPaymentDto: CreatePaymentDto) {
+  async createPayment(@Request() req: any, @Body() createPaymentDto: CreatePaymentDto) {
+    const user = req.user;
     const paymentData = {
       ...createPaymentDto,
+      created_by: user.userId,
       payment_method: 2,
     };
     return await this.paymentsService.createPayment(paymentData);
@@ -131,5 +132,71 @@ export class PaymentsController {
       ...updatePaymentDto,
     };
     return await this.paymentsService.updatePayment(paymentId, paymentData);
+  }
+
+  @Get('/download/csv')
+  @UseGuards(AuthGuard('jwt'))
+  async downloadPayments(@Res() res: Response, @Request() req: any, @Query() filterQueryDto: ExportPaymentFilterDTO) {
+    const admin = req.user;
+    const { search, product_code, start_date, end_date } = filterQueryDto;
+    const searchFilters = { search, product_code, start_date, end_date };
+
+    let allPayments = [];
+    let page = 1;
+    let perPage = 1000;
+
+    while (true) {
+      const payments = await this.paymentsService.getPayments(admin, searchFilters, page, perPage);
+
+      if (payments.length === 0) break;
+
+      allPayments = allPayments.concat(payments);
+      page++;
+    }
+
+    const workbook = new excel.Workbook();
+    const worksheet = workbook.addWorksheet('Sheet1');
+
+    // Add data to the worksheet
+    worksheet.columns = [
+      { header: 'ID', key: 'id', width: 10 },
+      { header: 'Name', key: 'name', width: 10 },
+      { header: 'Email', key: 'email', width: 15 },
+      { header: 'Reference ID', key: 'reference_id', width: 10 },
+      { header: 'Product Name', key: 'product_name', width: 10 },
+      { header: 'Payment Amount', key: 'payment_amount', width: 10 },
+      { header: 'Product Code', key: 'product_code', width: 10 },
+      { header: 'Date Created', key: 'date_created', width: 10 },
+      { header: 'Status', key: 'status', width: 10 },
+    ];
+
+    const results = allPayments as [any];
+
+    results.forEach((payment) => {
+      const status = payment.status == 1 ? 'active' : 'deleted';
+      const paymentAmount = typeof payment.price === 'string' ? parseInt(payment.price) : payment.price;
+
+      worksheet.addRow({
+        id: payment.id,
+        name: payment.name,
+        email: payment.email,
+        reference_id: payment.reference_id,
+        product_name: payment.product.name,
+        payment_amount: paymentAmount,
+        product_code: payment.product_code,
+        date_created: payment.createdAt.toLocaleString(),
+        status: status,
+      });
+    });
+
+    // Set up the response headers
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="payments.csv"');
+
+    // Stream the workbook to the response
+    await workbook.csv.write(res);
+
+    // End the response
+    res.end();
   }
 }

@@ -7,6 +7,7 @@ import { UpdateStudentCourseDto } from './dto/update-studentCourse.dto';
 import { CreateStudentCourseDto } from './dto/create-studentCourse.dto';
 import { Response } from 'express';
 import * as excel from 'exceljs';
+import { ExportStudentFilterDTO, SearchStudentFilterDTO } from './dto/filter-student.dto';
 
 @Controller('students')
 @UseGuards(AuthGuard('jwt'))
@@ -19,33 +20,18 @@ export class StudentsController {
   }
 
   @Get('/')
-  async getStudents(
-    @Request() req: any,
-    @Query('search') search?: string,
-    @Query('page_number') page_number?: number,
-    @Query('per_page') per_page?: number,
-    @Query('enrolled_to') enrolled_to?: string,
-    @Query('not_enrolled_to') not_enrolled_to?: string,
-    @Query('country') country?: string,
-    @Query('company') company?: string,
-    @Query('phone') phone?: string,
-    @Query('position') position?: string,
-    @Query('account_type') account_type?: number
-  ) {
+  async getStudents(@Request() req: any, @Query() searchFilterDto: SearchStudentFilterDTO) {
     const admin = req.user;
-    const pageNumber = page_number ? page_number : 1;
-    const perPage = per_page ? per_page : 10;
-    const filters = {
-      enrolled_to,
-      not_enrolled_to,
-      country,
-      company,
-      phone,
-      position,
-      account_type,
-    };
+    const { per_page, page_number, search, ...filters } = searchFilterDto;
 
-    return await this.studentsService.getStudents(admin, search, filters, pageNumber, perPage);
+    const { students, totalResult } = await this.studentsService.getStudents(
+      admin,
+      search,
+      filters,
+      page_number,
+      per_page
+    );
+    return { students, studentsCount: totalResult };
   }
 
   @Post('/')
@@ -103,30 +89,22 @@ export class StudentsController {
   }
 
   @Get('/download/csv')
-  async downloadStudents(
-    @Res() res: Response,
-    @Request() req: any,
-    @Query('search') search?: string,
-    @Query('enrolled_to') enrolled_to?: string,
-    @Query('not_enrolled_to') not_enrolled_to?: string,
-    @Query('country') country?: string,
-    @Query('company') company?: string,
-    @Query('phone') phone?: string,
-    @Query('position') position?: string,
-    @Query('account_type') account_type?: number
-  ) {
+  async downloadStudents(@Res() res: Response, @Request() req: any, @Query() filterQueryDto: ExportStudentFilterDTO) {
     const admin = req.user;
-    const filters = {
-      enrolled_to,
-      not_enrolled_to,
-      country,
-      company,
-      phone,
-      position,
-      account_type,
-    };
+    const { search, ...filters } = filterQueryDto;
 
-    const students = await this.studentsService.getStudents(admin, search, filters, 1, 1000000000000000000);
+    let allStudents = [];
+    let page = 1;
+    let perPage = 1000;
+
+    while (true) {
+      const { students } = await this.studentsService.getStudents(admin, search, filters, page, perPage);
+
+      if (students.length === 0) break;
+
+      allStudents = allStudents.concat(students);
+      page++;
+    }
 
     const workbook = new excel.Workbook();
     const worksheet = workbook.addWorksheet('Sheet1');
@@ -141,7 +119,7 @@ export class StudentsController {
       { header: 'Company', key: 'company', width: 10 },
       { header: 'Position', key: 'position', width: 10 },
       { header: 'Language', key: 'language', width: 10 },
-      { header: 'Afiliate Access', key: 'affiliate_access', width: 10 },
+      { header: 'Affiliate Access', key: 'affiliate_access', width: 10 },
       { header: 'Last Login', key: 'last_login', width: 10 },
       { header: 'Date Created', key: 'date_created', width: 10 },
       { header: 'Created By', key: 'created_by', width: 10 },
@@ -149,7 +127,7 @@ export class StudentsController {
       { header: 'Courses', key: 'courses', width: 10 },
     ];
 
-    const results = students as [any];
+    const results = allStudents as [any];
 
     results.forEach((student) => {
       const status = student.status == 1 ? 'active' : 'deleted';
@@ -175,10 +153,10 @@ export class StudentsController {
 
     // Set up the response headers
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename=student.csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="students.csv"');
 
     // Stream the workbook to the response
-    workbook.csv.write(res);
+    await workbook.csv.write(res);
 
     // End the response
     res.end();

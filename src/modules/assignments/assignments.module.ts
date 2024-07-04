@@ -6,10 +6,26 @@ import { PrismaModule } from 'src/common/prisma/prisma.module';
 import { IndividualSubmmisionsRepository } from './repositories/individual-submissions.repository';
 import { IndividualSubmissionsController } from './controllers/individual-submissions.controller';
 import { IndividualSubmissionsService } from './services/individual-submissions.service';
+import { StudentGroupsController } from './controllers/student-groups.controller';
+import { StudentGroupService } from './services/student-group.service';
+import { StudentGroupsRepository } from './repositories/student-groups.repository';
+import { StudentGroupMembersRepository } from './repositories/student-group-members.repository';
+import { StudentCoursesRepository } from '../students/repositories/student_courses.repository';
+import { StudentRepository } from '../students/repositories/student.repository';
 
 @Module({
   imports: [PrismaModule],
-  controllers: [AssignmentsController, IndividualSubmissionsController],
-  providers: [AssignmentsService, IndividualSubmissionsService, AssignmentsRepository, IndividualSubmmisionsRepository]
+  controllers: [AssignmentsController, IndividualSubmissionsController, StudentGroupsController],
+  providers: [
+    AssignmentsService,
+    IndividualSubmissionsService,
+    AssignmentsRepository,
+    IndividualSubmmisionsRepository,
+    StudentGroupService,
+    StudentGroupsRepository,
+    StudentGroupMembersRepository,
+    StudentCoursesRepository,
+    StudentRepository
+  ],
 })
 export class AssignmentsModule {}

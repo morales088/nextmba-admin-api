@@ -2,7 +2,6 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { AbstractRepository } from 'src/common/repositories/abstract.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { Students } from '@prisma/client';
-import { UpdateStudentDto } from '../dto/update-student.dto';
 import { FilterOptions } from '../interfaces/student.interface';
 
 @Injectable()
@@ -15,10 +14,14 @@ export class StudentRepository extends AbstractRepository<Students> {
     return 'Students'; // Specify the Prisma model name for entity
   }
 
-  async countAllStudents(): Promise<number> {
+  async countAllActiveStudents(): Promise<number> {
     return this.prisma.students.count({
       where: { status: 1 },
     });
+  }
+
+  async countAllStudents(): Promise<number> {
+    return this.prisma.students.count();
   }
 
   async find(): Promise<Students> {
@@ -49,7 +52,7 @@ export class StudentRepository extends AbstractRepository<Students> {
     filters,
     pageNumber: number = 1,
     perPage: number = 10
-  ): Promise<Students[]> {
+  ): Promise<{ students: Students[]; totalResult: number }> {
     const skipAmount = (pageNumber - 1) * perPage;
     const searchData = search ?? '';
 
@@ -66,47 +69,53 @@ export class StudentRepository extends AbstractRepository<Students> {
 
     let whereCondition: WhereCondition = {};
 
-    if (searchData)
+    if (searchData) {
       whereCondition.OR = [
-        {
-          email: {
-            startsWith: searchData,
-            mode: 'insensitive',
-          },
-        },
-        {
-          email: {
-            endsWith: searchData,
-            mode: 'insensitive',
-          },
-        },
-        {
-          name: {
-            startsWith: searchData,
-            mode: 'insensitive',
-          },
-        },
-        {
-          name: {
-            endsWith: searchData,
-            mode: 'insensitive',
-          },
-        },
+        { email: { contains: searchData, mode: 'insensitive' } },
+        { email: { startsWith: searchData, mode: 'insensitive' } },
+        { email: { endsWith: searchData, mode: 'insensitive' } },
+        { name: { contains: searchData, mode: 'insensitive' } },
+        { name: { startsWith: searchData, mode: 'insensitive' } },
+        { name: { endsWith: searchData, mode: 'insensitive' } },
       ];
+    }
+
     if (filters.country) whereCondition.country = filters.country;
     if (filters.company) whereCondition.company = filters.company;
     if (filters.phone) whereCondition.phone = filters.phone;
     if (filters.position) whereCondition.position = filters.position;
 
-    if (filters.enrolled_to)
-      whereCondition.student_courses = { some: { course_id: { in: JSON.parse(filters.enrolled_to) } } };
+    if (filters.enrolled_to) {
+      whereCondition.student_courses = { some: { course_id: filters.enrolled_to } };
+      // whereCondition.student_courses = { some: { course_id: { in: JSON.parse(filters.enrolled_to) } } };
+      if (filters.course_tier)
+        whereCondition.student_courses = { some: { course_id: filters.enrolled_to, course_tier: filters.course_tier } };
+    }
 
     if (filters.not_enrolled_to)
-      whereCondition.NOT = [{ student_courses: { some: { course_id: { in: JSON.parse(filters.not_enrolled_to) } } } }];
+      whereCondition.NOT = [{ student_courses: { some: { course_id: filters.not_enrolled_to } } }];
+    // whereCondition.NOT = [{ student_courses: { some: { course_id: { in: JSON.parse(filters.not_enrolled_to) } } } }];
+
+    // Student Course: start_date filter
+    if (filters.start_date && filters.end_date) {
+      whereCondition.OR = [
+        {
+          student_courses: {
+            some: {
+              course_id: filters.enrolled_to,
+              starting_date: {
+                gte: filters.start_date,
+                lte: filters.end_date,
+              },
+            },
+          },
+        },
+      ];
+    }
 
     if (admin.role === 2) whereCondition.created_by = { in: [admin.userId] };
-    
-    return this.prisma[this.modelName].findMany({
+
+    const students = await this.prisma[this.modelName].findMany({
       where: whereCondition,
       include: { student_courses: { where: { status: 1 }, include: { course: true } } },
       orderBy: [
@@ -117,6 +126,13 @@ export class StudentRepository extends AbstractRepository<Students> {
       skip: skipAmount,
       take: perPage,
     });
+
+    // Fetch total count of matching students
+    const totalResult = await this.prisma[this.modelName].count({
+      where: whereCondition,
+    });
+
+    return { students, totalResult };
   }
 
   async insert(data: Partial<Students>): Promise<any> {

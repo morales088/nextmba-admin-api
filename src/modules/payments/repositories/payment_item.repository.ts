@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { AbstractRepository } from 'src/common/repositories/abstract.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { Payment_items, Payments } from '@prisma/client';
-import { CourseTierType } from 'src/common/constants/enum';
+import { CourseTierType, PaymentOrigin } from 'src/common/constants/enum';
 
 @Injectable()
 export class PaymentItemRepository extends AbstractRepository<Payment_items> {
@@ -25,12 +25,11 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
     });
   }
 
-  async insert(studentId: number, paymentId: number, productCode: string): Promise<any> {
+  async insert(studentId: number, paymentId: number, productCode: string, paymentOrigin: number = 1): Promise<any> {
     const product = await this.prisma.products.findFirst({
       where: { code: productCode, status: 1 },
       include: { product_items: { where: { status: 1 } } },
     });
-
     const productItems = product.product_items as unknown as {
       product_id: number;
       course_id: number;
@@ -38,6 +37,7 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
       course_tier: number;
       status: number;
     }[];
+    
     const currentDate = new Date();
     // try {
     for (const product_item of productItems) {
@@ -73,7 +73,11 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
       const course = await this.prisma.courses.findFirst({
         where: { id: product_item.course_id },
       });
-      const startingDate = new Date(course.starting_date);
+      // const startingDate = new Date(course.starting_date);
+      const startingDate = paymentOrigin == PaymentOrigin.NextUni ? new Date() : new Date(course.starting_date);
+      console.log(paymentOrigin == PaymentOrigin.NextUni)
+      console.log(startingDate)
+      console.log(new Date(course.starting_date))
 
       // const startingDate = new Date();
       // startingDate.setMonth(startingDate.getMonth() + 1);
@@ -103,6 +107,7 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
         expiration_date: expirationDate,
         course_tier: product_item.course_tier,
       };
+
       // add student course for first time enrollee
       if (!studentCourse) await this.prisma.student_courses.create({ data: studentCourseData });
 

@@ -69,6 +69,8 @@ model Modules {
   live_link           String?
   external_link       String?
   host_email          String?
+  quiz_link           String?
+  quiz_result         String?
   start_date          DateTime
   end_date            DateTime
   display_topic       Boolean        @default(false)
@@ -215,6 +217,7 @@ model Students {
   idividual_submissions Individual_submissions[]
   Group_items           Group_items[]
   takes                 Takes[]
+  student_group_member  Student_group_member[]
 }
 
 model Student_courses {
@@ -268,6 +271,7 @@ model Payments {
   reference_id          String?
   price                 Decimal               @db.Decimal(9, 2)
   payment_method        Int                   @default(1)
+  origin                Int                   @default(1)
   name                  String                @db.VarChar(255)
   email                 String                @db.VarChar(255)
   contact_number        String?
@@ -424,15 +428,26 @@ model Subscriber_groups {
 }
 
 model Student_groups {
-  id        Int       @id @default(autoincrement())
-  course_id Int
-  name      String
-  link      String?
-  is_public Boolean   @default(false)
-  status    Int       @default(1)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
-  course    Courses?  @relation(fields: [course_id], references: [id])
+  id                   Int                    @id @default(autoincrement())
+  course_id            Int?
+  name                 String
+  link                 String?
+  is_public            Boolean                @default(false)
+  status               Int                    @default(1)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime?              @updatedAt
+  course               Courses?               @relation(fields: [course_id], references: [id])
+  student_group_member Student_group_member[]
+}
+
+model Student_group_member {
+  id         Int            @id @default(autoincrement())
+  group_id   Int
+  student_id Int
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime?      @updatedAt
+  group      Student_groups @relation(fields: [group_id], references: [id])
+  student    Students       @relation(fields: [student_id], references: [id])
 }
 
 model Assignments {
