@@ -30,6 +30,7 @@ import { AssignmentsModule } from './modules/assignments/assignments.module';
 import * as dotenv from 'dotenv';
 import { CronModule } from './modules/cron/cron.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { QuizModule } from './modules/quiz/quiz.module';
 
 dotenv.config();
 
@@ -76,6 +77,7 @@ dotenv.config();
     GoogleModule,
     AssignmentsModule,
     CronModule,
+    QuizModule,
   ],
   controllers: [],
   providers: [],
