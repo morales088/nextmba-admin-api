@@ -5,15 +5,15 @@ import { QuizQuestionRepository } from '../repositories/quiz_question.repository
 export class QuizQuestionService {
   constructor(private readonly quizQuestionRepository: QuizQuestionRepository) {}
 
-  async getQuizQuestion(id: number) {
-    return this.quizQuestionRepository.findById(id);
-  }
+  // async getQuizQuestion(id: number) {
+  //   return this.quizQuestionRepository.findById(id);
+  // }
 
-  async getQuizQuestions() {
-    return this.quizQuestionRepository.find();
-  }
+  // async getQuizQuestions() {
+  //   return this.quizQuestionRepository.find();
+  // }
 
-  async createQuizQuestions(data) {
-    return this.quizQuestionRepository.insert(data);
-  }
+  // async createQuizQuestions(data) {
+  //   return this.quizQuestionRepository.insert(data);
+  // }
 }

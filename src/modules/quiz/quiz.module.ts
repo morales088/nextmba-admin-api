@@ -4,12 +4,12 @@ import { QuizService } from './services/quiz.service';
 import { PrismaModule } from 'src/common/prisma/prisma.module';
 import { QuestionService } from './services/question.service';
 import { AnswerService } from './services/answer.service';
-import { QuizQuestionService } from './services/quiz_question.service';
+// import { QuizQuestionService } from './services/quiz_question.service';
 import { TakeService } from './services/take.service';
 import { TakeAnswerService } from './services/take_answer.service';
 import { AnswerRepository } from './repositories/answer.repository';
 import { QuestionRepository } from './repositories/question.repository';
-import { QuizQuestionRepository } from './repositories/quiz_question.repository';
+// import { QuizQuestionRepository } from './repositories/quiz_question.repository';
 import { QuizRepository } from './repositories/quiz.repository';
 import { TakeRepository } from './repositories/take.repository';
 import { TakeAnswerRepository } from './repositories/take_answer.repository';
@@ -24,12 +24,12 @@ import { TakeController } from './controllers/take.controller';
     QuizService, 
     QuestionService, 
     AnswerService, 
-    QuizQuestionService, 
+    // QuizQuestionService, 
     TakeService, 
     TakeAnswerService,
     AnswerRepository,
     QuestionRepository,
-    QuizQuestionRepository,
+    // QuizQuestionRepository,
     QuizRepository,
     TakeRepository,
     TakeAnswerRepository

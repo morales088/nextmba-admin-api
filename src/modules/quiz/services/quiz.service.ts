@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { QuizRepository } from '../repositories/quiz.repository';
 import { QuestionRepository } from '../repositories/question.repository';
 import { CreateQuizDto } from '../dto/create-quiz.dto';
-import { QuizQuestionRepository } from '../repositories/quiz_question.repository';
+// import { QuizQuestionRepository } from '../repositories/quiz_question.repository';
 
 @Injectable()
 export class QuizService {
   constructor(
     private readonly quizRepository: QuizRepository,
     private readonly questionRepository: QuestionRepository,
-    private readonly quizQuestionRepository: QuizQuestionRepository
+    // private readonly quizQuestionRepository: QuizQuestionRepository
   ) {}
 
   async getQuiz(id: number) {
