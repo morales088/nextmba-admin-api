@@ -21,23 +21,28 @@ export class QuizService {
   }
 
   async createQuiz(data: CreateQuizDto) {
-    try {
+    // try {
       
-    //create quiz
-    const {question_qty, ...newData } = data // removing question_qty to object
-    const quiz = await this.quizRepository.insert(newData);
+    // //create quiz
+    // const {question_qty, ...newData } = data // removing question_qty to object
+    // const quiz = await this.quizRepository.insert(newData);
 
-    //create quiz questions
-    const questions = await this.randomQuestions(data.question_qty, data.module_id);
-    for (const data of questions) {
-      const quizQuestionData = {
-        quiz_id: quiz.id,
-        question_id: data.id,
-      };
-      await this.quizQuestionRepository.create(quizQuestionData);
-    }
+    // //create quiz questions
+    // const questions = await this.randomQuestions(data.question_qty, data.module_id);
+    // for (const data of questions) {
+    //   const quizQuestionData = {
+    //     quiz_id: quiz.id,
+    //     question_id: data.id,
+    //   };
+    //   await this.quizQuestionRepository.create(quizQuestionData);
+    // }
 
-    return this.getQuiz(quiz.id);
+    // return this.getQuiz(quiz.id);
+    // } catch (error) {
+    //   throw new Error(error);
+    // }
+    try {
+    const quiz = await this.quizRepository.insert(data);
     } catch (error) {
       throw new Error(error);
     }

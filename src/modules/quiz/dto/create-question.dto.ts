@@ -4,7 +4,7 @@ import { IsIn, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validat
 export class CreateQuestionDto {
   @IsNotEmpty()
   @Transform(({ value }) => parseInt(value))
-  module_id: number;
+  quiz_id: number;
   
   @IsNotEmpty()
   @IsString()

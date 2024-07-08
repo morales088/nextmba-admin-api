@@ -22,7 +22,7 @@ export class CreateQuizDto {
   @Transform(({ value }) => parseInt(value))
   score: number;
 
-  @IsNotEmpty()
-  @Transform(({ value }) => parseInt(value))
-  question_qty: number;
+  // @IsNotEmpty()
+  // @Transform(({ value }) => parseInt(value))
+  // question_qty: number;
 }
