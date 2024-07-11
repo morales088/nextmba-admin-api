@@ -42,7 +42,7 @@ export class QuizService {
     //   throw new Error(error);
     // }
     try {
-    const quiz = await this.quizRepository.insert(data);
+      return await this.quizRepository.insert(data);
     } catch (error) {
       throw new Error(error);
     }

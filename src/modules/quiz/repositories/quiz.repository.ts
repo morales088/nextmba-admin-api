@@ -17,7 +17,7 @@ export class QuizRepository extends AbstractRepository<Quiz> {
   async findById(id: number): Promise<Quiz> {
     return this.prisma.quiz.findFirst({
       include: {
-        // quiz_questions : { where: { status: 1 } }
+        questions: { where: { active: 1, status: 1 }, include: { answers: { where: { active: 1, status: 1 } } } },
       },
       where: { id },
     });
@@ -26,6 +26,9 @@ export class QuizRepository extends AbstractRepository<Quiz> {
   async find(): Promise<Quiz[]> {
     return this.prisma.quiz.findMany({
       where: { status: 1 },
+      include: {
+        questions: { where: { active: 1, status: 1 }, include: { answers: { where: { active: 1, status: 1 } } } },
+      },
       orderBy: [
         {
           id: 'asc',
