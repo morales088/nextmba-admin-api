@@ -20,6 +20,10 @@ export class QuizService {
     return this.quizRepository.find();
   }
 
+  async getByQuizId(quizId: number) {
+    return this.questionRepository.findByQuizId(quizId);
+  }
+
   async createQuiz(data: CreateQuizDto) {
     // try {
       
@@ -48,11 +52,11 @@ export class QuizService {
     }
   }
 
-  async randomQuestions(limit: number, moduleId: number) {
-    const allQuestions = await this.questionRepository.findByModuleId(moduleId);
-    const shuffled = allQuestions.sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, limit);
-  }
+  // async randomQuestions(limit: number, moduleId: number) {
+  //   const allQuestions = await this.questionRepository.findByModuleId(moduleId);
+  //   const shuffled = allQuestions.sort(() => 0.5 - Math.random());
+  //   return shuffled.slice(0, limit);
+  // }
 
   async updateQuiz(id: number, data) {
     return this.quizRepository.updateQuiz(id, data);

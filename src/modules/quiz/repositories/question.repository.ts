@@ -23,9 +23,10 @@ export class QuestionRepository extends AbstractRepository<Questions> {
     });
   }
 
-  async findByModuleId(id: number): Promise<Questions[]> {
+  async findByQuizId(quizId: number): Promise<Questions[]> {
     return this.prisma[this.modelName].findMany({
-      where: { status: 1, module_id: id },
+      where: { status: 1, quiz_id: quizId },
+      include: { answers: { where: { active: 1, status: 1 } } },
       orderBy: [
         {
           id: 'asc',

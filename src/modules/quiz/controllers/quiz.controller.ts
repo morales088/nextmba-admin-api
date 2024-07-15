@@ -9,7 +9,9 @@ import { UpdateQuizDto } from '../dto/update-quiz.dto ';
 @Controller('quiz')
 @UseGuards(AuthGuard('jwt'))
 export class QuizController {
-  constructor(private readonly quizService: QuizService) {}
+  constructor(
+    private readonly quizService: QuizService,
+  ) {}
 
   @Get('/')
   async getAllQuiz() {
@@ -19,6 +21,11 @@ export class QuizController {
   @Get('/:quizId')
   async getQuiz(@Param('quizId') quizId: number) {
     return await this.quizService.getQuiz(quizId);
+  }
+
+  @Get('/:quizId/questions')
+  async getQuestionsPerQuiz(@Param('quizId') quizId: number) {
+    return await this.quizService.getByQuizId(quizId);
   }
 
   @Post('/')
@@ -31,11 +38,7 @@ export class QuizController {
   }
 
   @Put('/:quizId')
-  async updateQuestion(
-    @Param('quizId') quizId: number,
-    @Request() req: any,
-    @Body() updateQuizDto: UpdateQuizDto
-  ) {
+  async updateQuestion(@Param('quizId') quizId: number, @Request() req: any, @Body() updateQuizDto: UpdateQuizDto) {
     const quizData = {
       ...updateQuizDto,
     };
