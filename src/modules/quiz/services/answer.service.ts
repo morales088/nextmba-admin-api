@@ -20,4 +20,8 @@ export class AnswerService {
   async updateAnswer(id: number, data) {
     return this.answerRepository.updateAnswer(id, data);
   }
+
+  async findByQuestionId(questionId: number) {
+    return this.answerRepository.findByQuestionId(questionId);
+  }
 }

@@ -34,6 +34,17 @@ export class AnswerRepository extends AbstractRepository<Answers> {
     });
   }
 
+  async findByQuestionId(questionId: number): Promise<Answers[]> {
+    return this.prisma[this.modelName].findMany({
+      where: { question_id : questionId, status: 1 },
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
+    });
+  }
+
   async insert(data: Partial<Answers>): Promise<Answers> {
     return this.prisma[this.modelName].create({ data });
   }
