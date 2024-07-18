@@ -15,10 +15,12 @@ export class CreateAnswerDto {
   description: string;
 
   @IsOptional()
-  @Transform(({ value }) => value === 'true')
-  correct: boolean;
+  @Transform(({ value }) => parseInt(value))
+  @IsIn([0, 1])
+  correct: number;
 
   @IsOptional()
-  @Transform(({ value }) => value === 'true')
-  active: boolean;
+  @Transform(({ value }) => parseInt(value))
+  @IsIn([0, 1])
+  active: number;
 }

@@ -44,7 +44,7 @@ export class AnswerRepository extends AbstractRepository<Answers> {
     if (!answer) {
       throw new BadRequestException('answer does not exist.');
     }
-
+    
     return this.prisma[this.modelName].update({
       where: { id: id },
       data: data,

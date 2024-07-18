@@ -24,7 +24,7 @@ export class AnswerController {
     const answerData = {
       ...createAnswerDto,
     };
-
+    
     return await this.answerService.createAnswer(answerData);
   }
 
