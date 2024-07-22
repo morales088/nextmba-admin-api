@@ -562,7 +562,7 @@ model Takes {
   id           Int            @id @default(autoincrement())
   quiz_id      Int
   student_id   Int
-  score        Int
+  score        Int?
   status       Int            @default(1)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime?      @updatedAt
