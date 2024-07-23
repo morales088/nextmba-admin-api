@@ -563,7 +563,7 @@ model Takes {
   quiz_id      Int
   student_id   Int
   score        Int?
-  status       Int            @default(2)
+  status       Int            @default(1)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime?      @updatedAt
   quiz         Quiz?          @relation(fields: [quiz_id], references: [id])

@@ -55,9 +55,9 @@ export enum QuizStatus {
 }
 
 export enum TakeStatus {
-  DELETED = 0,
-  PASS = 1,
-  FAIL = 2,
+  FAIL = 0,
+  ONGOING = 1,
+  PASS = 2,
 }
 
 export enum ModuleTierType {
