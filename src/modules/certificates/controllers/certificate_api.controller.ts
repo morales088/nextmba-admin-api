@@ -1,9 +1,10 @@
-import { Controller, Get, HttpStatus, Param, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param, Query, Res, UseGuards, BadRequestException } from '@nestjs/common';
 import { PdfService } from 'src/common/utils/pdf.service';
 import { StudentCertificatesService } from '../services/certificates.service';
 import { Response } from 'express';
 import { ApiKeyGuard } from 'src/common/guards/api-key.guard';
 import { CoursesService } from 'src/modules/courses/services/courses.service';
+import { QrService } from '../services/qr.service';
 
 @Controller('certificate-api')
 // @UseGuards(ApiKeyGuard)
@@ -11,7 +12,8 @@ export class CertificateApiController {
   constructor(
     private readonly studentCertificatesService: StudentCertificatesService,
     private readonly coursesService: CoursesService,
-    private readonly pdfService: PdfService
+    private readonly pdfService: PdfService,
+    private readonly qrService: QrService
   ) {}
 
   @Get('/download/:studentCertificateCode')
@@ -20,6 +22,7 @@ export class CertificateApiController {
     @Param('studentCertificateCode') studentCertificateCode: string
   ): Promise<any> {
     const studCertificate = await this.studentCertificatesService.getCertificateByCode(studentCertificateCode);
+    if (!studCertificate) throw new BadRequestException('Student certificate does not exist.');
     const studentInfo = studCertificate.student;
 
     const htmlFilePath = 'src/common/templates/certificate.template.html';
@@ -84,6 +87,9 @@ export class CertificateApiController {
     else if (studentInfo.name.length <= 29) fontSize = '50px';
     else fontSize = '42px';
 
+    // QR
+    const qrCodeDataUrl = await this.qrService.generateQrCode(studentCertificateCode,"#f0ede8");
+
     // add course name and speaker name
     const data = {
       courseName: courseName,
@@ -94,6 +100,7 @@ export class CertificateApiController {
       certificate_id: studCertificate.certificate_code,
       certificate_date: certDate,
       info: studCertificate.certificate_tier == 1 ? completionInfo : attendanceInfo,
+      qr: qrCodeDataUrl
     };
 
     const pdfBuffer = await this.pdfService.certificateGeneratePdf(htmlFilePath, data);
@@ -129,5 +136,15 @@ export class CertificateApiController {
     const month = monthNames[date.getMonth()].toUpperCase();
     const year = date.getFullYear();
     return `${month} ${year}`;
+  }
+
+  @Get('generate')
+  async generateQrCode(@Query('text') text: string, @Res() res: Response) {
+    const qrCodeDataUrl = await this.qrService.generateQrCode(text,"#f0ede8");
+    const imgBuffer = Buffer.from(qrCodeDataUrl.split(',')[1], 'base64');
+
+    console.log(qrCodeDataUrl)
+    res.setHeader('Content-Type', 'image/png');
+    res.send(imgBuffer);
   }
 }

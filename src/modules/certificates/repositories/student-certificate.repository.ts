@@ -63,7 +63,7 @@ export class StudentCertificateRepository extends AbstractRepository<Student_cer
 
   async findByCode(code: string) {
     return this.prisma[this.modelName].findFirst({
-      where: { certificate_code: code },
+      where: { certificate_code: code, status : 2 },
       include: { student: true },
     });
   }
