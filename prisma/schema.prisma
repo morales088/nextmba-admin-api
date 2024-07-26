@@ -62,33 +62,34 @@ model Courses {
 }
 
 model Modules {
-  id                  Int            @id @default(autoincrement())
-  course_id           Int
-  name                String         @db.VarChar(255)
-  description         String?
-  live_link           String?
-  external_link       String?
-  host_email          String?
-  quiz_link           String?
-  quiz_result         String?
-  start_date          DateTime
-  end_date            DateTime
-  display_topic       Boolean        @default(false)
-  display_speaker     Boolean        @default(false)
-  status              Int            @default(1)
-  createdAt           DateTime       @default(now())
-  updatedAt           DateTime?      @updatedAt
-  live_id             String?
-  custom_course_title String?
-  tier                Int            @default(1)
-  event_id            String?
-  files               Files[]
-  medias              Medias[]
-  course              Courses        @relation(fields: [course_id], references: [id])
-  topics              Topics[]
-  translations        Translations[]
-  assignment          Assignments[]
-  quiz                Quiz[]
+  id                   Int                    @id @default(autoincrement())
+  course_id            Int
+  name                 String                 @db.VarChar(255)
+  description          String?
+  live_link            String?
+  external_link        String?
+  host_email           String?
+  quiz_link            String?
+  quiz_result          String?
+  start_date           DateTime
+  end_date             DateTime
+  display_topic        Boolean                @default(false)
+  display_speaker      Boolean                @default(false)
+  status               Int                    @default(1)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime?              @updatedAt
+  live_id              String?
+  custom_course_title  String?
+  tier                 Int                    @default(1)
+  event_id             String?
+  files                Files[]
+  medias               Medias[]
+  course               Courses                @relation(fields: [course_id], references: [id])
+  topics               Topics[]
+  translations         Translations[]
+  assignment           Assignments[]
+  quiz                 Quiz[]
+  student_certificates Student_certificates[]
 }
 
 model Speakers {
@@ -405,6 +406,7 @@ model Student_certificates {
   id               Int       @id @default(autoincrement())
   student_id       Int
   course_id        Int
+  module_id        Int?      @default(0)
   certificate_code String?
   certificate_tier Int       @default(1)
   status           Int       @default(1)
@@ -412,6 +414,7 @@ model Student_certificates {
   updatedAt        DateTime? @updatedAt
   course           Courses   @relation(fields: [course_id], references: [id])
   student          Students  @relation(fields: [student_id], references: [id])
+  module           Modules?  @relation(fields: [module_id], references: [id])
 }
 
 model Subscriber_groups {
