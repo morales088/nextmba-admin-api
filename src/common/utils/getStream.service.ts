@@ -30,7 +30,7 @@ export class StreamService {
       data: {
         created_by_id: userId,
         custom: {
-          is_public: true,
+          // is_public: true,
         },
       },
     });
@@ -43,6 +43,12 @@ export class StreamService {
 
     const token = this.client.createToken(userId, this.exp); // Generate a token for the user
     return { callId: call.id, createdBy: userId, token };
+  }
+
+  async endCall(callId: string) {
+    const call = this.client.video.call('livestream', callId);
+    await call.endCall(); // End the call
+    return { message: `Call ${callId} ended successfully` };
   }
 
   async addUserToCall(callId: string, userId: string, role: string = 'user') {

@@ -144,6 +144,11 @@ export class MeetingsController {
     return res.status(HttpStatus.OK).json(livestream);
   }
 
+  @Post('/getStream/end')
+  async endCall(@Body() body: { call_id: string }) {
+    return this.streamService.endCall(body.call_id);
+  }
+
   @Post('/getStream/create-user')
   async createUser(@Body() body: { userId: string }) {
     return this.streamService.createUser(body.userId);
