@@ -136,6 +136,7 @@ export class MeetingsController {
     const livestream = await this.streamService.createCall(meeting.call_id, admin.email)
 
     const moduleData = {
+      live_link: livestream.callId.toString(),
       live_id: livestream.callId.toString(),
     };
 
@@ -145,7 +146,12 @@ export class MeetingsController {
   }
 
   @Post('/getStream/end')
-  async endCall(@Body() body: { call_id: string }) {
+  async endCall(@Body() body: { module_id: number, call_id: string }) {
+    const moduleData = {
+      live_link: null,
+    };
+
+    await this.meetingsService.updateModule(body.module_id, moduleData);
     return this.streamService.endCall(body.call_id);
   }
 
