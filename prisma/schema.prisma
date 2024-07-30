@@ -406,7 +406,7 @@ model Student_certificates {
   id               Int       @id @default(autoincrement())
   student_id       Int
   course_id        Int
-  module_id        Int?      @default(0)
+  module_id        Int?
   certificate_code String?
   certificate_tier Int       @default(1)
   status           Int       @default(1)
