@@ -29,9 +29,7 @@ export class StreamService {
     await call.create({
       data: {
         created_by_id: userId,
-        custom: {
-          // is_public: true,
-        },
+        members: [{ user_id: userId, role: 'admin' }],
       },
     });
 
@@ -45,25 +43,25 @@ export class StreamService {
     return { callId: call.id, createdBy: userId, token };
   }
 
-  // async endCall(callId: string) {
-  //   try {
-  //     const call = this.client.video.call('livestream', callId);
-  //     await call.endCall(); // Attempt to end the call
-  //     return { message: `Call ${callId} ended successfully` };
-  //   } catch (error) {
-  //     if (error.response && error.response.status === 404) {
-  //       return { message: `Call ${callId} does not exist` };
-  //     } else {
-  //       return { message: `Failed to end call ${callId}: ${error.message}` };
-  //     }
-  //   }
-  // }
+  async endCall(callId: string) {
+    try {
+      const call = this.client.video.call('default', callId);
+      await call.endCall(); // Attempt to end the call
+      return { message: `Call ${callId} ended successfully` };
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        return { message: `Call ${callId} does not exist` };
+      } else {
+        return { message: `Failed to end call ${callId}: ${error.message}` };
+      }
+    }
+  }
 
   async addUserToCall(callId: string, userId: string, role: string = 'user') {
     const data = {
       user_id: userId, role: role 
     }
-    const call = this.client.video.call('livestream', callId);
+    const call = this.client.video.call('default', callId);
     await call.updateCallMembers({
       update_members: [data],
     });

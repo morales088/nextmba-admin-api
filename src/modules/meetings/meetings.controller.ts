@@ -133,16 +133,16 @@ export class MeetingsController {
 
     if (!!module.live_link) return res.status(HttpStatus.BAD_REQUEST).json({ message: 'This module has live id.' });
     
-    const livestream = await this.streamService.createCall(meeting.call_id, admin.email)
+    const call = await this.streamService.createCall(meeting.call_id, admin.email)
 
     const moduleData = {
-      live_link: livestream.callId.toString(),
-      live_id: livestream.callId.toString(),
+      live_link: call.callId.toString(),
+      live_id: call.callId.toString(),
     };
 
     await this.meetingsService.updateModule(meeting.module_id, moduleData);
     
-    return res.status(HttpStatus.OK).json(livestream);
+    return res.status(HttpStatus.OK).json(call);
   }
 
   @Post('/getStream/end')
@@ -151,8 +151,8 @@ export class MeetingsController {
       live_link: null,
     };
     const update = await this.meetingsService.updateModule(body.module_id, moduleData);
-    // return this.streamService.endCall(body.call_id);
-    return { message: `Call ${body.call_id} ended successfully` };
+    return this.streamService.endCall(body.call_id);
+    // return { message: `Call ${body.call_id} ended successfully` };
   }
 
   @Post('/getStream/create-user')
