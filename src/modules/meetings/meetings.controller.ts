@@ -151,7 +151,8 @@ export class MeetingsController {
       live_link: null,
     };
     const update = await this.meetingsService.updateModule(body.module_id, moduleData);
-    return this.streamService.endCall(body.call_id);
+    // return this.streamService.endCall(body.call_id);
+    return { message: `Call ${body.call_id} ended successfully` };
   }
 
   @Post('/getStream/create-user')
