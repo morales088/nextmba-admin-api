@@ -46,9 +46,17 @@ export class StreamService {
   }
 
   async endCall(callId: string) {
-    const call = this.client.video.call('livestream', callId);
-    await call.endCall(); // End the call
-    return { message: `Call ${callId} ended successfully` };
+    try {
+      const call = this.client.video.call('livestream', callId);
+      await call.endCall(); // Attempt to end the call
+      return { message: `Call ${callId} ended successfully` };
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        return { message: `Call ${callId} does not exist` };
+      } else {
+        return { message: `Failed to end call ${callId}: ${error.message}` };
+      }
+    }
   }
 
   async addUserToCall(callId: string, userId: string, role: string = 'user') {

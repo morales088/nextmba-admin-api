@@ -150,8 +150,7 @@ export class MeetingsController {
     const moduleData = {
       live_link: null,
     };
-
-    await this.meetingsService.updateModule(body.module_id, moduleData);
+    const update = await this.meetingsService.updateModule(body.module_id, moduleData);
     return this.streamService.endCall(body.call_id);
   }
 
