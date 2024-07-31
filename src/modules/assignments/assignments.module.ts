@@ -12,10 +12,13 @@ import { StudentGroupsRepository } from './repositories/student-groups.repositor
 import { StudentGroupMembersRepository } from './repositories/student-group-members.repository';
 import { StudentCoursesRepository } from '../students/repositories/student_courses.repository';
 import { StudentRepository } from '../students/repositories/student.repository';
+import { AssignmentEmailsRepository } from './repositories/assignment-emails.repository';
+import { AssignmentEmailsService } from './services/assignment-emails.service';
+import { AssignmentEmailsController } from './controllers/assignment-emails.controller';
 
 @Module({
   imports: [PrismaModule],
-  controllers: [AssignmentsController, IndividualSubmissionsController, StudentGroupsController],
+  controllers: [AssignmentsController, IndividualSubmissionsController, StudentGroupsController, AssignmentEmailsController],
   providers: [
     AssignmentsService,
     IndividualSubmissionsService,
@@ -25,7 +28,9 @@ import { StudentRepository } from '../students/repositories/student.repository';
     StudentGroupsRepository,
     StudentGroupMembersRepository,
     StudentCoursesRepository,
-    StudentRepository
+    StudentRepository,
+    AssignmentEmailsRepository,
+    AssignmentEmailsService
   ],
 })
 export class AssignmentsModule {}

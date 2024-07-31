@@ -90,6 +90,7 @@ model Modules {
   assignment           Assignments[]
   quiz                 Quiz[]
   student_certificates Student_certificates[]
+  assignment_emails    Assignment_emails[]
 }
 
 model Speakers {
@@ -585,4 +586,15 @@ model Take_answers {
   takes       Takes?     @relation(fields: [take_id], references: [id])
   questions   Questions? @relation(fields: [question_id], references: [id])
   answers     Answers?   @relation(fields: [answer_id], references: [id])
+}
+
+model Assignment_emails {
+  id        Int       @id @default(autoincrement())
+  module_id Int
+  name      String?
+  emails    String
+  status    Int       @default(1)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  module    Modules?  @relation(fields: [module_id], references: [id])
 }
