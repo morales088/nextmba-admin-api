@@ -122,7 +122,7 @@ export class MeetingsController {
 
   // getStream
   @Post('/getStream/start')
-  async createLiveStream(@Request() req: any, @Body() createGetStreamDto: CreateGetStreamDto, @Res() res: Response) {
+  async createCall(@Request() req: any, @Body() createGetStreamDto: CreateGetStreamDto, @Res() res: Response) {
     const admin = req.user;
     const meeting = {
       ...createGetStreamDto,
@@ -131,7 +131,7 @@ export class MeetingsController {
     // if module has live id
     const module = await this.meetingsService.getModule(meeting.module_id);
 
-    if (!!module.live_link) return res.status(HttpStatus.BAD_REQUEST).json({ message: 'This module has live id.' });
+    // if (!!module.live_link) return res.status(HttpStatus.BAD_REQUEST).json({ message: 'This module has live id.' });
     
     const call = await this.streamService.createCall(meeting.call_id, admin.email)
 
@@ -141,6 +141,15 @@ export class MeetingsController {
     };
 
     await this.meetingsService.updateModule(meeting.module_id, moduleData);
+    
+    return res.status(HttpStatus.OK).json(call);
+  }
+
+  @Post('/getStream/goLive')
+  async startCall(@Request() req: any,@Body() body: {call_id: string }, @Res() res: Response) {
+    const admin = req.user;
+    
+    const call = await this.streamService.goLive(body.call_id)
     
     return res.status(HttpStatus.OK).json(call);
   }

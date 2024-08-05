@@ -16,20 +16,27 @@ export class StreamService {
     };
 
     await this.client.upsertUsers({
-  users: {
-    [user.id]: user,
-  },
-});
+      users: {
+        [user.id]: user,
+      },
+    });
     const token = this.client.createToken(userId);
     return { user, token };
   }
 
   async createCall(callId: string, userId: string) {
+    await this.createUser(userId)
     const call = this.client.video.call('default', callId);
     await call.create({
       data: {
         created_by_id: userId,
         members: [{ user_id: userId, role: 'admin' }],
+        // settings_override: {
+        //   backstage: {
+        //     enabled: true,
+        //     join_ahead_time_seconds: 300,
+        //   },
+        // },
       },
     });
 
@@ -38,6 +45,8 @@ export class StreamService {
 
     // console.log(addAdmin);
     // console.log(addUser);
+    // console.log(call);
+    // await this.enableBackstage(callId)
 
     const token = this.client.createToken(userId, this.exp); // Generate a token for the user
     return { callId: call.id, createdBy: userId, token };
@@ -47,6 +56,9 @@ export class StreamService {
     try {
       const call = this.client.video.call('default', callId);
       await call.endCall(); // Attempt to end the call
+
+      // await this.stopLive(callId) // stop live  
+
       return { message: `Call ${callId} ended successfully` };
     } catch (error) {
       if (error.response && error.response.status === 404) {
@@ -59,8 +71,9 @@ export class StreamService {
 
   async addUserToCall(callId: string, userId: string, role: string = 'user') {
     const data = {
-      user_id: userId, role: role 
-    }
+      user_id: userId,
+      role: role,
+    };
     const call = this.client.video.call('default', callId);
     await call.updateCallMembers({
       update_members: [data],
@@ -68,5 +81,44 @@ export class StreamService {
 
     const token = this.client.createToken(userId, this.exp);
     return { callId: call.id, userId, role: role, token };
+  }
+
+  async enableBackstage(callId: string) {
+    try {
+      const call = this.client.video.call('default', callId);
+      const update = await call.update({
+        // settings_override: {
+        //   backstage: {
+        //     enabled: true,
+        //     join_ahead_time_seconds: 300,
+        //   },
+        // },
+      });
+      
+      console.log(update);
+      return { message: `Backstage enabled for call ${callId} successfully` };
+    } catch (error) {
+      return { message: `Failed to enable backstage for call ${callId}: ${error.message}` };
+    }
+  }
+
+  async goLive(callId: string) {
+    try {
+      const call = this.client.video.call('default', callId);
+      call.goLive();
+      return { message: `Call ${callId} is now live` };
+    } catch (error) {
+      return { message: `Failed to start live for call ${callId}: ${error.message}` }
+    }
+  }
+
+  async stopLive(callId: string) {
+    try {
+      const call = this.client.video.call('default', callId);
+      await call.stopLive();
+      return { message: `Call ${callId} is no longer live` };
+    } catch (error) {
+      return { message: `Failed to stop live for call ${callId}: ${error.message}` };
+    }
   }
 }
