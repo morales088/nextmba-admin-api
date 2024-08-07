@@ -15,6 +15,10 @@ export class ProductsService {
     return this.productRepository.find();
   }
 
+  async getProductByCode(productCode: string) {
+    return this.productRepository.findByCode(productCode);
+  }
+
   async createProduct(data) {
     return this.productRepository.insert(data);
   }
