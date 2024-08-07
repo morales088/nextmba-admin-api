@@ -6,6 +6,11 @@ export class QrService {
   async generateQrCode(text: string, backgroundColor: string = '#ffffff'): Promise<string> {
     try {
       return await QRCode.toDataURL(text, {
+        errorCorrectionLevel: 'H',
+        type: 'image/png',
+        rendererOpts: {
+          quality: 1,
+        },
         color: {
           dark: '#000000', // QR code color
           light: backgroundColor, // Background color
