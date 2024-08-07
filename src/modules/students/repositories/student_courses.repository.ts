@@ -27,6 +27,18 @@ export class StudentCoursesRepository extends AbstractRepository<Student_courses
     });
   }
 
+  async findByCourse(courseId:number): Promise<Student_courses[]> {
+    return this.prisma[this.modelName].findMany({
+      where: { status: 1, course_id : courseId },
+      include: { student: true },
+      orderBy: [
+        {
+          id: 'asc',
+        },
+      ],
+    });
+  }
+
   async insert(data: Partial<Student_courses>): Promise<Student_courses> {
     const existingStudent = await this.prisma[this.modelName].findFirst({
       where: { course_id: data.course_id, student_id: data.student_id, status: 1 },

@@ -31,6 +31,7 @@
     "@nestjs/schedule": "^4.0.1",
     "@nestjs/serve-static": "^4.0.1",
     "@prisma/client": "^5.14.0",
+    "@stream-io/node-sdk": "^0.3.0",
     "@types/bcrypt": "^5.0.0",
     "@types/multer": "^1.4.7",
     "aws-sdk": "^2.1480.0",
@@ -59,6 +60,7 @@
     "passport-local": "^1.0.0",
     "passport-strategy": "^1.0.0",
     "puppeteer": "^22.0.0",
+    "qrcode": "^1.5.3",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "stripe": "^15.3.0"
