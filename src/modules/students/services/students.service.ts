@@ -42,6 +42,7 @@ export class StudentsService {
     const studentData = {
       ...data,
       password: hashedPassword,
+      email : data.email.trim()
     };
 
     const createdStudent = await this.studentRepository.insert(studentData);
@@ -63,12 +64,13 @@ export class StudentsService {
         const studentData = {
           ...data,
           password: hashedPassword,
+          email : data.email.trim()
         };
-
+        
         const existingStudent = await tx.students.findFirst({
           where: {
             email: {
-              equals: data.email,
+              equals: studentData.email,
               mode: 'insensitive',
             },
           },
