@@ -32,6 +32,7 @@ export class CertificateApiController {
     const certificate = await this.studentCertificatesService.getCertificate(studCertificate.certificate_tier);
     const course = await this.coursesService.getCourse(studCertificate.course_id);
     const courseName = course.name.split('+')[0];
+    // const courseName = "AI For Business Course";
 
     // if(certificate && result.student_modules.length < 12) return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Template not available. / Not yet complete the course.' });
 
@@ -81,7 +82,7 @@ export class CertificateApiController {
     else nameSize = '42px';
 
     let courseSize: string;
-    if (courseName.length <= 24) courseSize = '60px';
+    if (courseName.length <= 20) courseSize = '60px';
     else if (courseName.length <= 29) courseSize = '48px';
     else courseSize = '42px';
 
