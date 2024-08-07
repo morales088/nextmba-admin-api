@@ -24,6 +24,11 @@ export class ProductsController {
     return await this.productsService.getProducts();
   }
 
+  @Get('/code/:productCode')
+  async getProductCode(@Param('productCode') productCode: string) {
+    return await this.productsService.getProductByCode(productCode);
+  }
+
   @Post('/')
   async createProduct(@Body() createProductDto: CreateProductDto) {
 
