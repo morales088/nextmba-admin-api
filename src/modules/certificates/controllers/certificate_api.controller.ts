@@ -74,17 +74,22 @@ export class CertificateApiController {
     // const attendanceInfo = `Attended the ${course.name} ( ${modules} modules/ ${lectures} lectures/ ${hours} hours) during period between ${newStartDate} and ${newEndDate}.`;
     const attendanceInfo = `Attended a module entitled "<b>${moduleName}</b>" on ${moduleDate} and participated in its assignment as a presenter on ${newEndDate}.`;
     console.log(studCertificate.module?.topics)
-    let speakers = await this.formatSpeakers(studCertificate.module?.topics)
+    let speakers = studCertificate.module?.topics ? await this.formatSpeakers(studCertificate.module?.topics) : '';
 
     let nameSize: string;
-    if (studentInfo.name.length <= 24) nameSize = '60px';
-    else if (studentInfo.name.length <= 29) nameSize = '50px';
-    else nameSize = '42px';
+    if (studentInfo.name.length <= 24) nameSize = '58px';
+    else if (studentInfo.name.length <= 29) nameSize = '48px';
+    else nameSize = '40px';
 
     let courseSize: string;
     if (courseName.length <= 20) courseSize = '58px';
     else if (courseName.length <= 29) courseSize = '46px';
     else courseSize = '40px';
+
+    let speakerSize: string;
+    if (studCertificate.module?.topics.length >= 4) speakerSize = '10px';
+    else if (studCertificate.module?.topics.length <= 3) speakerSize = '12px';
+    else speakerSize = '14px';
 
     // QR
     const qrCodeDataUrl = await this.qrService.generateQrCode(studentCertificateCode,"#f0ede8");
@@ -102,6 +107,7 @@ export class CertificateApiController {
       info: studCertificate.certificate_tier == 1 ? completionInfo : attendanceInfo,
       qr: qrCodeDataUrl,
       speakers : speakers
+      speakerSize : speakerSize
     };
     // console.log(data)
     
@@ -185,10 +191,10 @@ export class CertificateApiController {
     return uniqueSpeakers
       .map(speaker => {
         const name = speaker.speaker.name;
-        const description = speaker.speaker.description;
+        const description = speaker.speaker.position;
         return `<b>${name}</b> - ${description.replace(/<\/?[^>]+(>|$)/g, "")}`;
       })
-      .join('<div style="line-height:80%;"><br></div>');
+      .join('<div style="line-height:60%;"><br></div>');
   }
 
   @Get('generate')
