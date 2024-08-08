@@ -106,7 +106,7 @@ export class CertificateApiController {
       certificate_date: certDate,
       info: studCertificate.certificate_tier == 1 ? completionInfo : attendanceInfo,
       qr: qrCodeDataUrl,
-      speakers : speakers
+      speakers : speakers,
       speakerSize : speakerSize
     };
     // console.log(data)

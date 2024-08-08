@@ -34,12 +34,12 @@ export class StreamService {
       data: {
         created_by_id: userId,
         members: [{ user_id: userId, role: 'admin' }],
-        settings_override: {
-          backstage: {
-            enabled: true,
-            // join_ahead_time_seconds: 300,
-          },
-        },
+        // settings_override: {
+        //   backstage: {
+        //     enabled: true,
+        //     // join_ahead_time_seconds: 300,
+        //   },
+        // },
       },
     });
 
@@ -49,7 +49,7 @@ export class StreamService {
     // console.log(addAdmin);
     // console.log(addUser);
     // console.log(call);
-    await this.enableBackstage(callId)
+    // await this.enableBackstage(callId)
 
     const token = this.client.createToken(userId, this.exp); // Generate a token for the user
     return { callId: call.id, createdBy: userId, token };

@@ -135,6 +135,7 @@ export class MeetingsController {
     const atIndex = admin.email.indexOf('@');
     const name = admin.email.substring(0, atIndex)
     const call = await this.streamService.createCall(meeting.call_id, name)
+    const chat = await this.streamService.createChatChannel(meeting.call_id, name, module.name)
 
     const moduleData = {
       live_link: call.callId.toString(),
