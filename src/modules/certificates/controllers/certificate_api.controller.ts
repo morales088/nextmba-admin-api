@@ -36,8 +36,8 @@ export class CertificateApiController {
 
     // if(certificate && result.student_modules.length < 12) return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Template not available. / Not yet complete the course.' });
 
-    const moduleName = studCertificate.module.name
-    const moduleDate = this.formatMonthDayYear(studCertificate.module.start_date)
+    const moduleName = studCertificate.module?.name
+    const moduleDate = this.formatMonthDayYear(studCertificate.module?.start_date)
     let endDate;
     let startDate = null;
     let modules : number ;
@@ -73,8 +73,8 @@ export class CertificateApiController {
     const completionInfo = `Completed the ${course.name} at NEXT MBA by Attending ${modules} modules ( ${lectures} lectures, ${hours} hours) and participating in the required assignments during the period between ${newStartDate} and ${newEndDate}.`;
     // const attendanceInfo = `Attended the ${course.name} ( ${modules} modules/ ${lectures} lectures/ ${hours} hours) during period between ${newStartDate} and ${newEndDate}.`;
     const attendanceInfo = `Attended a module entitled "<b>${moduleName}</b>" on ${moduleDate} and participated in its assignment as a presenter on ${newEndDate}.`;
-    console.log(studCertificate.module.topics)
-    let speakers = await this.formatSpeakers(studCertificate.module.topics)
+    console.log(studCertificate.module?.topics)
+    let speakers = await this.formatSpeakers(studCertificate.module?.topics)
 
     let nameSize: string;
     if (studentInfo.name.length <= 24) nameSize = '60px';

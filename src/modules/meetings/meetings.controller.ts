@@ -131,7 +131,7 @@ export class MeetingsController {
     // if module has live id
     const module = await this.meetingsService.getModule(meeting.module_id);
 
-    // if (!!module.live_link) return res.status(HttpStatus.BAD_REQUEST).json({ message: 'This module has live id.' });
+    if (!!module.live_link) return res.status(HttpStatus.BAD_REQUEST).json({ message: 'This module has live id.' });
     const atIndex = admin.email.indexOf('@');
     const name = admin.email.substring(0, atIndex)
     const call = await this.streamService.createCall(meeting.call_id, name)
