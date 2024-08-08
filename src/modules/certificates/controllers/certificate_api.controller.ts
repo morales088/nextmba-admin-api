@@ -73,7 +73,7 @@ export class CertificateApiController {
     const completionInfo = `Completed the ${course.name} at NEXT MBA by Attending ${modules} modules ( ${lectures} lectures, ${hours} hours) and participating in the required assignments during the period between ${newStartDate} and ${newEndDate}.`;
     // const attendanceInfo = `Attended the ${course.name} ( ${modules} modules/ ${lectures} lectures/ ${hours} hours) during period between ${newStartDate} and ${newEndDate}.`;
     const attendanceInfo = `Attended a module entitled "<b>${moduleName}</b>" on ${moduleDate} and participated in its assignment as a presenter on ${newEndDate}.`;
-  
+    console.log(studCertificate.module.topics)
     let speakers = await this.formatSpeakers(studCertificate.module.topics)
 
     let nameSize: string;
@@ -82,9 +82,9 @@ export class CertificateApiController {
     else nameSize = '42px';
 
     let courseSize: string;
-    if (courseName.length <= 20) courseSize = '60px';
-    else if (courseName.length <= 29) courseSize = '48px';
-    else courseSize = '42px';
+    if (courseName.length <= 20) courseSize = '58px';
+    else if (courseName.length <= 29) courseSize = '46px';
+    else courseSize = '40px';
 
     // QR
     const qrCodeDataUrl = await this.qrService.generateQrCode(studentCertificateCode,"#f0ede8");
@@ -103,7 +103,7 @@ export class CertificateApiController {
       qr: qrCodeDataUrl,
       speakers : speakers
     };
-    console.log(data)
+    // console.log(data)
     
     const pdfBuffer = await this.pdfService.certificateGeneratePdf(htmlFilePath, data);
 
@@ -186,9 +186,9 @@ export class CertificateApiController {
       .map(speaker => {
         const name = speaker.speaker.name;
         const description = speaker.speaker.description;
-        return `<b>${name}</b> - ${description}`;
+        return `<b>${name}</b> - ${description.replace(/<\/?[^>]+(>|$)/g, "")}`;
       })
-      .join('<div style="line-height:100%;"><br></div>');
+      .join('<div style="line-height:80%;"><br></div>');
   }
 
   @Get('generate')
