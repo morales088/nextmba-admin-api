@@ -11,8 +11,10 @@ export class WebhookController {
   ) {}
 
   @Post('/payment-success')
-  async handleStripeWebhook(@Req() request: RawBodyRequest<Request>) {
-    const rawReqBody = request.rawBody;
+  // async handleStripeWebhook(@Req() request: RawBodyRequest<Request>) {
+  async handleStripeWebhook(@Req() request: Request) {
+    // const rawReqBody = request.rawBody;
+    const reqBody = request.body;
     const signature = request.headers['stripe-signature'];
     // console.log("💡 ~ signature:", signature)
     const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -21,7 +23,7 @@ export class WebhookController {
     let event;
 
     try {
-      event = this.stripe.webhooks.constructEvent(rawReqBody, signature, endpointSecret);
+      event = this.stripe.webhooks.constructEvent(reqBody, signature, endpointSecret);
     } catch (err) {
       console.error(`⚠️ Webhook signature verification failed.`, err.message);
       return;
