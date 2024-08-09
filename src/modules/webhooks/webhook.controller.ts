@@ -16,9 +16,9 @@ export class WebhookController {
     // const rawReqBody = request.rawBody;
     const reqBody = request.body;
     const signature = request.headers['stripe-signature'];
-    // console.log("💡 ~ signature:", signature)
+    console.log("💡 ~ signature:", signature)
     const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-    // console.log("💡 ~ endpointSecret:", endpointSecret)
+    console.log("💡 ~ endpointSecret:", endpointSecret)
 
     let event;
 
@@ -28,7 +28,7 @@ export class WebhookController {
       console.error(`⚠️ Webhook signature verification failed.`, err.message);
       return;
     }
-    // console.log("💡 ~ event:", event)
+    console.log("💡 ~ event:", event)
 
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
