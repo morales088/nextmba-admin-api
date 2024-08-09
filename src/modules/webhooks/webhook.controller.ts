@@ -1,7 +1,7 @@
-import { Controller, Get, Post, RawBodyRequest, Req } from '@nestjs/common';
+import { Controller, Post, RawBodyRequest, Req } from '@nestjs/common';
+import { WebhookService } from './webhook.service';
 import { Request } from 'express';
 import Stripe from 'stripe';
-import { WebhookService } from './webhook.service';
 
 @Controller('webhook')
 export class WebhookController {
@@ -11,31 +11,21 @@ export class WebhookController {
   ) {}
 
   @Post('/payment-success')
-  // async handleStripeWebhook(@Req() request: RawBodyRequest<Request>) {
-  async handleStripeWebhook(@Req() request: Request) {
-    // const rawReqBody = request.rawBody;
-    const reqBody = request.body;
+  async handleStripeWebhook(@Req() request: RawBodyRequest<Request>) {
+    const rawBody = request.rawBody;
     const signature = request.headers['stripe-signature'];
-    console.log("💡 ~ signature:", signature)
+    console.log('💡 ~ signature:', signature);
     const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-    console.log("💡 ~ endpointSecret:", endpointSecret)
-
-    let event;
+    console.log('💡 ~ endpointSecret:', endpointSecret);
 
     try {
-      event = this.stripe.webhooks.constructEvent(reqBody, signature, endpointSecret);
+      const event: Stripe.Event = this.stripe.webhooks.constructEvent(rawBody, signature, endpointSecret);
+      await this.webhookService.handleEvent(event);
     } catch (err) {
       console.error(`⚠️ Webhook signature verification failed.`, err.message);
       return;
     }
-    console.log("💡 ~ event:", event)
 
-    if (event.type === 'checkout.session.completed') {
-      const session = event.data.object as Stripe.Checkout.Session;
-      console.log("💡 ~ session:", session)
-      await this.webhookService.handleSuccessfulPayment(session);
-    }
-
-    return { received: true };
+    return { success: true, received: true };
   }
 }
