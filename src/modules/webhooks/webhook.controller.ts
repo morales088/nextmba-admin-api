@@ -10,7 +10,7 @@ export class WebhookController {
     private readonly webhookService: WebhookService
   ) {}
 
-  @Get('/payment-success')
+  @Post('/payment-success')
   async handleStripeWebhook(@Req() request: Request) {
     const signature = request.headers['stripe-signature'];
     const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
