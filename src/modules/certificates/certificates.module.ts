@@ -11,7 +11,6 @@ import { SendMailService } from 'src/common/utils/send-mail.service';
 import { CoursesService } from '../courses/services/courses.service';
 import { CourseRepository } from '../courses/repositories/course.repository';
 import { StudentRepository } from '../students/repositories/student.repository';
-import { QrService } from './services/qr.service';
 
 @Module({
   imports: [PrismaModule],
@@ -24,7 +23,6 @@ import { QrService } from './services/qr.service';
     PdfService,
     SendMailService,
     CoursesService,
-    QrService,
     CourseRepository,
     StudentRepository
   ],

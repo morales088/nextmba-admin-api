@@ -58,14 +58,14 @@
         width: 100%;
         text-align: center;
       }
-
+      
       .modules {
         position: absolute;
         width: 850px;
         left: 205px;
         top: 490px;
-        margin-left: auto;
-        margin-right: auto;
+        margin-left: auto; 
+        margin-right: auto; 
         z-index: 100;
         display: flex;
         flex-wrap: wrap;
@@ -78,7 +78,7 @@
         font-size: 14px;
         color: #515151;
       }
-
+            
       .child {
         width: 24%;
         margin: 2px;
@@ -88,7 +88,7 @@
         font-size: 12px;
         color: #565655
       }
-
+      
       .child b{
         text-transform: capitalize;
       }
@@ -151,13 +151,6 @@
         text-align: left;
       }
 
-      .qr {
-        position: absolute;
-        /* bottom: 32px;
-        left: 205px; */
-        top: 3px;
-        right: 3px;
-      }
     </style>
   </head>
 
@@ -170,8 +163,13 @@
       <div class="courseContainer">
         <h1 class="course">{{courseName}}</h1>
       </div>
-
-      <img class="marketing" class="img-container" src="{{template}}" alt="certificate" width="100%" />
+      
+      <img class="marketing"
+        class="img-container"
+        src="{{template}}"
+        alt="certificate"
+        width="100%"
+      />
 
       <div class="modules">
         <h2>{{modules}}</h2>
@@ -180,8 +178,6 @@
       <h2 class="description">{{info}}</h2>
       <h2 class="speaker">Course speakers:</h2>
       <h3 class="certificateDate"><b>{{certificate_date}}</b></h3>
-
-      <img class="qr" src="{{qr}}" alt="qr" width="3%" />
     </div>
   </body>
 </html>

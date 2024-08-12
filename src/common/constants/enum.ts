@@ -37,33 +37,8 @@ export enum AssignmentsType {
   GROUP = 2,
 }
 
-export enum Difficulty {
-  EAST = 1,
-  MEDIUM = 2,
-  HARD = 3,
-}
-
-export const Active = {
-  INCLUDED : true,
-  EXCLUDED : false,
-}
-
-export enum QuizStatus {
-  DELETED = 0,
-  ACTIVE = 1,
-  PUBLISHED = 2,
-}
-
-export enum TakeStatus {
-  FAIL = 0,
-  ONGOING = 1,
-  PASS = 2,
-}
-
 export enum ModuleTierType {
   FULL = 1,
   LIMITED = 2,
   ALL = 3
 }
-
-

@@ -22,7 +22,7 @@ export class CertificateRepository extends AbstractRepository<Certificates> {
 
   async certificate(tier: number = 1) {
     return this.prisma[this.modelName].findFirst({
-      where: { certificate_tier : tier, status : 1 },
+      where: { certificate_tier : tier },
     });
   }
 }
