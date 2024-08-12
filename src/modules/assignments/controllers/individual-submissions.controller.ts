@@ -24,6 +24,17 @@ export class IndividualSubmissionsController {
       return await this.individualSubmissionsService.getSubmission(submissionId);
     }
 
+    // @Post('/')
+    // async createBilling(
+    //   @Body() createAssignmentDto: CreateAssignmentDto,
+    // ) {
+    //   const assignmentData = {
+    //     ...createAssignmentDto,
+    //   };
+  
+    //   return await this.assignmentsService.createAssignment(assignmentData);
+    // }
+
     @Put('/:submissionId')
     async updateSubmission(
       @Param('submissionId') submissionId: number,

@@ -62,35 +62,30 @@ model Courses {
 }
 
 model Modules {
-  id                   Int                    @id @default(autoincrement())
-  course_id            Int
-  name                 String                 @db.VarChar(255)
-  description          String?
-  live_link            String?
-  external_link        String?
-  host_email           String?
-  quiz_link            String?
-  quiz_result          String?
-  start_date           DateTime
-  end_date             DateTime
-  display_topic        Boolean                @default(false)
-  display_speaker      Boolean                @default(false)
-  status               Int                    @default(1)
-  createdAt            DateTime               @default(now())
-  updatedAt            DateTime?              @updatedAt
-  live_id              String?
-  custom_course_title  String?
-  tier                 Int                    @default(1)
-  event_id             String?
-  files                Files[]
-  medias               Medias[]
-  course               Courses                @relation(fields: [course_id], references: [id])
-  topics               Topics[]
-  translations         Translations[]
-  assignment           Assignments[]
-  quiz                 Quiz[]
-  student_certificates Student_certificates[]
-  assignment_emails    Assignment_emails[]
+  id                  Int            @id @default(autoincrement())
+  course_id           Int
+  name                String         @db.VarChar(255)
+  description         String?
+  live_link           String?
+  external_link       String?
+  host_email          String?
+  start_date          DateTime
+  end_date            DateTime
+  display_topic       Boolean        @default(false)
+  display_speaker     Boolean        @default(false)
+  status              Int            @default(1)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime?      @updatedAt
+  live_id             String?
+  custom_course_title String?
+  tier                Int            @default(1)
+  event_id            String?
+  files               Files[]
+  medias              Medias[]
+  course              Courses        @relation(fields: [course_id], references: [id])
+  topics              Topics[]
+  translations        Translations[]
+  assignment          Assignments[]
 }
 
 model Speakers {
@@ -217,8 +212,6 @@ model Students {
   student_courses       Student_courses[]
   idividual_submissions Individual_submissions[]
   Group_items           Group_items[]
-  takes                 Takes[]
-  student_group_member  Student_group_member[]
 }
 
 model Student_courses {
@@ -407,7 +400,6 @@ model Student_certificates {
   id               Int       @id @default(autoincrement())
   student_id       Int
   course_id        Int
-  module_id        Int?
   certificate_code String?
   certificate_tier Int       @default(1)
   status           Int       @default(1)
@@ -415,7 +407,6 @@ model Student_certificates {
   updatedAt        DateTime? @updatedAt
   course           Courses   @relation(fields: [course_id], references: [id])
   student          Students  @relation(fields: [student_id], references: [id])
-  module           Modules?  @relation(fields: [module_id], references: [id])
 }
 
 model Subscriber_groups {
@@ -431,26 +422,15 @@ model Subscriber_groups {
 }
 
 model Student_groups {
-  id                   Int                    @id @default(autoincrement())
-  course_id            Int?
-  name                 String
-  link                 String?
-  is_public            Boolean                @default(false)
-  status               Int                    @default(1)
-  createdAt            DateTime               @default(now())
-  updatedAt            DateTime?              @updatedAt
-  course               Courses?               @relation(fields: [course_id], references: [id])
-  student_group_member Student_group_member[]
-}
-
-model Student_group_member {
-  id         Int            @id @default(autoincrement())
-  group_id   Int
-  student_id Int
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime?      @updatedAt
-  group      Student_groups @relation(fields: [group_id], references: [id])
-  student    Students       @relation(fields: [student_id], references: [id])
+  id        Int       @id @default(autoincrement())
+  course_id Int
+  name      String
+  link      String?
+  is_public Boolean   @default(false)
+  status    Int       @default(1)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  course    Courses?  @relation(fields: [course_id], references: [id])
 }
 
 model Assignments {
@@ -503,98 +483,4 @@ model Group_items {
   updatedAt         DateTime?          @updatedAt
   group_submissions Group_submissions? @relation(fields: [group_id], references: [id])
   student           Students?          @relation(fields: [student_id], references: [id])
-}
-
-model Questions {
-  id           Int            @id @default(autoincrement())
-  quiz_id      Int
-  name         String
-  description  String?
-  difficulty   Int            @default(1)
-  active       Int            @default(1)
-  status       Int            @default(1)
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime?      @updatedAt
-  quiz         Quiz?          @relation(fields: [quiz_id], references: [id])
-  answers      Answers[]
-  take_answers Take_answers[]
-}
-
-model Answers {
-  id           Int            @id @default(autoincrement())
-  question_id  Int
-  name         String
-  description  String?
-  correct      Int            @default(1)
-  active       Int            @default(1)
-  status       Int            @default(1)
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime?      @updatedAt
-  questions    Questions?     @relation(fields: [question_id], references: [id])
-  take_answers Take_answers[]
-}
-
-model Quiz {
-  id          Int         @id @default(autoincrement())
-  module_id   Int
-  // question_id    Int
-  name        String
-  description String?
-  score       Int
-  status      Int         @default(1)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime?   @updatedAt
-  modules     Modules?    @relation(fields: [module_id], references: [id])
-  // questions      Questions?       @relation(fields: [question_id], references: [id])
-  // quiz_questions Quiz_questions[]
-  questions   Questions[]
-  takes       Takes[]
-}
-
-// model Quiz_questions {
-//   id          Int        @id @default(autoincrement())
-//   quiz_id     Int
-//   question_id Int
-//   status      Int        @default(1)
-//   createdAt   DateTime   @default(now())
-//   updatedAt   DateTime?  @updatedAt
-//   quiz        Quiz?      @relation(fields: [quiz_id], references: [id])
-//   questions   Questions? @relation(fields: [question_id], references: [id])
-// }
-
-model Takes {
-  id           Int            @id @default(autoincrement())
-  quiz_id      Int
-  student_id   Int
-  score        Int?
-  status       Int            @default(1)
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime?      @updatedAt
-  quiz         Quiz?          @relation(fields: [quiz_id], references: [id])
-  students     Students?      @relation(fields: [student_id], references: [id])
-  take_answers Take_answers[]
-}
-
-model Take_answers {
-  id          Int        @id @default(autoincrement())
-  take_id     Int
-  question_id Int
-  answer_id   Int
-  status      Int        @default(1)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime?  @updatedAt
-  takes       Takes?     @relation(fields: [take_id], references: [id])
-  questions   Questions? @relation(fields: [question_id], references: [id])
-  answers     Answers?   @relation(fields: [answer_id], references: [id])
-}
-
-model Assignment_emails {
-  id        Int       @id @default(autoincrement())
-  module_id Int
-  name      String?
-  emails    String
-  status    Int       @default(1)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @updatedAt
-  module    Modules?  @relation(fields: [module_id], references: [id])
 }

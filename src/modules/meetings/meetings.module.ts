@@ -5,11 +5,10 @@ import { ZoomService } from 'src/common/utils/zoom.service';
 import { ModuleRepository } from '../modules/repositories/module.repository';
 import { PrismaModule } from 'src/common/prisma/prisma.module';
 import { DailycoService } from '../../common/utils/dailyCO.service';
-import { StreamService } from 'src/common/utils/getStream.service';
 
 @Module({
   imports: [PrismaModule],
   controllers: [MeetingsController],
-  providers: [MeetingsService, ZoomService, ModuleRepository, DailycoService, StreamService],
+  providers: [MeetingsService, ZoomService, ModuleRepository, DailycoService]
 })
 export class MeetingsModule {}
