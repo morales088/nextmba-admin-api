@@ -15,16 +15,11 @@ export class WebhookService {
 
   async handleSuccessfulPayment(session: Stripe.Checkout.Session) {
     const metaData = session.metadata;
-    const customerData = session.customer
-    const customerEmail = session.customer_email
     const customerDetails = session.customer_details
-    console.log("💡 ~ customerData:", customerData)
-    console.log("💡 ~ customerDetails:", customerDetails)
-    console.log('💡 ~ metaData:', metaData);
 
     const paymentData = {
       name: customerDetails.name,
-      email: customerEmail,
+      email: customerDetails.email,
       product_code: metaData.product_code,
       price: metaData.price,
     };
