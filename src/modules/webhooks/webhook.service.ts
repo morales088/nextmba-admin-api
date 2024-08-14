@@ -6,17 +6,25 @@ import Stripe from 'stripe';
 export class WebhookService {
   constructor(private paymentService: PaymentsService) {}
 
+  async handleEvent(event: Stripe.Event) {
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object as Stripe.Checkout.Session;
+      await this.handleSuccessfulPayment(session);
+    }
+  }
+
   async handleSuccessfulPayment(session: Stripe.Checkout.Session) {
     const metaData = session.metadata;
+    const customerDetails = session.customer_details
 
     const paymentData = {
-      name: metaData.email,
-      email: metaData.email,
+      name: customerDetails.name,
+      email: customerDetails.email,
       product_code: metaData.product_code,
       price: metaData.price,
     };
+    console.log("💡 ~ paymentData:", paymentData)
 
-    const payment = await this.paymentService.createPayment(paymentData);
-    console.log("💡 ~ payment:", payment)
+    return this.paymentService.createPayment(paymentData);
   }
 }
