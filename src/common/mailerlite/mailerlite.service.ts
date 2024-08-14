@@ -50,6 +50,14 @@ export class MailerLiteService {
       });
   }
 
+  async getGroupByCourseId(courseId: number) {
+    return this.subscriberGroupsService.getSubscriberGroupByCourseId(courseId)
+  }
+
+  async getAllSubscriberLists() {
+    return this.subscriberGroupsService.getAllSubscriberGroups();
+  }
+
   async createOrUpdateSubscriber(studentData: CreateOrUpdateSubscriberParams): Promise<SubscriberObject> {
     return this.mailerLite.subscribers
       .createOrUpdate(studentData)

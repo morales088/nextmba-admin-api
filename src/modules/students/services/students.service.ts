@@ -7,6 +7,9 @@ import { SendMailService } from 'src/common/utils/send-mail.service';
 import { FilterOptions } from '../interfaces/student.interface';
 import { currentTime, last24Hours, previousEndOfDay, previousStartOfDay } from 'src/common/helpers/date.helper';
 import { PrismaService } from 'src/common/prisma/prisma.service';
+import { MailerLiteService } from '../../../common/mailerlite/mailerlite.service';
+import { AccountType } from '../../../common/constants/enum';
+import { SubscriberGroupV2 } from '../../../common/constants/groups';
 
 @Injectable()
 export class StudentsService {
@@ -16,7 +19,8 @@ export class StudentsService {
     private readonly sendMailService: SendMailService,
     private readonly studentRepository: StudentRepository,
     private readonly paymentRepository: PaymentRepository,
-    private readonly studentCoursesRepository: StudentCoursesRepository
+    private readonly studentCoursesRepository: StudentCoursesRepository,
+    private readonly mailerLiteService: MailerLiteService
   ) {}
 
   async getActiveStudentsCount() {
@@ -42,6 +46,7 @@ export class StudentsService {
     const studentData = {
       ...data,
       password: hashedPassword,
+      email: data.email.trim(),
     };
 
     const createdStudent = await this.studentRepository.insert(studentData);
@@ -63,12 +68,13 @@ export class StudentsService {
         const studentData = {
           ...data,
           password: hashedPassword,
+          email: data.email.trim(),
         };
 
         const existingStudent = await tx.students.findFirst({
           where: {
             email: {
-              equals: data.email,
+              equals: studentData.email,
               mode: 'insensitive',
             },
           },
@@ -279,6 +285,74 @@ export class StudentsService {
       return completedStudentCourses;
     } catch (error) {
       throw new Error(error.message);
+    }
+  }
+
+  async addCreatedStudentToCourseGroups(studentId: number) {
+    const student = await this.studentRepository.findById(studentId);
+    const subscriber = await this.mailerLiteService.createOrUpdateSubscriber({ email: student.email });
+
+    if (!subscriber) {
+      console.debug(`Skipping student with invalid email: ${student.email}`);
+      console.debug(`Unable to add student to group/list.`);
+      return;
+    }
+
+    const { courseStartingDates, allSubscriberGroups } = await this.mailerLiteService.getAllSubscriberLists();
+    const activeSubscribersGroup = Object.values(SubscriberGroupV2).map(group => group.active);
+    const activeAndCourseGroupIds = [...allSubscriberGroups, ...activeSubscribersGroup];
+
+    const studentCourses = await this.studentCoursesRepository.findByStudentId(studentId);
+
+    for (const studentCourse of studentCourses) {
+      const studentEmail = student.email
+      const courseId = studentCourse.course_id;
+
+      if (student.account_type === AccountType.PRO) {
+        try {
+          await this.mailerLiteService.assignSubscriberToGroups({
+            email: studentEmail,
+            fields: courseStartingDates,
+            groups: activeAndCourseGroupIds,
+          });
+          console.log(`Student successfully added to all groups: ${studentEmail}`);
+        } catch (error) {
+          console.error('An error occurred:', error.message);
+        }
+      } else {
+        const subscriberGroup = await this.mailerLiteService.getGroupByCourseId(courseId);
+        const courseGroupActive = SubscriberGroupV2[courseId];
+
+        if (!subscriberGroup) {
+          console.debug(`Skipping student course ${courseId}, No data available.`);
+          continue; // skip student course
+        }
+
+        const courseStartDate = studentCourse.starting_date;
+        const courseStartDateField = { [`${subscriberGroup.start_date_field}`]: courseStartDate };
+
+        try {
+          await this.mailerLiteService.createOrUpdateSubscriber({
+            email: studentEmail,
+            fields: courseStartDateField,
+          });
+
+          const groupIds = [
+            subscriberGroup.group_id, // Course group
+            courseGroupActive.active, // Course active group
+            SubscriberGroupV2[0].active, // Active students group
+          ];
+
+          await Promise.all(
+            groupIds.map((groupId) =>
+              this.mailerLiteService.assignSubscriberToGroup(subscriber.email, groupId)
+            )
+          );
+        } catch (error) {
+          console.error('An error occurred:', error.message);
+        }
+      }
+      console.log(`Student successfully added to group(s): ${studentEmail}`);
     }
   }
 }
