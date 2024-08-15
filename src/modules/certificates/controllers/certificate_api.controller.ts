@@ -73,7 +73,7 @@ export class CertificateApiController {
     const completionInfo = `Completed the ${course.name} at NEXT MBA by Attending ${modules} modules ( ${lectures} lectures, ${hours} hours) and participating in the required assignments during the period between ${newStartDate} and ${newEndDate}.`;
     // const attendanceInfo = `Attended the ${course.name} ( ${modules} modules/ ${lectures} lectures/ ${hours} hours) during period between ${newStartDate} and ${newEndDate}.`;
     const attendanceInfo = `Attended a module entitled "<b>${moduleName}</b>" on ${moduleDate} and participated in its assignment as a presenter on ${newEndDate}.`;
-    console.log(studCertificate.module?.topics)
+    // console.log(studCertificate.module?.topics)
     let speakers = studCertificate.module?.topics ? await this.formatSpeakers(studCertificate.module?.topics) : '';
 
     let nameSize: string;
@@ -92,7 +92,9 @@ export class CertificateApiController {
     else speakerSize = '14px';
 
     // QR
-    const qrCodeDataUrl = await this.qrService.generateQrCode(studentCertificateCode,"#f0ede8");
+    const qrCode = process.env.QR_FE_ROUTE+'/cert/'+studentCertificateCode
+    const qrCodeDataUrl = await this.qrService.generateQrCode(qrCode,"#f0ede8");
+    console.log(qrCode)
 
     // add course name and speaker name
     const data = {
