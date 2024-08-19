@@ -1,10 +1,12 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Res, UseGuards, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { MeetingsService } from './services/meetings.service';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
 import { ZoomService } from 'src/common/utils/zoom.service';
 import { Response } from 'express';
 import { DailycoService } from 'src/common/utils/dailyCO.service';
+import { StreamService } from 'src/common/utils/getStream.service';
+import { CreateGetStreamDto } from './dto/create-getStream.dto';
 
 @Controller('meetings')
 @UseGuards(AuthGuard('jwt'))
@@ -12,7 +14,8 @@ export class MeetingsController {
   constructor(
     private readonly meetingsService: MeetingsService,
     private readonly zoomService: ZoomService,
-    private readonly dailycoService: DailycoService
+    private readonly dailycoService: DailycoService,
+    private readonly streamService: StreamService
   ) {}
 
   @Get('/')
@@ -107,5 +110,63 @@ export class MeetingsController {
     const moduleData = { live_link: null, live_id: null };
     await this.meetingsService.updateModule(moduleId, moduleData);
     return res.status(HttpStatus.OK).json({ message: 'Meeting deletion success.' });
+  }
+  
+  // // getStream
+  // @Post('/getStream/start')
+  // async createLiveStream() {
+  //   const livestream = await this.streamService.createCall("call1234","user1234")
+    
+  //   return livestream
+  // }
+
+  // getStream
+  @Post('/getStream/start')
+  async createCall(@Request() req: any, @Body() createGetStreamDto: CreateGetStreamDto, @Res() res: Response) {
+    const admin = req.user;
+    const meeting = {
+      ...createGetStreamDto,
+    };
+    
+    // if module has live id
+    const module = await this.meetingsService.getModule(meeting.module_id);
+
+    if (!!module.live_link) return res.status(HttpStatus.BAD_REQUEST).json({ message: 'This module has live id.' });
+    const atIndex = admin.email.indexOf('@');
+    const name = admin.email.substring(0, atIndex)
+    const call = await this.streamService.createCall(meeting.call_id, name)
+    const chat = await this.streamService.createChatChannel(meeting.call_id, name, module.name)
+
+    const moduleData = {
+      live_link: call.callId.toString(),
+      live_id: call.callId.toString(),
+    };
+
+    await this.meetingsService.updateModule(meeting.module_id, moduleData);
+    
+    return res.status(HttpStatus.OK).json(call);
+  }
+
+  @Post('/getStream/goLive')
+  async startCall(@Request() req: any,@Body() body: {call_id: string }, @Res() res: Response) {
+    const admin = req.user;
+    
+    const call = await this.streamService.goLive(body.call_id)
+    
+    return res.status(HttpStatus.OK).json(call);
+  }
+
+  @Post('/getStream/end')
+  async endCall(@Body() body: { module_id: number, call_id: string }) {
+    const moduleData = {
+      live_link: null,
+    };
+    const update = await this.meetingsService.updateModule(body.module_id, moduleData);
+    return this.streamService.endCall(body.call_id);
+  }
+
+  @Post('/getStream/create-user')
+  async createUser(@Body() body: { userId: string }) {
+    return this.streamService.createUser(body.userId);
   }
 }

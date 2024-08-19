@@ -7,10 +7,8 @@ import { ProductItemRepository } from './repositories/product_item.repository';
 import { ProductsApiController } from './products_api.controller';
 
 @Module({
-  imports: [
-    PrismaModule,
-  ],
+  imports: [PrismaModule],
   controllers: [ProductsController, ProductsApiController],
-  providers: [ProductsService, ProductRepository, ProductItemRepository]
+  providers: [ProductsService, ProductRepository, ProductItemRepository],
 })
 export class ProductsModule {}
