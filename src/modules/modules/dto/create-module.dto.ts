@@ -27,14 +27,6 @@ export class CreateModuleDto {
 
   @IsOptional()
   @IsString()
-  quiz_link: string;
-
-  @IsOptional()
-  @IsString()
-  quiz_result: string;
-
-  @IsOptional()
-  @IsString()
   host_email: string;
 
   @IsNotEmpty()
