@@ -34,7 +34,7 @@ export class PaymentApiController {
       const url = await this.ecommpayService.createEcommpayPayment(createEcommpayPaymentDto);
       console.log(`💡 ~ url:`, url);
 
-      res.redirect(url);
+      res.status(200).json({ url });
     } catch (error) {
       console.error(`Payment creation failed: ${error.message}`);
       return res.status(500).json({ message: 'Creating payment failed', error: error.message });
