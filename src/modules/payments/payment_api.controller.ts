@@ -31,6 +31,8 @@ export class PaymentApiController {
   @UseGuards(ApiKeyGuard)
   async createEcommpayPayment(@Res() res: Response, @Body() createEcommpayPaymentDto: CreateEcommpayPaymentDto) {
     try {
+      console.log('');
+      console.log(`💡 ~ New Payment:`);
       const url = await this.ecommpayService.createEcommpayPayment(createEcommpayPaymentDto);
       console.log(`💡 ~ url:`, url);
 
@@ -44,14 +46,25 @@ export class PaymentApiController {
   @Get('/ecommpay/callback')
   async callbackEcommpayPayment(@Query() queryParams: any, @Res() res: Response) {
     try {
-      const { success_url } = queryParams;
+      const { success_url, email, customer_first_name, customer_last_name, product_code, payment_amount } = queryParams;
 
-      await this.ecommpayService.checkPaymentData(queryParams);
+      await this.ecommpayService.checkPayment(queryParams);
+
+      // Create student payment
+      const paymentData = {
+        name: `${customer_first_name} ${customer_last_name}`,
+        email: email,
+        product_code: product_code,
+        price: payment_amount / 100,
+      };
+      console.log(`💡 ~ Customer Info:`, paymentData);
+
+      await this.paymentsService.createPayment(paymentData);
 
       res.redirect(success_url);
     } catch (error) {
       console.error(`Payment validation failed: ${error.message}`);
-      return res.status(400).json({ message: 'Invalid payment data', error: error.message });
+      return res.status(400).json({ message: 'Error occurred.', error: error.message });
     }
   }
 }
