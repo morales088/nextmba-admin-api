@@ -1,14 +1,10 @@
-import {
-  IsCurrency,
-  IsEmail,
-  IsISO4217CurrencyCode,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsEmail, IsISO4217CurrencyCode, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateEcommpayPaymentDto {
+  @IsNotEmpty()
+  @IsString()
+  product_code: string;
+
   @IsEmail()
   @IsString()
   email: string;

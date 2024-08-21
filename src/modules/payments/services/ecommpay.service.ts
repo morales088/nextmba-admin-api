@@ -1,26 +1,23 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { CreateEcommpayPaymentDto } from '../dto/ecommpay-payment.dto';
 const { Payment } = require('ecommpay');
-const { Callback } = require('ecommpay');
 import * as crypto from 'crypto';
-import axios from 'axios';
 
 @Injectable()
 export class EcommpayService {
   private readonly apiKey: string;
   private readonly projectId: string;
-  private readonly webhookUrl: string;
   private readonly callbackUrl: string;
 
   constructor() {
     this.apiKey = process.env.ECOMMPAY_SECRET_KEY;
     this.projectId = process.env.ECOMMPAY_PROJECT_ID;
-    this.webhookUrl = process.env.ECOMMPAY_WEBHOOK_URL;
     this.callbackUrl = process.env.ECOMMPAY_CALLBACK_URL;
   }
 
   async createEcommpayPayment(paymentData: CreateEcommpayPaymentDto) {
     const {
+      product_code,
       email,
       customer_first_name,
       customer_last_name,
@@ -54,6 +51,7 @@ export class EcommpayService {
       customer_first_name,
       customer_last_name,
       email,
+      product_code,
       force_payment_method,
       target_element,
       success_url,
@@ -76,9 +74,6 @@ export class EcommpayService {
     ecommPayment.redirectSuccessUrl = redirectUrl;
     console.log(`💡 ~ ecommPayment:`, ecommPayment);
 
-    // // For Debugging - manual send a request to the callback api
-    // axios.post(redirectUrl)
-
     return ecommPayment.getUrl();
   }
 
@@ -96,12 +91,12 @@ export class EcommpayService {
       .join(';');
   }
 
-  async checkPaymentData(payload: Record<string, any>) {
-    const { signature, ...paymentData } = payload;
-    console.log(`💡 ~ paymentData:`, paymentData)
+  async checkPayment(payload: Record<string, any>) {
+    const { signature, ...withoutSignature } = payload;
+    console.log(`💡 ~ withoutSignature:`, withoutSignature)
 
     // recreate the string that was signed
-    const stringToSign = this.convertDataStringToSign(paymentData);
+    const stringToSign = this.convertDataStringToSign(withoutSignature);
     // calculate HMAC SHA-512 using your secret key and compare
     const expectedSignature = crypto.createHmac('sha512', this.apiKey).update(stringToSign).digest('base64');
     console.log(`💡 ~ signature:`, signature);
