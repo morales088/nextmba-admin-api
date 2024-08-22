@@ -43,6 +43,7 @@
     "cloudinary": "^1.40.0",
     "dotenv": "^16.3.1",
     "dotenv-cli": "^7.3.0",
+    "ecommpay": "^0.1.7",
     "exceljs": "^4.4.0",
     "fast-csv": "^5.0.1",
     "google-auth-library": "^9.8.0",

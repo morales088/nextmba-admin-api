@@ -16,6 +16,7 @@ import { SendMailService } from 'src/common/utils/send-mail.service';
 import { PaymentAffiliateRepository } from './repositories/payment_affiliate.repository';
 import { PdfService } from 'src/common/utils/pdf.service';
 import { BillingRepository } from '../billings/repositories/billing.repository';
+import { EcommpayService } from './services/ecommpay.service';
 
 @Module({
   imports: [PrismaModule],
@@ -34,7 +35,8 @@ import { BillingRepository } from '../billings/repositories/billing.repository';
     StudentCoursesRepository,
     PaymentAffiliateRepository,
     BillingRepository,
-    PdfService
+    PdfService,
+    EcommpayService,
   ],
   exports: [
     PaymentsService,
@@ -50,7 +52,8 @@ import { BillingRepository } from '../billings/repositories/billing.repository';
     StudentCoursesRepository,
     PaymentAffiliateRepository,
     BillingRepository,
-    PdfService
+    PdfService,
+    EcommpayService,
   ],
 })
 export class PaymentsModule {}
