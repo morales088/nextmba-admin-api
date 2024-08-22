@@ -29,7 +29,7 @@ export class EcommpayService {
     } = paymentData;
 
     const ecommPayment = new Payment(this.projectId, this.apiKey);
-    const generatedPaymentId = `ecom${crypto.randomBytes(8).toString('hex')}`;
+    const generatedPaymentId = `ecomm${crypto.randomBytes(8).toString('hex')}`;
     // const generatedPaymentId = crypto.randomInt(8);
 
     // Populate the ecommPayment object
@@ -56,23 +56,17 @@ export class EcommpayService {
       target_element,
       success_url,
     };
-    console.log(`💡 ~ dataToSign:`, dataToSign);
 
     const stringToSign = this.convertDataStringToSign(dataToSign);
-
-    // Calculate HMAC SHA-512 and encode in Base64
     const signature = crypto.createHmac('sha512', this.apiKey).update(stringToSign).digest('base64');
-    console.log(`💡 ~ signature:`, signature);
 
     const queryParams = new URLSearchParams({
       signature: signature,
       ...dataToSign,
     }).toString();
-    console.log(`💡 ~ queryParams:`, queryParams);
 
     const redirectUrl = `${this.callbackUrl}?${queryParams}`;
     ecommPayment.redirectSuccessUrl = redirectUrl;
-    console.log(`💡 ~ ecommPayment:`, ecommPayment);
 
     return ecommPayment.getUrl();
   }
@@ -93,14 +87,9 @@ export class EcommpayService {
 
   async checkPayment(payload: Record<string, any>) {
     const { signature, ...withoutSignature } = payload;
-    console.log(`💡 ~ withoutSignature:`, withoutSignature)
 
-    // recreate the string that was signed
     const stringToSign = this.convertDataStringToSign(withoutSignature);
-    // calculate HMAC SHA-512 using your secret key and compare
     const expectedSignature = crypto.createHmac('sha512', this.apiKey).update(stringToSign).digest('base64');
-    console.log(`💡 ~ signature:`, signature);
-    console.log(`💡 ~ expectedSignature:`, expectedSignature);
 
     // compare the expected signature with the received signature
     if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature))) {
