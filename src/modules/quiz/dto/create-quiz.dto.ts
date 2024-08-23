@@ -18,6 +18,10 @@ export class CreateQuizDto {
   @IsString()
   description: string;
 
+  @IsOptional()
+  @IsString()
+  deadline: string;
+
   @IsNotEmpty()
   @Transform(({ value }) => parseInt(value))
   score: number;

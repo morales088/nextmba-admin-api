@@ -541,6 +541,7 @@ model Quiz {
   // question_id    Int
   name        String
   description String?
+  deadline    String?
   score       Int
   status      Int         @default(1)
   createdAt   DateTime    @default(now())
