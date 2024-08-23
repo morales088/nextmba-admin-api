@@ -69,14 +69,14 @@ export class CertificateApiController {
     const newStartDate = this.formatMonthYear(new Date(startDate));
     // format end date
     const newEndDate = this.formatMonthYear(new Date(endDate));
-    const certDate = this.formatDate(new Date(endDate));
+    const certDate = this.formatDate(new Date(startDate))+` - `+this.formatDate(new Date(endDate));
 
     const completionInfo = `Completed the ${course.name} at NEXT MBA by Attending ${modules} modules ( ${lectures} lectures, ${hours} hours) and participating in the required assignments during the period between ${newStartDate} and ${newEndDate}.`;
     // const attendanceInfo = `Attended the ${course.name} ( ${modules} modules/ ${lectures} lectures/ ${hours} hours) during period between ${newStartDate} and ${newEndDate}.`;
     const attendanceInfo = `Attended a module entitled "<b>${moduleName}</b>" on ${moduleDate}, participated in its assignment and passed its quiz.`;
     // console.log(studCertificate.module?.topics)
     let speakers = studCertificate.module?.topics ? await this.formatLectures(studCertificate.module?.topics) : '';
-    console.log(speakers)
+    // console.log(speakers)
 
     let nameSize: string;
     if (studentInfo.name.length <= 24) nameSize = '58px';
@@ -96,7 +96,7 @@ export class CertificateApiController {
     // QR
     const qrCode = process.env.QR_FE_ROUTE+'/cert/'+studentCertificateCode
     const qrCodeDataUrl = await this.qrService.generateQrCode(qrCode,"#f0ede8");
-    console.log(qrCode)
+    console.log(moduleHtml)
 
     // add course name and speaker name
     const data = {
@@ -104,7 +104,8 @@ export class CertificateApiController {
       courseFontSize: courseSize,
       name: studentInfo.name,
       nameFontSize: nameSize,
-      modules: moduleHtml.join(', ') + '.',
+      // modules: moduleHtml.join(', ') + '.',
+      modules: moduleHtml.map(name=> `<li>${name}</li>`).join(''),
       template: certificate.template,
       certificate_id: studCertificate.certificate_code,
       certificate_date: certDate,
