@@ -63,17 +63,25 @@
         margin-left: auto;
         margin-right: auto;
         z-index: 100;
-        display: flex;
-        flex-wrap: wrap;
         /* background: rgba(30, 143, 255, 0.319); */
       }
 
-      .speakers h2{
+      .speakers h1 {
+        text-transform: uppercase;
+        font: inherit;
+        font-weight: 700;
+        padding: 5px 0px;
+        margin: 0; /* Remove default margin */
+      }
+
+      .speakers h2{`
         text-transform: uppercase;
         font: inherit;
         font-weight: 400;
         font-size: {{speakerSize}};
         color: #646464;
+        padding: 5px 0px;
+        margin: 0; /* Remove default margin */
       }
 
       .speakers b{
@@ -177,7 +185,7 @@
       <img class="marketing" class="img-container" src="{{template}}" alt="certificate" width="100%" />
 
       <div class="speakers">
-        <h2>{{speakers}}</h2>
+        {{speakers}}
       </div>
       <!-- <h2 class="certificateId">Certificate Code: {{certificate_id}}</h2> -->
       <h2 class="description">{{info}}</h2>

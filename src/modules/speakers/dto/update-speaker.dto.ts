@@ -36,6 +36,10 @@ export class UpdateSpeakerDto {
 
   @IsOptional()
   @IsString()
+  bio: string;
+
+  @IsOptional()
+  @IsString()
   profile: string;
 
   @IsOptional()

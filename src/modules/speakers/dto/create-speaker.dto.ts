@@ -35,5 +35,9 @@ export class CreateSpeakerDto {
 
   @IsOptional()
   @IsString()
+  bio: string;
+
+  @IsOptional()
+  @IsString()
   profile: string;
 }

@@ -99,6 +99,7 @@ model Speakers {
   position        String?
   company         String?
   description     String?
+  bio             String?
   profile         String?
   status          Int               @default(1)
   createdAt       DateTime          @default(now())

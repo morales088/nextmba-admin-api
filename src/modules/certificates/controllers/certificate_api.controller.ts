@@ -22,6 +22,7 @@ export class CertificateApiController {
     @Param('studentCertificateCode') studentCertificateCode: string
   ): Promise<any> {
     const studCertificate = await this.studentCertificatesService.getCertificateByCode(studentCertificateCode);
+    // console.log(studCertificate)
     if (!studCertificate) throw new BadRequestException('Student certificate does not exist.');
     const studentInfo = studCertificate.student;
 
@@ -72,9 +73,10 @@ export class CertificateApiController {
 
     const completionInfo = `Completed the ${course.name} at NEXT MBA by Attending ${modules} modules ( ${lectures} lectures, ${hours} hours) and participating in the required assignments during the period between ${newStartDate} and ${newEndDate}.`;
     // const attendanceInfo = `Attended the ${course.name} ( ${modules} modules/ ${lectures} lectures/ ${hours} hours) during period between ${newStartDate} and ${newEndDate}.`;
-    const attendanceInfo = `Attended a module entitled "<b>${moduleName}</b>" on ${moduleDate} and participated in its assignment as a presenter on ${newEndDate}.`;
+    const attendanceInfo = `Attended a module entitled "<b>${moduleName}</b>" on ${moduleDate}, participated in its assignment and passed its quiz.`;
     // console.log(studCertificate.module?.topics)
-    let speakers = studCertificate.module?.topics ? await this.formatSpeakers(studCertificate.module?.topics) : '';
+    let speakers = studCertificate.module?.topics ? await this.formatLectures(studCertificate.module?.topics) : '';
+    console.log(speakers)
 
     let nameSize: string;
     if (studentInfo.name.length <= 24) nameSize = '58px';
@@ -152,7 +154,8 @@ export class CertificateApiController {
     const day = date.getDate();
     const year = date.getFullYear();
   
-    return `${month} ${day}, ${year}`;
+    // return `${month} ${day}, ${year}`;
+    return `${day} ${month} ${year}`;
   }
 
   formatMonthYear(date) {
@@ -176,27 +179,52 @@ export class CertificateApiController {
   }
   
   formatSpeakers(speakers: any[]): string {
-    // Check for duplicate speaker IDs
-    const seenIds = new Set<number>();
-    const duplicates = new Set<number>();
+    // // Check for duplicate speaker IDs
+    // const seenIds = new Set<number>();
+    // const duplicates = new Set<number>();
     
-    speakers.forEach(speaker => {
-      if (seenIds.has(speaker.id)) {
-        duplicates.add(speaker.id);
-      } else {
-        seenIds.add(speaker.id);
-      }
-    });
+    // speakers.forEach(speaker => {
+    //   if (seenIds.has(speaker.id)) {
+    //     duplicates.add(speaker.id);
+    //   } else {
+    //     seenIds.add(speaker.id);
+    //   }
+    // });
 
-    const uniqueSpeakers = speakers.filter(speaker => !duplicates.has(speaker.id));
+    // const uniqueSpeakers = speakers.filter(speaker => !duplicates.has(speaker.id));
+    const uniqueSpeakers = speakers;
 
     return uniqueSpeakers
       .map(speaker => {
         const name = speaker.speaker.name;
-        const description = speaker.speaker.position;
-        return `<b>${name}</b> - ${description.replace(/<\/?[^>]+(>|$)/g, "")}`;
+        const bio = speaker.speaker.bio;
+        return `<b>${name}</b> - ${bio}`;
       })
       .join('<div style="line-height:60%;"><br></div>');
+  }
+
+  formatLectures(speakers: any[]) {
+
+  let monthlyTalk = "<h1>Monthly talk:</h1>";
+  let appliedStudies = "";
+
+  let hasAppliedStudies = false;
+
+  speakers.forEach(lecture => {
+    const { type, speaker } = lecture;
+    const bio = speaker.bio ? speaker.bio : '';
+
+    if (type === 1) {
+      monthlyTalk += `<h2><b>${speaker.name}</b> - ${bio}</h2>`;
+    } else if (type === 4) {
+      hasAppliedStudies = true;
+      appliedStudies += `<h2><b>${speaker.name}</b> - ${bio}<br></h2>`;
+    }
+  });
+  
+  return hasAppliedStudies
+    ? `${monthlyTalk}<br><h1>Applied Studies:</h1>${appliedStudies}`
+    : monthlyTalk;
   }
 
   @Get('generate')

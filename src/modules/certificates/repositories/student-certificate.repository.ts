@@ -66,7 +66,7 @@ export class StudentCertificateRepository extends AbstractRepository<Student_cer
       where: { certificate_code: code, status: 2 },
       include: {
         student: true,
-        module: { include: { topics: { where: { type: 1, status: 1 }, include: { speaker: true } } } },
+        module: { include: { topics: { where: { type: { in: [1, 4] }, status: 1 }, include: { speaker: true } } } },
       },
     });
   }
