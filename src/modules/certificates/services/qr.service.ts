@@ -12,7 +12,7 @@ export class QrService {
           quality: 1,
         },
         color: {
-          dark: '#000000', // QR code color
+          dark: '#515151', // QR code color
           light: backgroundColor, // Background color
         },
       });
