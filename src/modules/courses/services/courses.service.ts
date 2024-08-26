@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCourseDto } from '../dto/create-course.dto';
 import { CourseRepository } from '../repositories/course.repository';
+import { StudentCoursesRepository } from 'src/modules/students/repositories/student_courses.repository';
 
 @Injectable()
 export class CoursesService {
-  constructor(private readonly courseRepository: CourseRepository) {}
+  constructor(
+    private readonly courseRepository: CourseRepository,
+    private readonly studentCoursesRepository: StudentCoursesRepository
+  ) {}
 
   async getCourse(id: number) {
     return this.courseRepository.findById(id);
@@ -31,8 +35,12 @@ export class CoursesService {
         acc[course.id] = course.name;
         return acc;
       }, {});
-    console.log("💡 ~ startingDates:", startingDates)
+    console.log('💡 ~ startingDates:', startingDates);
 
     return startingDates;
+  }
+
+  async getStudCourse(courseId: number, studId: number) {
+    return this.studentCoursesRepository.findByStudCourse(courseId, studId);
   }
 }

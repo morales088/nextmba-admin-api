@@ -25,4 +25,11 @@ export class CertificateRepository extends AbstractRepository<Certificates> {
       where: { certificate_tier : tier, status : 1 },
     });
   }
+
+  async attendanceCert(): Promise<Certificates> {
+    return this.prisma[this.modelName].findFirst({
+      where: { certificate_tier : 3 },
+    });
+  }
 }
+
