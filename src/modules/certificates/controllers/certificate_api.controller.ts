@@ -85,10 +85,12 @@ export class CertificateApiController {
     // format end date
     const newEndDate = this.formatMonthYear(new Date(endDate));
     const certDate = this.formatDate(new Date(startDate)) + ` - ` + this.formatDate(new Date(endDate));
+    
+    const presenter = `<b>as a presenter</b> `
 
     const completionInfo = `Completed the ${course.name} at NEXT MBA by Attending ${modules} modules ( ${lectures} lectures, ${hours} hours) and participating in the required assignments during the period between ${newStartDate} and ${newEndDate}.`;
     // const attendanceInfo = `Attended the ${course.name} ( ${modules} modules/ ${lectures} lectures/ ${hours} hours) during period between ${newStartDate} and ${newEndDate}.`;
-    const attendanceInfo = `Attended a module entitled "<b>${moduleName}</b>" on ${moduleDate}, participated in its assignment and passed its quiz.`;
+    const attendanceInfo = `Attended a module entitled "<b>${moduleName}</b>" on ${moduleDate}, participated in its assignment ${presenter}and passed its quiz.`;
     // console.log(studCertificate.module?.topics)
     let speakers = studCertificate.module?.topics ? await this.formatLectures(studCertificate.module?.topics) : '';
     // console.log(speakers)
