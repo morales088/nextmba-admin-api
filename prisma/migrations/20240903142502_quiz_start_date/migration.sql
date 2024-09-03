@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Quiz" ALTER COLUMN "start_date" SET DATA TYPE TEXT,
+ALTER COLUMN "deadline" SET DATA TYPE TEXT;
