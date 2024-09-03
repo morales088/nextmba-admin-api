@@ -16,6 +16,10 @@ export class UpdateQuizDto {
 
   @IsOptional()
   @IsString()
+  start_date: string;
+
+  @IsOptional()
+  @IsString()
   deadline: string;
 
   @IsOptional()

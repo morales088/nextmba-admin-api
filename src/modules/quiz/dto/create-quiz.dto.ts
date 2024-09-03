@@ -20,6 +20,10 @@ export class CreateQuizDto {
 
   @IsOptional()
   @IsString()
+  start_date: string;
+
+  @IsOptional()
+  @IsString()
   deadline: string;
 
   @IsNotEmpty()
