@@ -69,6 +69,7 @@
       .speakers h1 {
         text-transform: uppercase;
         font: inherit;
+        font-size: 12px;
         font-weight: 700;
         padding: 5px 0px;
         margin: 0; /* Remove default margin */
@@ -79,7 +80,8 @@
         font: inherit;
         font-weight: 400;
         font-size: {{speakerSize}};
-        color: #646464;
+        /* color: #646464; */
+        color: #0e0c0e;
         padding: 5px 0px;
         margin: 0; /* Remove default margin */
       }
@@ -108,11 +110,12 @@
 
       .certificateId {
         position: absolute;
-        font-weight: lighter;
-        font-size: 14px;
-        color: #a4a3a0;
-        bottom: 315px;
-        left: 205px;
+        font: inherit;
+        font-weight: 900;
+        font-size: 12px;
+        color: rgba(14, 12, 14, .2);
+        bottom: 21px;
+        right: 105px;
       }
 
       .description {
@@ -147,20 +150,23 @@
         position: absolute;
         z-index: 100;
         left: 65px;
-        bottom: 530px;
+        bottom: 565px;
+        /* top: 75px; */
         width: 700px;
         /* background: rgba(30, 143, 255, 0.319); */
       }
 
       .course {
         font: inherit;
-        font-weight: 800;
+        font-weight: 700;
         text-transform: uppercase;
         font-size: {{courseFontSize}};
+        /* font-size: 38px; */
         /* line-height: 1; */
         color: #ff5600;
         width: 100%;
         text-align: left;
+        margin : 0;
       }
 
       .qr {
@@ -190,7 +196,7 @@
       <div class="speakers">
         {{speakers}}
       </div>
-      <!-- <h2 class="certificateId">Certificate Code: {{certificate_id}}</h2> -->
+      <div class="certificateId">{{certificate_id}}</div>
       <h2 class="description">{{info}}</h2>
       <!-- <h3 class="certificateDate"><b>{{certificate_date}}</b></h3> -->
 

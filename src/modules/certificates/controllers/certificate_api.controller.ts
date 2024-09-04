@@ -38,7 +38,7 @@ export class CertificateApiController {
     const studcourse = await this.coursesService.getStudCourse(studCertificate.course_id, studentInfo.id);
     const attendanceCert = (await this.studentCertificatesService.attendanceCert()).template
     const courseName = course.name.split('+')[0];
-    // const courseName = "AI For Business Course";
+    // const courseName = "Marketing Director Course";
     console.log(studCertificate.certificate_tier);
     console.log(studcourse.starting_date);
     console.log(new Date('2024-07-31'));
@@ -102,13 +102,13 @@ export class CertificateApiController {
 
     let courseSize: string;
     if (courseName.length <= 20) courseSize = '58px';
-    else if (courseName.length <= 29) courseSize = '46px';
+    else if (courseName.length <= 29) courseSize = '38px'; //46
     else courseSize = '40px';
 
     let speakerSize: string;
-    if (studCertificate.module?.topics.length >= 4) speakerSize = '10px';
-    else if (studCertificate.module?.topics.length <= 3) speakerSize = '12px';
-    else speakerSize = '14px';
+    if (studCertificate.module?.topics.length >= 4) speakerSize = '11px';
+    else if (studCertificate.module?.topics.length <= 3) speakerSize = '13px';
+    else speakerSize = '15px';
 
     // QR
     const qrCode = process.env.QR_FE_ROUTE + '/cert/' + studentCertificateCode;
@@ -124,14 +124,14 @@ export class CertificateApiController {
       // modules: moduleHtml.join(', ') + '.',
       modules: moduleHtml.map((name) => `<li>${name}</li>`).join(''),
       template: template,
-      certificate_id: studCertificate.certificate_code,
+      certificate_id: certificate.certificate_code,
       certificate_date: certDate,
       info: studCertificate.certificate_tier == 1 ? completionInfo : attendanceInfo,
       qr: qrCodeDataUrl,
       speakers: speakers,
       speakerSize: speakerSize,
     };
-    // console.log(data)
+    console.log(data.certificate_id)
 
     const pdfBuffer = await this.pdfService.certificateGeneratePdf(htmlFilePath, data);
 
