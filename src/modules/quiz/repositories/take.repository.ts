@@ -45,7 +45,6 @@ export class TakeRepository extends AbstractRepository<Takes> {
   async insert(data: Partial<Takes>): Promise<Takes> {
     return this.prisma[this.modelName].create({ data });
   }
-  
 
   async updateTake(id: number, data: any): Promise<Takes> {
     const take = await this.findById(id);
@@ -58,5 +57,48 @@ export class TakeRepository extends AbstractRepository<Takes> {
       where: { id: id },
       data: data,
     });
+  }
+
+  async submissionsPerQuiz(quizId) {
+    const quizAttempts = await this.prisma.takes.groupBy({
+      by: ['student_id'],
+      where: {
+        quiz_id: quizId,
+      },
+      _count: {
+        _all: true,
+      },
+      _max: {
+        score: true,
+        status: true
+      }
+    });
+
+    const studentIds = quizAttempts.map((attempt) => attempt.student_id);
+    const students = await this.prisma.students.findMany({
+      where: {
+        id: { in: studentIds },
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+    });
+
+    const studentMap = Object.fromEntries(
+      students.map((student) => [student.id, { name: student.name, email: student.email }])
+    );
+
+    const attemptsSummary = quizAttempts.map((attempt) => ({
+      student_id: attempt.student_id,
+      student_name: studentMap[attempt.student_id].name,
+      student_email: studentMap[attempt.student_id].email,
+      attempts: attempt._count._all,
+      passed: attempt._max.status >= 2,
+      score: attempt._max.score,
+    }));
+  
+    return attemptsSummary;
   }
 }

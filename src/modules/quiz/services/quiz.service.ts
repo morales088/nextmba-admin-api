@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { QuizRepository } from '../repositories/quiz.repository';
 import { QuestionRepository } from '../repositories/question.repository';
 import { CreateQuizDto } from '../dto/create-quiz.dto';
+import { TakeRepository } from '../repositories/take.repository';
 // import { QuizQuestionRepository } from '../repositories/quiz_question.repository';
 
 @Injectable()
@@ -9,7 +10,7 @@ export class QuizService {
   constructor(
     private readonly quizRepository: QuizRepository,
     private readonly questionRepository: QuestionRepository,
-    // private readonly quizQuestionRepository: QuizQuestionRepository
+    private readonly takeRepository: TakeRepository
   ) {}
 
   async getQuiz(id: number) {
@@ -60,5 +61,11 @@ export class QuizService {
 
   async updateQuiz(id: number, data) {
     return this.quizRepository.updateQuiz(id, data);
+  }
+
+  async submissionsPerQuiz(quizId: number) {
+    const takes = await this.takeRepository.submissionsPerQuiz(quizId);
+    console.log(takes)
+    return takes
   }
 }
