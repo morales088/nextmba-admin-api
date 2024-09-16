@@ -10,7 +10,7 @@ export enum AccountStatus {
 
 export enum AccountType {
   REGULAR = 1,
-  PRO = 2,
+  PRO = 3,
 }
 
 export enum ModuleType {
