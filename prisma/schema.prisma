@@ -237,7 +237,7 @@ model Student_courses {
   is_followed     Boolean   @default(false)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime? @updatedAt
-  course_tier     Int       @default(1)
+  course_tier     Int       @default(1) // permanent (1), premium/subscription (2), trial(3)
   course          Courses   @relation(fields: [course_id], references: [id])
   student         Students  @relation(fields: [student_id], references: [id])
 }
