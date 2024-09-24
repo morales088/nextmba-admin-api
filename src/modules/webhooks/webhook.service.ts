@@ -37,9 +37,12 @@ export class WebhookService {
       console.log(`🔥 ~ metaData:`, metaData);
       const customerDetails = session.customer_details;
       console.log(`🔥 ~ customerDetails:`, customerDetails);
+      const productCode = metaData.product_code;
+      console.log(`🔥 ~ metaData.product_code:`, metaData.product_code);
+      console.log(`🔥 ~ productCode:`, productCode);
 
       const product = await this.database.products.findFirst({
-        where: { code: metaData.productCode.toString(), status: 1 },
+        where: { code: productCode, status: 1 },
       });
 
       const paymentData = {
