@@ -1,13 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { PaymentsService } from '../payments/services/payments.service';
+import { PrismaService } from '../../common/prisma/prisma.service';
 import Stripe from 'stripe';
 
 @Injectable()
 export class WebhookService {
+  private stripe: Stripe;
+
   constructor(
-    private readonly stripe: Stripe,
-    private paymentService: PaymentsService
-  ) {}
+    private readonly paymentService: PaymentsService,
+    private readonly database: PrismaService
+  ) {
+    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2024-04-10',
+    });
+  }
 
   async handleEvent(event: Stripe.Event) {
     console.log(`🔥 ~ event:`, event);
@@ -32,7 +39,6 @@ export class WebhookService {
   }
 
   async handleSuccessfulSubscription(session: Stripe.Checkout.Session) {
-    console.log(`🔥 ~ session.line_items:`, session.line_items);
     const metaData = session.metadata;
     console.log(`🔥 ~ metaData:`, metaData);
     const customerDetails = session.customer_details;
@@ -41,15 +47,25 @@ export class WebhookService {
     const lineItems = await this.stripe.checkout.sessions.listLineItems(session.id);
     console.log(`🔥 ~ lineItems:`, lineItems);
 
+    const product = await this.database.products.findFirst({
+      where: { code: metaData.productCode },
+    });
+
     const paymentData = {
       name: customerDetails.name,
       email: customerDetails.email,
-      product_code: metaData.product_code,
-      price: metaData.price,
+      product_code: product.code,
+      price: product.price,
     };
     console.log('💡 ~ paymentData:', paymentData);
 
+    const subscription = await this.stripe.subscriptions.retrieve(session.subscription.toString());
+    console.log(`🔥 ~ subscription:`, subscription);
+
     // return this.paymentService.createPayment(paymentData);
+    // after payment, activate the student plan premium
+    // then update the subscription details to include the metadata of the student id for later use
+    // include studentId, productCode
   }
 
   async handleSuccessfulPayment(session: Stripe.Checkout.Session) {

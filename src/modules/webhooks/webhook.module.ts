@@ -2,10 +2,11 @@ import { Module } from '@nestjs/common';
 import { WebhookController } from './webhook.controller';
 import { PaymentsModule } from '../payments/payments.module';
 import { WebhookService } from './webhook.service';
+import { PrismaModule } from '../../common/prisma/prisma.module';
 import Stripe from 'stripe';
 
 @Module({
-  imports: [PaymentsModule],
+  imports: [PaymentsModule, PrismaModule],
   controllers: [WebhookController],
   providers: [WebhookService, Stripe],
   exports: [],
