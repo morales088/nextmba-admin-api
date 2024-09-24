@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PaymentsService } from '../payments/services/payments.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { StudentPlanService } from '../student-plan/services/student-plan.service';
 import Stripe from 'stripe';
 
 @Injectable()
@@ -9,7 +10,8 @@ export class WebhookService {
 
   constructor(
     private readonly paymentService: PaymentsService,
-    private readonly database: PrismaService
+    private readonly database: PrismaService,
+    private readonly studentPlanService: StudentPlanService
   ) {
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
       apiVersion: '2024-04-10',
@@ -27,45 +29,43 @@ export class WebhookService {
         await this.handleSuccessfulSubscription(session);
       }
     }
-
-    // In 'checkout.session.completed' handle the
-    // mode 'subscription'
-    // access the metadata that includes the product_code from payment link
-    // use that product code determine the product bought by the user
-
-    // create a new handleSuccessPayment for subscription
-    // use the product_code from the meta data to fetch the product in the web app
-    // use the price from the product and use to create payment
   }
 
   async handleSuccessfulSubscription(session: Stripe.Checkout.Session) {
-    const metaData = session.metadata;
-    console.log(`🔥 ~ metaData:`, metaData);
-    const customerDetails = session.customer_details;
-    console.log(`🔥 ~ customerDetails:`, customerDetails);
+    try {
+      const metaData = session.metadata;
+      console.log(`🔥 ~ metaData:`, metaData);
+      const customerDetails = session.customer_details;
+      console.log(`🔥 ~ customerDetails:`, customerDetails);
 
-    const lineItems = await this.stripe.checkout.sessions.listLineItems(session.id);
-    console.log(`🔥 ~ lineItems:`, lineItems);
+      const product = await this.database.products.findFirst({
+        where: { code: metaData.productCode.toString(), status: 1 },
+      });
 
-    const product = await this.database.products.findFirst({
-      where: { code: metaData.productCode },
-    });
+      const paymentData = {
+        name: customerDetails.name,
+        email: customerDetails.email,
+        product_code: product.code,
+        price: product.price,
+      };
+      console.log('💡 ~ paymentData:', paymentData);
 
-    const paymentData = {
-      name: customerDetails.name,
-      email: customerDetails.email,
-      product_code: product.code,
-      price: product.price,
-    };
-    console.log('💡 ~ paymentData:', paymentData);
+      const payment = await this.paymentService.createPayment(paymentData);
+      console.log(`🔥 ~ payment:`, payment);
 
-    const subscription = await this.stripe.subscriptions.retrieve(session.subscription.toString());
-    console.log(`🔥 ~ subscription:`, subscription);
+      const subscription = await this.stripe.subscriptions.update(session.subscription.toString(), {
+        metadata: {
+          student_id: payment.student_id,
+          student_email: paymentData.email,
+          product_code: paymentData.product_code,
+        },
+      });
+      console.log(`🔥 ~ subscription:`, subscription);
 
-    // return this.paymentService.createPayment(paymentData);
-    // after payment, activate the student plan premium
-    // then update the subscription details to include the metadata of the student id for later use
-    // include studentId, productCode
+      await this.studentPlanService.activatePremium(payment.studentId);
+    } catch (error) {
+      console.error('Error occurred: ', error.message);
+    }
   }
 
   async handleSuccessfulPayment(session: Stripe.Checkout.Session) {
