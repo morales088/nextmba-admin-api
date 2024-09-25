@@ -247,6 +247,7 @@ model Products {
   name           String          @db.VarChar(255)
   code           String          @db.VarChar(255)
   price          Decimal         @db.Decimal(9, 2)
+  charge_type    Int             @default(1) // 1 - one-off, 2 - recurring
   pro_access     Boolean         @default(false)
   library_access Boolean         @default(false)
   status         Int             @default(1)

@@ -66,4 +66,7 @@ export enum ModuleTierType {
   ALL = 3
 }
 
-
+export enum ChargeType {
+  ONE_OFF = 1,
+  RECURRING = 2,
+}
