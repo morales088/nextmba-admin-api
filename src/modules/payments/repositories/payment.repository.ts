@@ -2,14 +2,10 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { AbstractRepository } from 'src/common/repositories/abstract.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { Payments } from '@prisma/client';
-import { PaymentItemRepository } from './payment_item.repository';
 
 @Injectable()
 export class PaymentRepository extends AbstractRepository<Payments> {
-  constructor(
-    protected readonly prisma: PrismaService,
-    private readonly paymentItemRepository: PaymentItemRepository
-  ) {
+  constructor(protected readonly prisma: PrismaService) {
     super(prisma);
   }
 
@@ -92,9 +88,6 @@ export class PaymentRepository extends AbstractRepository<Payments> {
     };
 
     const createPayment = await this.prisma[this.modelName].create({ data: paymentData });
-
-    // insert payment items
-    await this.paymentItemRepository.insert(studentId, createPayment.id, data.product_code, data.origin);
 
     return await this.findById(createPayment.id);
   }

@@ -3,9 +3,12 @@ import { PaymentRepository } from '../repositories/payment.repository';
 import { StudentRepository } from 'src/modules/students/repositories/student.repository';
 import { StudentsService } from 'src/modules/students/services/students.service';
 import { ProductRepository } from 'src/modules/products/repositories/product.repository';
+import { PaymentItemRepository } from '../repositories/payment_item.repository';
 import { PaymentAffiliateRepository } from '../repositories/payment_affiliate.repository';
 import { SendMailService } from 'src/common/utils/send-mail.service';
 import { PrismaService } from 'src/common/prisma/prisma.service';
+import { StudentPlanService } from '../../student-plan/services/student-plan.service';
+import { ChargeType } from '../../../common/constants/enum';
 
 @Injectable()
 export class PaymentsService {
@@ -14,11 +17,13 @@ export class PaymentsService {
   constructor(
     protected readonly prisma: PrismaService,
     private readonly paymentRepository: PaymentRepository,
+    private readonly paymentItemRepository: PaymentItemRepository,
     private readonly studentRepository: StudentRepository,
     private readonly productRepository: ProductRepository,
     private readonly paymentAffiliateRepository: PaymentAffiliateRepository,
     private readonly studentsService: StudentsService,
-    private readonly sendMailService: SendMailService
+    private readonly sendMailService: SendMailService,
+    private readonly studentPlanService: StudentPlanService
   ) {}
 
   async getPayment(id: number) {
@@ -100,8 +105,17 @@ export class PaymentsService {
         paymentData.commission_percentage = commission_percentage;
       }
 
-      // insert data to payments and return payment_id
+      // insert data to payments
       const createPayment = await this.paymentRepository.insert(studentId, product.id, paymentData);
+
+      // Check for the product charge type
+      if (product.charge_type === ChargeType.RECURRING) {
+        // use the activatePremium function to add the student courses
+        await this.studentPlanService.activatePremium(studentId);
+      } else if (product.charge_type === ChargeType.ONE_OFF) {
+        // insert payment items
+        await this.paymentItemRepository.insert(studentId, createPayment.id, data.product_code, data.origin);
+      }
 
       if (createPayment) {
         // email payment information

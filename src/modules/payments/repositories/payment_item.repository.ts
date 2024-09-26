@@ -26,8 +26,6 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
   }
 
   async insert(studentId: number, paymentId: number, productCode: string, paymentOrigin: number = 1): Promise<any> {
-    // Check for the product charge type if "recurring" use the activatePremium function
-
     const product = await this.prisma.products.findFirst({
       where: { code: productCode, status: 1 },
       include: { product_items: { where: { status: 1 } } },
