@@ -34,7 +34,7 @@ export class StudentPlanService {
   async activatePremium(studentId: number) {
     const studentData = await this.database.students.findFirst({ where: { id: studentId } });
 
-    if (studentData.account_type === 2) return new ForbiddenException('Student is already in Premium plan');
+    if (studentData.account_type === 2) return;
 
     // Find all owned courses
     const studentCourses = await this.database.student_courses.findMany({
@@ -49,6 +49,7 @@ export class StudentPlanService {
         status: 1,
         id: { notIn: studentCourseIds },
       },
+      select: { id: true, name: true, price: true, status: true },
     });
 
     // Set array of data for creating new student_courses
