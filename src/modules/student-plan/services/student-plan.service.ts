@@ -41,6 +41,7 @@ export class StudentPlanService {
         status: 1,
         id: { notIn: studentCourseIds },
       },
+      select: { id: true, name: true, price: true, status: true },
     });
 
     const insertData = unownedCourses.map((course) => ({
