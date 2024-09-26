@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PaymentsService } from '../payments/services/payments.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
-import { StudentPlanService } from '../student-plan/services/student-plan.service';
 import Stripe from 'stripe';
 
 @Injectable()
@@ -10,8 +9,7 @@ export class WebhookService {
 
   constructor(
     private readonly paymentService: PaymentsService,
-    private readonly database: PrismaService,
-    private readonly studentPlanService: StudentPlanService
+    private readonly database: PrismaService
   ) {
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
       apiVersion: '2024-04-10',
@@ -64,8 +62,6 @@ export class WebhookService {
         },
       });
       console.log(`🔥 ~ subscription:`, subscription);
-
-      await this.studentPlanService.activatePremium(payment.studentId);
     } catch (error) {
       console.error('Error occurred: ', error.message);
     }
