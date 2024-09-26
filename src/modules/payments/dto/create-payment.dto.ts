@@ -1,31 +1,22 @@
 import { Prisma } from '@prisma/client';
-import { Transform, Type } from 'class-transformer';
-import { IsDate, IsDateString, IsDecimal, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsDecimal, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { CommissionStatus, PaymentOrigin, PaymentStatus } from '../../../common/constants/enum';
 
 export class CreatePaymentDto {
-//   @IsNotEmpty()
-//   student_id: number;
-
   @IsNotEmpty()
   product_code: number;
 
   @IsOptional()
   @IsString()
   reference_id: string;
-  
-  // @IsDecimal({ decimal_digits: '2' })
-  @IsNotEmpty()
-  // price: Prisma.Decimal;
-  price: number;
 
-  // @IsOptional()
-  // @IsNumber()
-  // @IsIn([1, 2]) 
-  // payment_method: number;
+  @IsNotEmpty()
+  price: number;
 
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
-  @IsIn([1, 2]) 
+  @IsEnum(PaymentOrigin)
   origin: number;
 
   @IsNotEmpty()
@@ -71,14 +62,14 @@ export class CreatePaymentDto {
   @IsOptional()
   @IsString()
   affiliate_code: string;
-  
+
   @IsDecimal({ decimal_digits: '2' })
   @IsOptional()
   commission_percentage: Prisma.Decimal;
 
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
-  @IsIn([0, 1]) //[0 - unpaid, 1 - paid]
+  @IsEnum(CommissionStatus)
   commission_status: number;
 
   @IsOptional()
@@ -87,6 +78,6 @@ export class CreatePaymentDto {
 
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
-  @IsIn([0, 1, 2]) //[0 - Void, 1 - Paid, 2 - Refunded]
+  @IsEnum(PaymentStatus)
   status: number;
 }

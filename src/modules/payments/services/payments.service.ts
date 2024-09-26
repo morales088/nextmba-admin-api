@@ -19,7 +19,7 @@ export class PaymentsService {
     private readonly paymentAffiliateRepository: PaymentAffiliateRepository,
     private readonly studentsService: StudentsService,
     private readonly sendMailService: SendMailService
-  ) { }
+  ) {}
 
   async getPayment(id: number) {
     return this.paymentRepository.findById(id);
@@ -42,7 +42,9 @@ export class PaymentsService {
       // check if email has account and return student_id
       let studentId: number;
       const findStudent = await this.studentRepository.findByEmail(data.email);
+
       if (findStudent) {
+        // update student library access and account type based on product
         if (product.library_access === true || product.pro_access === true) {
           const updateStudent = {
             library_access: product.library_access === true ? 1 : 0,
@@ -60,7 +62,7 @@ export class PaymentsService {
           email: data.email,
           library_access: product.library_access === true ? 1 : 0,
           account_type: product.pro_access === true ? 3 : 1,
-          created_by: data.created_by
+          created_by: data.created_by,
         };
 
         // const createStudent = await this.studentsService.createStudent(studentData);

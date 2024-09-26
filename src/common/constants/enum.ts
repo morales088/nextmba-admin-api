@@ -43,11 +43,6 @@ export enum Difficulty {
   HARD = 3,
 }
 
-export const Active = {
-  INCLUDED : true,
-  EXCLUDED : false,
-}
-
 export enum QuizStatus {
   DELETED = 0,
   ACTIVE = 1,
@@ -63,10 +58,21 @@ export enum TakeStatus {
 export enum ModuleTierType {
   FULL = 1,
   LIMITED = 2,
-  ALL = 3
+  ALL = 3,
 }
 
 export enum ChargeType {
   ONE_OFF = 1,
   RECURRING = 2,
+}
+
+export enum CommissionStatus {
+  UNPAID = 0,
+  PAID = 1,
+}
+
+export enum PaymentStatus {
+  VOID = 0,
+  PAID = 1,
+  REFUNDED = 2,
 }
