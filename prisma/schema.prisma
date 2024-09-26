@@ -251,6 +251,7 @@ model Products {
   pro_access     Boolean         @default(false)
   library_access Boolean         @default(false)
   status         Int             @default(1)
+  charge_type    Int // one time payment (1), recurring
   createdAt      DateTime        @default(now())
   updatedAt      DateTime?       @updatedAt
   payments       Payments[]
