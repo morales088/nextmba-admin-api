@@ -7,7 +7,7 @@ export class StudentPlanController {
 
   @Get('/:studentId')
   async getSubscriptionDetails(@Param('studentId') studentId: number) {
-    return await this.studentPlanService.findSubscriptionDetails(studentId);
+    return this.studentPlanService.findSubscriptionDetails(studentId);
   }
 
   @Patch('/end-trial/:studentId')

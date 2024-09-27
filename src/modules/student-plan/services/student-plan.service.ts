@@ -14,7 +14,7 @@ export class StudentPlanService {
   async findSubscriptionDetails(studentId: number) {
     const student = await this.database.students.findFirst({ where: { id: studentId } });
 
-    if (student?.account_type === 2) return {};
+    if (student?.account_type !== 2) return {};
 
     const { product } = await this.stripeService.findSubscriptionPayment(studentId);
 
