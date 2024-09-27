@@ -16,13 +16,15 @@ export class StripeService {
   }
 
   async findSubscriptionPayment(studentId: number) {
-    const subscriptionPayment = await this.database.payments.findFirstOrThrow({
+    const subscriptionPayment = await this.database.payments.findFirst({
       where: {
         student_id: studentId,
         product: { charge_type: ChargeType.RECURRING },
       },
       include: { product: true },
     });
+
+    if (!subscriptionPayment) throw new NotFoundException('No subscription payment found.')
 
     return subscriptionPayment;
   }
