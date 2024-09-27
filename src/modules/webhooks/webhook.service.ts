@@ -1,20 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { PaymentsService } from '../payments/services/payments.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { StripeService } from '../stripe/stripe.service';
 import Stripe from 'stripe';
 
 @Injectable()
 export class WebhookService {
-  private stripe: Stripe;
-
   constructor(
     private readonly paymentService: PaymentsService,
-    private readonly database: PrismaService
-  ) {
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2024-04-10',
-    });
-  }
+    private readonly database: PrismaService,
+    private readonly stripeService: StripeService
+  ) {}
 
   async handleEvent(event: Stripe.Event) {
     console.log(`🔥 ~ event:`, event);
@@ -54,12 +50,10 @@ export class WebhookService {
       const payment = await this.paymentService.createPayment(paymentData);
       console.log(`🔥 ~ payment:`, payment);
 
-      const subscription = await this.stripe.subscriptions.update(session.subscription.toString(), {
-        metadata: {
-          student_id: payment.student_id,
-          student_email: paymentData.email,
-          product_code: paymentData.product_code,
-        },
+      const subscription = await this.stripeService.updateSubscription(session.subscription.toString(), {
+        student_id: payment.student_id,
+        payment_id: payment.id,
+        product_code: paymentData.product_code,
       });
       console.log(`🔥 ~ subscription:`, subscription);
     } catch (error) {

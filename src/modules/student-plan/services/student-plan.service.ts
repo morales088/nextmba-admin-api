@@ -2,10 +2,28 @@ import { UTCDate } from '@date-fns/utc';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { addMonths } from 'date-fns';
 import { PrismaService } from 'src/common/prisma/prisma.service';
+import { StripeService } from '../../stripe/stripe.service';
 
 @Injectable()
 export class StudentPlanService {
-  constructor(private readonly database: PrismaService) {}
+  constructor(
+    private readonly database: PrismaService,
+    private readonly stripeService: StripeService
+  ) {}
+
+  async findSubscriptionDetails(studentId: number) {
+    const student = await this.database.students.findFirst({ where: { id: studentId } });
+
+    if (student?.account_type === 2) return {};
+
+    const { product } = await this.stripeService.findSubscriptionPayment(studentId);
+
+    return {
+      name: product.name,
+      code: product.code,
+      price: product.price,
+    };
+  }
 
   // end trial
   async endTrial(studentId: number) {
@@ -106,6 +124,8 @@ export class StudentPlanService {
 
   // end subscription
   async endPremium(studentId: number) {
+    await this.stripeService.findAndCancelSubscription(studentId);
+
     return await this.database.$transaction(async (tx) => {
       // Update student account to basic
       await tx.students.update({ where: { id: studentId }, data: { account_type: 1 } });
