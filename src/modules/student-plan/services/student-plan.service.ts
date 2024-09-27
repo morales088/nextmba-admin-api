@@ -11,6 +11,20 @@ export class StudentPlanService {
     private readonly stripeService: StripeService
   ) {}
 
+  async findSubscriptionDetails(studentId: number) {
+    const student = await this.database.students.findFirst({ where: { id: studentId } });
+
+    if (student?.account_type === 2) return {};
+
+    const { product } = await this.stripeService.findSubscriptionPayment(studentId);
+
+    return {
+      name: product.name,
+      code: product.code,
+      price: product.price,
+    };
+  }
+
   // end trial
   async endTrial(studentId: number) {
     return await this.database.$transaction(async (tx) => {

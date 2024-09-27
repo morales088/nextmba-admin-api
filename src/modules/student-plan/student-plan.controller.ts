@@ -1,9 +1,14 @@
-import { Controller, Param, Patch, Post, Query } from '@nestjs/common';
+import { Controller, Param, Patch, Post, Query, Get } from '@nestjs/common';
 import { StudentPlanService } from './services/student-plan.service';
 
 @Controller('student-plan')
 export class StudentPlanController {
   constructor(private readonly studentPlanService: StudentPlanService) {}
+
+  @Get('/:studentId')
+  async getSubscriptionDetails(@Param('studentId') studentId: number) {
+    return await this.studentPlanService.findSubscriptionDetails(studentId);
+  }
 
   @Patch('/end-trial/:studentId')
   async endTrial(@Param('studentId') studentId: number) {
