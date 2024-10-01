@@ -293,6 +293,7 @@ model Payments {
   commission_percentage Decimal               @default(0) @db.Decimal(9, 2)
   commission_status     Int                   @default(0)
   remarks               String?
+  subscriptionId        String?
   status                Int                   @default(1)
   createdAt             DateTime              @default(now())
   updatedAt             DateTime?             @updatedAt
