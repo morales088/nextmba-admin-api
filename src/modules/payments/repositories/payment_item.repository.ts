@@ -110,7 +110,7 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
     }
 
     // insert all course if pro account
-    if (product.pro_access === true) await this.addPro(studentId);
+    // if (product.pro_access === true) await this.addPro(studentId);
 
     return 'payment items successfully created';
   }

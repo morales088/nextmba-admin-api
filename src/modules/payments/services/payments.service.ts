@@ -54,7 +54,7 @@ export class PaymentsService {
         if (product.library_access === true || product.pro_access === true) {
           const updateStudent = {
             library_access: product.library_access === true ? 1 : 0,
-            account_type: product.pro_access === true ? 3 : findStudent.account_type,
+            // account_type: product.pro_access === true ? 3 : findStudent.account_type,
           };
 
           this.studentsService.updateStudent(findStudent.id, updateStudent);
@@ -67,7 +67,7 @@ export class PaymentsService {
           name: data.name,
           email: data.email,
           library_access: product.library_access === true ? 1 : 0,
-          account_type: product.pro_access === true ? 3 : 1,
+          // account_type: product.pro_access === true ? 3 : 1,
           created_by: data.created_by,
         };
 
