@@ -20,8 +20,10 @@ export class StripeService {
       where: {
         student_id: studentId,
         product: { charge_type: ChargeType.RECURRING },
+        subscriptionId: { not: null },
       },
       include: { product: true },
+      orderBy: { createdAt: 'desc' },
     });
 
     if (!subscriptionPayment) throw new NotFoundException('No subscription payment found.');
