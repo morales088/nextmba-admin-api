@@ -71,6 +71,8 @@ export class StudentPlanService {
 
   // end trial
   async endTrial(studentId: number) {
+    await this.stripeService.findAndCancelSubscription(studentId);
+
     return await this.database.$transaction(async (tx) => {
       // Update the student account to basic
       await tx.students.update({ where: { id: studentId }, data: { account_type: 1 } });
