@@ -8,7 +8,8 @@ import { PaymentAffiliateRepository } from '../repositories/payment_affiliate.re
 import { SendMailService } from 'src/common/utils/send-mail.service';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { StudentPlanService } from '../../student-plan/services/student-plan.service';
-import { ChargeType } from '../../../common/constants/enum';
+import { ChargeType, SubscriptionStatus } from '../../../common/constants/enum';
+import Stripe from 'stripe';
 
 @Injectable()
 export class PaymentsService {
@@ -34,7 +35,7 @@ export class PaymentsService {
     return this.paymentRepository.payments(user, searchFilter, page, per_page);
   }
 
-  async createPayment(data) {
+  async createPayment(data: any, subscriptionStatus?: Stripe.Subscription.Status) {
     try {
       // check reference id if already exists
       const existingPayment = await this.paymentRepository.findByReferenceId(data.reference_id);
@@ -108,10 +109,13 @@ export class PaymentsService {
       // insert data to payments
       const createPayment = await this.paymentRepository.insert(studentId, product.id, paymentData);
 
-      // Check for the product charge type
+      // Check for the product charge type and trialStatus from webhook
       if (product.charge_type === ChargeType.RECURRING) {
-        // use the activatePremium function to add the student courses
-        await this.studentPlanService.activatePremium(studentId);
+        if (subscriptionStatus === SubscriptionStatus.TRIALING) {
+          await this.studentPlanService.activateTrial(studentId);
+        } else if (subscriptionStatus === SubscriptionStatus.ACTIVE) {
+          await this.studentPlanService.activatePremium(studentId);
+        }
       } else if (product.charge_type === ChargeType.ONE_OFF) {
         // insert payment items
         await this.paymentItemRepository.insert(studentId, createPayment.id, data.product_code, data.origin);

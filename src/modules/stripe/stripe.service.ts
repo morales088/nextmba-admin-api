@@ -24,9 +24,13 @@ export class StripeService {
       include: { product: true },
     });
 
-    if (!subscriptionPayment) throw new NotFoundException('No subscription payment found.')
+    if (!subscriptionPayment) throw new NotFoundException('No subscription payment found.');
 
     return subscriptionPayment;
+  }
+
+  async retrieveSubscription(subscriptionId: string) {
+    return this.stripe.subscriptions.retrieve(subscriptionId);
   }
 
   async updateSubscription(subscriptionId: string, metadata: any) {

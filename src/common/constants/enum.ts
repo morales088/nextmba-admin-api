@@ -76,3 +76,14 @@ export enum PaymentStatus {
   PAID = 1,
   REFUNDED = 2,
 }
+
+export enum SubscriptionStatus {
+  TRIALING = 'trialing',
+  ACTIVE = 'active',
+  PAST_DUE = 'past_due',
+  PAUSED = 'paused',
+  UNPAID = 'unpaid',
+  CANCELLED = 'past_due',
+  INCOMPLETE = 'incomplete',
+  INCOMPLETE_EXPIRED = 'incomplete_expired',
+}

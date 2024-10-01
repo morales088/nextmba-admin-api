@@ -10,9 +10,8 @@ export class StudentPlanController {
     return this.studentPlanService.findSubscriptionDetails(studentId);
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Post('/activate-trial')
-  async activateTrial(@Auth('userId') studentId: number) {
+  @Post('/activate-trial/:studentId')
+  async activateTrial(@Param('studentId') studentId: number) {
     return await this.studentPlanService.activateTrial(studentId);
   }
 
