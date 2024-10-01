@@ -1,6 +1,6 @@
 import { UTCDate } from '@date-fns/utc';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { addMonths } from 'date-fns';
+import { addMonths, addWeeks } from 'date-fns';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { StripeService } from '../../stripe/stripe.service';
 
@@ -23,6 +23,50 @@ export class StudentPlanService {
       code: product.code,
       price: product.price,
     };
+  }
+
+  // start trial
+  async activateTrial(studentId: number) {
+    // Get the student data
+    const studentData = await this.database.students.findFirst({ where: { id: studentId } });
+
+    if (studentData.claimed_trial) return new ForbiddenException('Student already claimed trial');
+
+    // Create an array of owned courses
+    const studentCourses = await this.database.student_courses.findMany({
+      where: { student_id: studentId, status: 1 },
+      select: { course_id: true },
+    });
+    const studentCourseIds = studentCourses.map((sc) => sc.course_id);
+
+    // Finds the courses that is unowned
+    const unownedCourses = await this.database.courses.findMany({
+      where: {
+        status: 1,
+        id: { notIn: studentCourseIds },
+      },
+    });
+
+    // Create data for creating student courses
+    const insertData = unownedCourses.map((course) => ({
+      student_id: studentId,
+      course_id: course.id,
+      course_tier: 3,
+      expiration_date: addWeeks(new UTCDate(), 1),
+    }));
+
+    // Update the student account type
+    await this.database.students.update({
+      where: { id: studentId },
+      data: { account_type: 3, claimed_trial: true, claimed_trial_at: new UTCDate() },
+    });
+
+    // Create courses
+    const createdDatas = await Promise.all(
+      insertData.map(async (data) => await this.database.student_courses.create({ data }))
+    );
+
+    return createdDatas;
   }
 
   // end trial
