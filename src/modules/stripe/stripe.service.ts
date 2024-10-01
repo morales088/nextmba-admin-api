@@ -27,6 +27,8 @@ export class StripeService {
     });
 
     if (!subscriptionPayment) throw new NotFoundException('No subscription payment found.');
+    
+    console.log(`🔥 ~ subscriptionPayment:`, subscriptionPayment);
 
     return subscriptionPayment;
   }
