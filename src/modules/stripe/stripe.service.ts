@@ -38,12 +38,8 @@ export class StripeService {
   }
 
   async findAndCancelSubscription(studentId: number) {
-    const findSubscriptionPayment = await this.findSubscriptionPayment(studentId);
+    const subscriptionPayment = await this.findSubscriptionPayment(studentId);
 
-    if (findSubscriptionPayment?.product?.charge_type === ChargeType.RECURRING) {
-      const { subscriptionId } = findSubscriptionPayment;
-
-      return this.stripe.subscriptions.cancel(subscriptionId);
-    }
+    return this.stripe.subscriptions.cancel(subscriptionPayment.subscriptionId);
   }
 }
