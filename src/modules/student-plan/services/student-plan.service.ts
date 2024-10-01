@@ -151,7 +151,7 @@ export class StudentPlanService {
       });
       const premiumCoursesIds = premiumCourses.map((pc) => pc.id);
 
-      // Update all premium coures
+      // Update all premium courses
       const updatedDatas = await Promise.all(
         premiumCoursesIds.map(
           async (courseId) =>

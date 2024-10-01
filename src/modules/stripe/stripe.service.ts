@@ -38,30 +38,8 @@ export class StripeService {
   }
 
   async findAndCancelSubscription(studentId: number) {
-    const findSubscriptionPayment = await this.findSubscriptionPayment(studentId);
+    const subscriptionPayment = await this.findSubscriptionPayment(studentId);
 
-    if (findSubscriptionPayment?.product?.charge_type === ChargeType.RECURRING) {
-      const { product, ...payment } = findSubscriptionPayment;
-
-      // Step 1: Use Stripe's search functionality to find the active subscription with the provided metadata
-      const query = `
-        status:'active' 
-        AND metadata['student_id']:'${studentId}' 
-        AND metadata['student_email']:'${payment.id}'
-        AND metadata['product_code']:'${product.code}'
-      `;
-
-      const subscriptions = await this.stripe.subscriptions.search({ query });
-      console.log(`🔥 ~ subscriptions:`, subscriptions);
-
-      if (subscriptions.data.length === 0) {
-        throw new NotFoundException('No active subscription found for the given student');
-      }
-
-      const subscriptionId = subscriptions.data.at(0).id;
-      console.log(`🔥 ~ subscriptionId:`, subscriptionId);
-
-      return this.stripe.subscriptions.cancel(subscriptionId);
-    }
+    return this.stripe.subscriptions.cancel(subscriptionPayment.subscriptionId);
   }
 }
