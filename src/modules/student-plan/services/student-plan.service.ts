@@ -82,6 +82,7 @@ export class StudentPlanService {
         where: { student_id: studentId, course_tier: 3, status: 1 },
         select: { id: true },
       });
+      console.log(`🔥 ~ studentCourse:`, studentCourse);
 
       // Update the data
       const updatedDatas = await Promise.all(
@@ -89,6 +90,7 @@ export class StudentPlanService {
           async (data) => await this.database.student_courses.update({ where: { id: data.id }, data: { status: 0 } })
         )
       );
+      console.log(`🔥 ~ updatedDatas:`, updatedDatas);
 
       return updatedDatas;
     });
