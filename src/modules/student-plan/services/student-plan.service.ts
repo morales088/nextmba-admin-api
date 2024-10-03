@@ -73,7 +73,7 @@ export class StudentPlanService {
   async endTrial(studentId: number) {
     await this.stripeService.findAndCancelSubscription(studentId);
 
-    return await this.database.$transaction(async (tx) => {
+    const result = await this.database.$transaction(async (tx) => {
       // Update the student account to basic
       await tx.students.update({ where: { id: studentId }, data: { account_type: 1 } });
 
@@ -87,13 +87,17 @@ export class StudentPlanService {
       // Update the data
       const updatedDatas = await Promise.all(
         studentCourse.map(
-          async (data) => await this.database.student_courses.update({ where: { id: data.id }, data: { status: 0 } })
+          async (data) => await tx.student_courses.update({ where: { id: data.id }, data: { status: 0 } })
         )
       );
       console.log(`🔥 ~ updatedDatas:`, updatedDatas);
 
-      return updatedDatas;
+      return result;
     });
+
+    
+    console.log(`🔥 ~ result:`, result);
+    return result;
   }
 
   // activate subscription
@@ -174,7 +178,7 @@ export class StudentPlanService {
   async endPremium(studentId: number) {
     await this.stripeService.findAndCancelSubscription(studentId);
 
-    return await this.database.$transaction(async (tx) => {
+    const result = await this.database.$transaction(async (tx) => {
       // Update student account to basic
       await tx.students.update({ where: { id: studentId }, data: { account_type: 1 } });
 
@@ -187,12 +191,15 @@ export class StudentPlanService {
       // Update all the courses so that the student doesn't have access to it
       const updatedDatas = await Promise.all(
         studentCourse.map(
-          async (data) => await this.database.student_courses.update({ where: { id: data.id }, data: { status: 0 } })
+          async (data) => await tx.student_courses.update({ where: { id: data.id }, data: { status: 0 } })
         )
       );
 
       return updatedDatas;
     });
+
+    console.log(`🔥 ~ result:`, result);
+    return result;
   }
 
   // Used for tracking expired basic courses (exceeded 1 year expiration)

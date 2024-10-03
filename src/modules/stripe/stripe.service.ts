@@ -43,6 +43,7 @@ export class StripeService {
 
   async findAndCancelSubscription(studentId: number) {
     const subscriptionPayment = await this.findSubscriptionPayment(studentId);
+    console.log(`🔥 ~ subscriptionPayment:`, subscriptionPayment);
 
     return this.stripe.subscriptions.cancel(subscriptionPayment.subscriptionId);
   }
