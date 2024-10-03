@@ -77,6 +77,7 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
         starting_date: startingDate,
         expiration_date: expirationDate,
         course_tier: product_item.course_tier,
+        is_followed: true,
       };
 
       // add student course for first time enrollee
