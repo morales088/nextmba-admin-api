@@ -73,31 +73,28 @@ export class StudentPlanService {
   async endTrial(studentId: number) {
     await this.stripeService.findAndCancelSubscription(studentId);
 
-    const result = await this.database.$transaction(async (tx) => {
-      // Update the student account to basic
-      await tx.students.update({ where: { id: studentId }, data: { account_type: 1 } });
+    // Update the student account to basic
+    await this.database.students.update({ where: { id: studentId }, data: { account_type: 1 } });
 
-      // Take all of the courses that came along with the trial
-      const studentCourse = await tx.student_courses.findMany({
-        where: { student_id: studentId, course_tier: 3, status: 1 },
-        select: { id: true },
-      });
-      console.log(`🔥 ~ studentCourse:`, studentCourse);
-
-      // Update the data
-      const updatedDatas = await Promise.all(
-        studentCourse.map(
-          async (data) => await tx.student_courses.update({ where: { id: data.id }, data: { status: 0 } })
-        )
-      );
-      console.log(`🔥 ~ updatedDatas:`, updatedDatas);
-
-      return result;
+    // Take all of the courses that came along with the trial
+    const studentCourses = await this.database.student_courses.findMany({
+      where: { student_id: studentId, course_tier: 3, status: 1 },
+      select: { id: true },
     });
+    console.log(`🔥 ~ studentCourse:`, studentCourses);
 
-    
-    console.log(`🔥 ~ result:`, result);
-    return result;
+    // If there are courses to update, use a bulk update (updateMany)
+    if (studentCourses.length > 0) {
+      const courseIds = studentCourses.map((course) => course.id);
+
+      const result = await this.database.student_courses.updateMany({
+        where: { id: { in: courseIds } },
+        data: { status: 0 },
+      });
+
+      console.log(`🔥 ~ result:`, result);
+      return result;
+    }
   }
 
   // activate subscription
@@ -178,28 +175,27 @@ export class StudentPlanService {
   async endPremium(studentId: number) {
     await this.stripeService.findAndCancelSubscription(studentId);
 
-    const result = await this.database.$transaction(async (tx) => {
-      // Update student account to basic
-      await tx.students.update({ where: { id: studentId }, data: { account_type: 1 } });
+    // Update student account to basic
+    await this.database.students.update({ where: { id: studentId }, data: { account_type: 1 } });
 
-      // Get all courses that came with premium
-      const studentCourse = await tx.student_courses.findMany({
-        where: { student_id: studentId, course_tier: 2, status: 1 },
-        select: { id: true },
-      });
-
-      // Update all the courses so that the student doesn't have access to it
-      const updatedDatas = await Promise.all(
-        studentCourse.map(
-          async (data) => await tx.student_courses.update({ where: { id: data.id }, data: { status: 0 } })
-        )
-      );
-
-      return updatedDatas;
+    // Get all courses that came with premium
+    const studentCourses = await this.database.student_courses.findMany({
+      where: { student_id: studentId, course_tier: 2, status: 1 },
+      select: { id: true },
     });
 
-    console.log(`🔥 ~ result:`, result);
-    return result;
+    // Update all the courses so that the student doesn't have access to it
+    if (studentCourses.length > 0) {
+      const courseIds = studentCourses.map((course) => course.id);
+
+      const result = await this.database.student_courses.updateMany({
+        where: { id: { in: courseIds } },
+        data: { status: 0 },
+      });
+
+      console.log(`🔥 ~ result:`, result);
+      return result;
+    }
   }
 
   // Used for tracking expired basic courses (exceeded 1 year expiration)
