@@ -32,6 +32,9 @@ import { CronModule } from './modules/cron/cron.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { QuizModule } from './modules/quiz/quiz.module';
 import { WebhookModule } from './modules/webhooks/webhook.module';
+import { StudentPlanModule } from './modules/student-plan/student-plan.module';
+import { StudentSubscriptionsModule } from './modules/student-subscriptions/student-subscriptions.module';
+import { StripeModule } from './modules/stripe/stripe.module';
 
 dotenv.config();
 
@@ -79,7 +82,10 @@ dotenv.config();
     AssignmentsModule,
     CronModule,
     QuizModule,
-    WebhookModule
+    WebhookModule,
+    StudentPlanModule,
+    StudentSubscriptionsModule,
+    StripeModule,
   ],
   controllers: [],
   providers: [],

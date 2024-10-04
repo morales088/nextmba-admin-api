@@ -28,6 +28,11 @@ export class QuizController {
     return await this.quizService.getByQuizId(quizId);
   }
 
+  @Get('/submissions/:quizId')
+  async getSubmissionsPerQuiz(@Param('quizId') quizId: number) {
+    return await this.quizService.submissionsPerQuiz(quizId);
+  }
+
   @Post('/')
   async createQuiz(@Body() createQuizDto: CreateQuizDto) {
     const quizData = {

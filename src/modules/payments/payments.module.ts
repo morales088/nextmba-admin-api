@@ -17,9 +17,10 @@ import { PaymentAffiliateRepository } from './repositories/payment_affiliate.rep
 import { PdfService } from 'src/common/utils/pdf.service';
 import { BillingRepository } from '../billings/repositories/billing.repository';
 import { EcommpayService } from './services/ecommpay.service';
+import { StudentPlanModule } from '../student-plan/student-plan.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, StudentPlanModule],
   controllers: [PaymentsController, PaymentApiController],
   providers: [
     PaymentsService,

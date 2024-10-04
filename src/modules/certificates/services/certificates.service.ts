@@ -25,6 +25,10 @@ export class StudentCertificatesService {
     return await this.studentCertificateRepository.findById(id);
   }
 
+  async attendanceCert() {
+    return await this.certificateRepository.attendanceCert();
+  }
+
   async getCertificateByCode(code: string) {
     return await this.studentCertificateRepository.findByCode(code);
   }

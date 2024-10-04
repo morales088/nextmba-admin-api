@@ -17,7 +17,7 @@ export class PaymentApiController {
 
   @Post('/')
   @UseGuards(ApiKeyGuard)
-  async createModule(@Body() createPaymentDto: CreatePaymentDto) {
+  async createPaymentViaAPI(@Body() createPaymentDto: CreatePaymentDto) {
     try {
       const paymentData = {
         ...createPaymentDto,

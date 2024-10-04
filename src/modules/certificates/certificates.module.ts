@@ -12,6 +12,7 @@ import { CoursesService } from '../courses/services/courses.service';
 import { CourseRepository } from '../courses/repositories/course.repository';
 import { StudentRepository } from '../students/repositories/student.repository';
 import { QrService } from './services/qr.service';
+import { StudentCoursesRepository } from '../students/repositories/student_courses.repository';
 
 @Module({
   imports: [PrismaModule],
@@ -26,7 +27,8 @@ import { QrService } from './services/qr.service';
     CoursesService,
     QrService,
     CourseRepository,
-    StudentRepository
+    StudentRepository,
+    StudentCoursesRepository
   ],
 })
 export class CertificatesModule {}
