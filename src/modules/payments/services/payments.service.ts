@@ -3,9 +3,13 @@ import { PaymentRepository } from '../repositories/payment.repository';
 import { StudentRepository } from 'src/modules/students/repositories/student.repository';
 import { StudentsService } from 'src/modules/students/services/students.service';
 import { ProductRepository } from 'src/modules/products/repositories/product.repository';
+import { PaymentItemRepository } from '../repositories/payment_item.repository';
 import { PaymentAffiliateRepository } from '../repositories/payment_affiliate.repository';
 import { SendMailService } from 'src/common/utils/send-mail.service';
 import { PrismaService } from 'src/common/prisma/prisma.service';
+import { StudentPlanService } from '../../student-plan/services/student-plan.service';
+import { ChargeType, SubscriptionStatus } from '../../../common/constants/enum';
+import Stripe from 'stripe';
 
 @Injectable()
 export class PaymentsService {
@@ -14,12 +18,14 @@ export class PaymentsService {
   constructor(
     protected readonly prisma: PrismaService,
     private readonly paymentRepository: PaymentRepository,
+    private readonly paymentItemRepository: PaymentItemRepository,
     private readonly studentRepository: StudentRepository,
     private readonly productRepository: ProductRepository,
     private readonly paymentAffiliateRepository: PaymentAffiliateRepository,
     private readonly studentsService: StudentsService,
-    private readonly sendMailService: SendMailService
-  ) { }
+    private readonly sendMailService: SendMailService,
+    private readonly studentPlanService: StudentPlanService
+  ) {}
 
   async getPayment(id: number) {
     return this.paymentRepository.findById(id);
@@ -29,7 +35,7 @@ export class PaymentsService {
     return this.paymentRepository.payments(user, searchFilter, page, per_page);
   }
 
-  async createPayment(data) {
+  async createPayment(data: any, subscriptionStatus?: Stripe.Subscription.Status) {
     try {
       // check reference id if already exists
       const existingPayment = await this.paymentRepository.findByReferenceId(data.reference_id);
@@ -42,11 +48,13 @@ export class PaymentsService {
       // check if email has account and return student_id
       let studentId: number;
       const findStudent = await this.studentRepository.findByEmail(data.email);
+
       if (findStudent) {
+        // update student library access and account type based on product
         if (product.library_access === true || product.pro_access === true) {
           const updateStudent = {
             library_access: product.library_access === true ? 1 : 0,
-            account_type: product.pro_access === true ? 3 : findStudent.account_type,
+            // account_type: product.pro_access === true ? 3 : findStudent.account_type,
           };
 
           this.studentsService.updateStudent(findStudent.id, updateStudent);
@@ -59,8 +67,8 @@ export class PaymentsService {
           name: data.name,
           email: data.email,
           library_access: product.library_access === true ? 1 : 0,
-          account_type: product.pro_access === true ? 3 : 1,
-          created_by: data.created_by
+          // account_type: product.pro_access === true ? 3 : 1,
+          created_by: data.created_by,
         };
 
         // const createStudent = await this.studentsService.createStudent(studentData);
@@ -98,8 +106,20 @@ export class PaymentsService {
         paymentData.commission_percentage = commission_percentage;
       }
 
-      // insert data to payments and return payment_id
+      // insert data to payments
       const createPayment = await this.paymentRepository.insert(studentId, product.id, paymentData);
+
+      // Check for the product charge type and trialStatus from webhook
+      if (product.charge_type === ChargeType.RECURRING) {
+        if (subscriptionStatus === SubscriptionStatus.TRIALING) {
+          await this.studentPlanService.activateTrial(studentId);
+        } else if (subscriptionStatus === SubscriptionStatus.ACTIVE) {
+          await this.studentPlanService.activatePremium(studentId);
+        }
+      } else if (product.charge_type === ChargeType.ONE_OFF) {
+        // insert payment items
+        await this.paymentItemRepository.insert(studentId, createPayment.id, data.product_code, data.origin);
+      }
 
       if (createPayment) {
         // email payment information

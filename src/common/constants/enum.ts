@@ -10,7 +10,7 @@ export enum AccountStatus {
 
 export enum AccountType {
   REGULAR = 1,
-  PRO = 2,
+  PRO = 3,
 }
 
 export enum ModuleType {
@@ -37,8 +37,53 @@ export enum AssignmentsType {
   GROUP = 2,
 }
 
+export enum Difficulty {
+  EAST = 1,
+  MEDIUM = 2,
+  HARD = 3,
+}
+
+export enum QuizStatus {
+  DELETED = 0,
+  ACTIVE = 1,
+  PUBLISHED = 2,
+}
+
+export enum TakeStatus {
+  FAIL = 0,
+  ONGOING = 1,
+  PASS = 2,
+}
+
 export enum ModuleTierType {
   FULL = 1,
   LIMITED = 2,
-  ALL = 3
+  ALL = 3,
+}
+
+export enum ChargeType {
+  ONE_OFF = 1,
+  RECURRING = 2,
+}
+
+export enum CommissionStatus {
+  UNPAID = 0,
+  PAID = 1,
+}
+
+export enum PaymentStatus {
+  VOID = 0,
+  PAID = 1,
+  REFUNDED = 2,
+}
+
+export enum SubscriptionStatus {
+  TRIALING = 'trialing',
+  ACTIVE = 'active',
+  PAST_DUE = 'past_due',
+  PAUSED = 'paused',
+  UNPAID = 'unpaid',
+  CANCELLED = 'past_due',
+  INCOMPLETE = 'incomplete',
+  INCOMPLETE_EXPIRED = 'incomplete_expired',
 }

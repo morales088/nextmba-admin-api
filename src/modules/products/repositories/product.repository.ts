@@ -47,7 +47,8 @@ export class ProductRepository extends AbstractRepository<Products> {
         product_id: createProduct.id,
         ...item,
       };
-      const createProductItem = await this.productItemRepository.insert(itemData);
+
+      await this.productItemRepository.insert(itemData);
     }
 
     return this.prisma[this.modelName].findUnique({

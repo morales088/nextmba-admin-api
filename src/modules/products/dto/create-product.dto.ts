@@ -1,6 +1,17 @@
 import { Prisma } from '@prisma/client';
 import { Transform, Type } from 'class-transformer';
-import { IsArray, IsDecimal, IsIn, IsNotEmpty, IsOptional, IsString, ValidateNested, isNumber } from 'class-validator';
+import {
+  IsArray,
+  IsDecimal,
+  IsEnum,
+  IsIn,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+  isNumber,
+} from 'class-validator';
+import { ChargeType } from '../../../common/constants/enum';
 
 export class CreateProductDto {
   @IsNotEmpty()
@@ -10,17 +21,21 @@ export class CreateProductDto {
   @IsNotEmpty()
   @IsString()
   code: string;
-  
+
   @IsDecimal({ decimal_digits: '2' })
   @IsNotEmpty()
   price: Prisma.Decimal;
+
+  @IsOptional()
+  @IsEnum(ChargeType)
+  charge_type: number;
 
   @IsOptional()
   pro_access: boolean;
 
   @IsOptional()
   library_access: boolean;
-  
+
   @IsNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => ItemsDTO)
@@ -28,9 +43,7 @@ export class CreateProductDto {
   product_items: ItemsDTO[];
 }
 
-
 export class ItemsDTO {
-
   @IsNotEmpty()
   course_id: number;
 

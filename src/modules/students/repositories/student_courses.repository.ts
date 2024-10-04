@@ -202,4 +202,10 @@ export class StudentCoursesRepository extends AbstractRepository<Student_courses
       throw new Error(error.message);
     }
   }
+
+  async findByStudCourse(courseId:number, studId:number): Promise<Student_courses> {
+    return this.prisma[this.modelName].findFirst({
+      where: { status: 1, course_id : courseId, student_id : studId },
+    });
+  }
 }

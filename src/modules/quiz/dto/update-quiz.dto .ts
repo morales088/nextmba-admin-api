@@ -15,6 +15,14 @@ export class UpdateQuizDto {
   description: string;
 
   @IsOptional()
+  @IsString()
+  start_date: string;
+
+  @IsOptional()
+  @IsString()
+  deadline: string;
+
+  @IsOptional()
   @Transform(({ value }) => parseInt(value))
   score: number;
 
