@@ -9,7 +9,7 @@ import { SendMailService } from 'src/common/utils/send-mail.service';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { StudentPlanService } from '../../student-plan/services/student-plan.service';
 import { ChargeType, SubscriptionStatus } from '../../../common/constants/enum';
-import Stripe from 'stripe';
+import { StripeService } from '../../stripe/stripe.service';
 
 @Injectable()
 export class PaymentsService {
@@ -24,7 +24,8 @@ export class PaymentsService {
     private readonly paymentAffiliateRepository: PaymentAffiliateRepository,
     private readonly studentsService: StudentsService,
     private readonly sendMailService: SendMailService,
-    private readonly studentPlanService: StudentPlanService
+    private readonly studentPlanService: StudentPlanService,
+    private readonly stripeService: StripeService
   ) {}
 
   async getPayment(id: number) {
@@ -35,34 +36,34 @@ export class PaymentsService {
     return this.paymentRepository.payments(user, searchFilter, page, per_page);
   }
 
-  async createPayment(data: any, subscriptionStatus?: Stripe.Subscription.Status) {
+  async createPayment(data: any) {
     try {
-      // check reference id if already exists
+      // Check reference id if already exists
       const existingPayment = await this.paymentRepository.findByReferenceId(data.reference_id);
       if (existingPayment) throw new Error('Reference Id already exists.');
 
-      // get product details
+      // Get product details
       const product = await this.productRepository.findByCode(data.product_code);
       if (!product) throw new Error('Invalid Product Code.');
 
-      // check if email has account and return student_id
+      // Check if email has account and return student_id
       let studentId: number;
       const findStudent = await this.studentRepository.findByEmail(data.email);
 
       if (findStudent) {
-        // update student library access and account type based on product
+        // Update student library access and account type based on product
         if (product.library_access === true || product.pro_access === true) {
           const updateStudent = {
             library_access: product.library_access === true ? 1 : 0,
             // account_type: product.pro_access === true ? 3 : findStudent.account_type,
           };
 
-          this.studentsService.updateStudent(findStudent.id, updateStudent);
+          await this.studentsService.updateStudent(findStudent.id, updateStudent);
         }
 
         studentId = findStudent.id;
       } else {
-        // create new student
+        // Create new student account
         const studentData = {
           name: data.name,
           email: data.email,
@@ -71,8 +72,7 @@ export class PaymentsService {
           created_by: data.created_by,
         };
 
-        // const createStudent = await this.studentsService.createStudent(studentData);
-        // use Interactive Transaction
+        // Use transaction query
         const createStudent = await this.studentsService.createStudentTx(studentData);
 
         studentId = createStudent.id;
@@ -82,11 +82,10 @@ export class PaymentsService {
         ...data,
       };
 
-      // ALL ABOUT AFFILIATES
-      // get affiliate infos
+      // Affiliate's feature
       const affiliate = await this.paymentAffiliateRepository.findPerCode(data.affiliate_code);
       if (data.affiliate_code && affiliate) {
-        // count affiliate on payments
+        // Count affiliate on payments
         const affiliatePayment = await this.paymentRepository.findByFromStudId(affiliate.student_id);
         let affiliateCount = (affiliatePayment as unknown as object[]).length;
         // ++affiliateCount;
@@ -106,31 +105,35 @@ export class PaymentsService {
         paymentData.commission_percentage = commission_percentage;
       }
 
-      // insert data to payments
-      const createPayment = await this.paymentRepository.insert(studentId, product.id, paymentData);
+      // Insert data to payments
+      const createdPayment = await this.paymentRepository.insert(studentId, product.id, paymentData);
 
-      // Check for the product charge type and trialStatus from webhook
-      if (product.charge_type === ChargeType.RECURRING) {
-        if (subscriptionStatus === SubscriptionStatus.TRIALING) {
+      // Check for the product charge type and subscription status
+      if (product.charge_type === ChargeType.ONE_OFF) {
+        await this.paymentItemRepository.insert(studentId, createdPayment.id, data.product_code, data.origin);
+      } else if (product.charge_type === ChargeType.RECURRING) {
+        // Find subscription of student
+        const subscription = !createdPayment.subscriptionId
+          ? await this.stripeService.findSubscription(studentId, product.code)
+          : await this.stripeService.retrieveSubscription(createdPayment.subscriptionId);
+
+        if (subscription?.status === SubscriptionStatus.TRIALING) {
           await this.studentPlanService.activateTrial(studentId);
-        } else if (subscriptionStatus === SubscriptionStatus.ACTIVE) {
+        } else if (subscription?.status === SubscriptionStatus.ACTIVE) {
           await this.studentPlanService.activatePremium(studentId);
         }
-      } else if (product.charge_type === ChargeType.ONE_OFF) {
-        // insert payment items
-        await this.paymentItemRepository.insert(studentId, createPayment.id, data.product_code, data.origin);
+
+        await this.paymentRepository.update(createdPayment.id, { subscriptionId: paymentData.subscriptionId });
       }
 
-      if (createPayment) {
-        // email payment information
-        // const paymentInfoData = {
+      if (createdPayment) {
+        // Email payment information
+        // await this.sendMailService.emailPaymentInformation({
         //   ...createPayment,
         //   productName: product.name,
-        // };
+        // );
 
-        // await this.sendMailService.emailPaymentInformation(paymentInfoData);
-
-        // email courses info to student
+        // Email courses information
         if (findStudent) {
           const coursesName = await this.productRepository.coursesPerProduct(data.product_code);
 
@@ -147,8 +150,7 @@ export class PaymentsService {
       // Add new created student to mailerlite
       this.studentsService.addCreatedStudentToCourseGroups(studentId);
 
-      //return payment details
-      return createPayment;
+      return createdPayment;
     } catch (error) {
       console.log('');
       this.logger.error(`An error occurred while processing payment:`);

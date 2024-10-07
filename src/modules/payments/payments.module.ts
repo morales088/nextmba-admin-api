@@ -18,9 +18,10 @@ import { PdfService } from 'src/common/utils/pdf.service';
 import { BillingRepository } from '../billings/repositories/billing.repository';
 import { EcommpayService } from './services/ecommpay.service';
 import { StudentPlanModule } from '../student-plan/student-plan.module';
+import { StripeModule } from '../stripe/stripe.module';
 
 @Module({
-  imports: [PrismaModule, StudentPlanModule],
+  imports: [PrismaModule, StudentPlanModule, StripeModule],
   controllers: [PaymentsController, PaymentApiController],
   providers: [
     PaymentsService,
