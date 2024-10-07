@@ -64,7 +64,7 @@ export class WebhookService {
       };
 
       await this.studentPlanService.endTrial(student.id);
-      const newSubscriptionPayment = await this.paymentService.createPayment(paymentData, subscription.status);
+      const newSubscriptionPayment = await this.paymentService.createPayment(paymentData);
       console.log(`🔥 ~ newSubscriptionPayment:`, newSubscriptionPayment);
     }
   }
@@ -96,7 +96,7 @@ export class WebhookService {
       };
       console.log('💡 ~ paymentData:', paymentData);
 
-      const payment = await this.paymentService.createPayment(paymentData, subscription.status);
+      const payment = await this.paymentService.createPayment(paymentData);
       console.log(`🔥 ~ payment:`, payment);
     } catch (error) {
       console.error('Error occurred: ', error.message);

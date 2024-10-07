@@ -15,6 +15,39 @@ export class StripeService {
     });
   }
 
+  async findCustomerByEmail(email: string) {
+    const customers = await this.stripe.customers.list({
+      email: email,
+      limit: 1,
+    });
+
+    if (customers.data.length > 0) {
+      return customers.data[0];
+    } else {
+      return null;
+    }
+  }
+
+  async findSubscription(studentId: number, productCode: string) {
+    const student = await this.database.students.findUnique({
+      where: { id: studentId },
+      select: { id: true, email: true },
+    });
+
+    const customer = await this.findCustomerByEmail(student.email);
+    if (!customer) return null;
+
+    const subscriptions = await this.stripe.subscriptions.list({
+      customer: customer.id,
+    });
+
+    const subscription = subscriptions.data.find((item) => {
+      item.metadata.product_code === productCode;
+    });
+
+    return subscription;
+  }
+
   async findSubscriptionPayment(studentId: number) {
     const subscriptionPayment = await this.database.payments.findFirst({
       where: {
@@ -27,7 +60,7 @@ export class StripeService {
     });
 
     if (!subscriptionPayment) throw new NotFoundException('No subscription payment found.');
-    
+
     console.log(`🔥 ~ subscriptionPayment:`, subscriptionPayment);
 
     return subscriptionPayment;
