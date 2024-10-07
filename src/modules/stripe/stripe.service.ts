@@ -45,6 +45,7 @@ export class StripeService {
       item.metadata.product_code === productCode;
     });
 
+    console.log(`🔥 ~ Found subscription:`, subscription);
     return subscription;
   }
 
@@ -67,7 +68,14 @@ export class StripeService {
   }
 
   async retrieveSubscription(subscriptionId: string) {
-    return this.stripe.subscriptions.retrieve(subscriptionId);
+    try {
+      const subscription = await this.stripe.subscriptions.retrieve(subscriptionId);
+      console.log(`🔥 ~ Retrieved Subscription:`, subscription);
+      return subscription;
+    } catch (error) {
+      console.log(`Error occurred retrieving subscription`);
+      return null;
+    }
   }
 
   async updateSubscription(subscriptionId: string, metadata: any) {

@@ -58,7 +58,7 @@ export class PaymentsService {
             // account_type: product.pro_access === true ? 3 : findStudent.account_type,
           };
 
-          this.studentsService.updateStudent(findStudent.id, updateStudent);
+          await this.studentsService.updateStudent(findStudent.id, updateStudent);
         }
 
         studentId = findStudent.id;
@@ -72,8 +72,7 @@ export class PaymentsService {
           created_by: data.created_by,
         };
 
-        // const createStudent = await this.studentsService.createStudent(studentData);
-        // use Interactive Transaction
+        // Use transaction query
         const createStudent = await this.studentsService.createStudentTx(studentData);
 
         studentId = createStudent.id;
@@ -110,21 +109,21 @@ export class PaymentsService {
       const createdPayment = await this.paymentRepository.insert(studentId, product.id, paymentData);
 
       // Check for the product charge type and subscription status
-      if (product.charge_type === ChargeType.RECURRING) {
+      if (product.charge_type === ChargeType.ONE_OFF) {
+        await this.paymentItemRepository.insert(studentId, createdPayment.id, data.product_code, data.origin);
+      } else if (product.charge_type === ChargeType.RECURRING) {
         // Find subscription of student
         const subscription = !createdPayment.subscriptionId
           ? await this.stripeService.findSubscription(studentId, product.code)
           : await this.stripeService.retrieveSubscription(createdPayment.subscriptionId);
-        console.log(`🔥 ~ subscription:`, subscription);
-        
-        if (subscription.status === SubscriptionStatus.TRIALING) {
+
+        if (subscription?.status === SubscriptionStatus.TRIALING) {
           await this.studentPlanService.activateTrial(studentId);
-        } else if (subscription.status === SubscriptionStatus.ACTIVE) {
+        } else if (subscription?.status === SubscriptionStatus.ACTIVE) {
           await this.studentPlanService.activatePremium(studentId);
         }
-      } else if (product.charge_type === ChargeType.ONE_OFF) {
-        // Insert payment items
-        await this.paymentItemRepository.insert(studentId, createdPayment.id, data.product_code, data.origin);
+
+        await this.paymentRepository.update(createdPayment.id, { subscriptionId: paymentData.subscriptionId });
       }
 
       if (createdPayment) {
@@ -148,7 +147,6 @@ export class PaymentsService {
         }
       }
 
-      //return payment details
       return createdPayment;
     } catch (error) {
       console.log('');
