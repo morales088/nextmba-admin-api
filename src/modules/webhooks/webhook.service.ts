@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PaymentsService } from '../payments/services/payments.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { StripeService } from '../stripe/stripe.service';
@@ -8,6 +8,8 @@ import Stripe from 'stripe';
 
 @Injectable()
 export class WebhookService {
+  private readonly logger = new Logger(WebhookService.name);
+
   constructor(
     private readonly paymentService: PaymentsService,
     private readonly database: PrismaService,
@@ -79,8 +81,8 @@ export class WebhookService {
       const customerDetails = session.customer_details;
       const subscriptionId = session.subscription.toString();
 
-      console.log(`🔥 ~ customerDetails:`, customerDetails);
-      console.log(`🔥 ~ metaData:`, metaData);
+      this.logger.log('Customer Details', JSON.stringify(customerDetails, null, 2));
+      this.logger.log('Metadata:', JSON.stringify(metaData, null, 2));
 
       if (!productCode) throw new NotFoundException('Product code undefined.');
       const product = await this.database.products.findFirst({ where: { code: productCode, status: 1 } });
@@ -94,10 +96,11 @@ export class WebhookService {
         product_code: product.code,
         price: subscription.status === SubscriptionStatus.TRIALING ? 0 : product.price,
       };
-      console.log('💡 ~ paymentData:', paymentData);
 
-      const payment = await this.paymentService.createPayment(paymentData);
-      console.log(`🔥 ~ payment:`, payment);
+      this.logger.log(`Mode: ${session.mode}`)
+      this.logger.log('Payment Data:', JSON.stringify(paymentData, null, 2));
+
+      await this.paymentService.createPayment(paymentData);
     } catch (error) {
       console.error('Error occurred: ', error.message);
     }
@@ -107,14 +110,18 @@ export class WebhookService {
     const metaData = session.metadata;
     const customerDetails = session.customer_details;
 
-    const paymentData = {
-      name: customerDetails.name,
-      email: customerDetails.email,
-      product_code: metaData.product_code,
-      price: metaData.price,
-    };
-    console.log('💡 ~ paymentData:', paymentData);
+    if (metaData) {
+      const paymentData = {
+        name: customerDetails.name,
+        email: customerDetails.email,
+        product_code: metaData.product_code,
+        price: metaData.price,
+      };
 
-    return this.paymentService.createPayment(paymentData);
+      this.logger.log(`Mode: ${session.mode}`)
+      this.logger.log('Payment Data:', JSON.stringify(paymentData, null, 2));
+
+      return this.paymentService.createPayment(paymentData);
+    }
   }
 }
