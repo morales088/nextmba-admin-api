@@ -110,7 +110,7 @@ export class WebhookService {
     const metaData = session.metadata;
     const customerDetails = session.customer_details;
 
-    if (metaData) {
+    if (metaData && Object.keys(metaData).length > 0) {
       const paymentData = {
         name: customerDetails.name,
         email: customerDetails.email,
