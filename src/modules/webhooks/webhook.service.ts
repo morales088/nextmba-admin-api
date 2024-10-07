@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PaymentsService } from '../payments/services/payments.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { StripeService } from '../stripe/stripe.service';
@@ -16,6 +16,7 @@ export class WebhookService {
   ) {}
 
   async handleEvent(event: Stripe.Event) {
+    console.log('');
     console.log(`🔥 ~ event:`, event);
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
@@ -24,6 +25,8 @@ export class WebhookService {
         await this.handleSuccessfulPayment(session);
       } else if (session.mode === 'subscription') {
         await this.handleSuccessfulSubscription(session);
+      } else {
+        throw new BadRequestException('Invalid mode of payment.');
       }
     } else if (event.type === 'customer.subscription.updated') {
       const subscription = event.data.object as Stripe.Subscription;
@@ -80,10 +83,7 @@ export class WebhookService {
       console.log(`🔥 ~ metaData:`, metaData);
 
       if (!productCode) throw new NotFoundException('Product code undefined.');
-
-      const product = await this.database.products.findFirst({
-        where: { code: productCode, status: 1 },
-      });
+      const product = await this.database.products.findFirst({ where: { code: productCode, status: 1 } });
 
       const subscription = await this.stripeService.retrieveSubscription(subscriptionId);
 
