@@ -3,6 +3,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { addMonths, addWeeks } from 'date-fns';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { StripeService } from '../../stripe/stripe.service';
+import { CourseTierStatus, StudentAccountType } from '../../../common/constants/enum';
 
 @Injectable()
 export class StudentPlanService {
@@ -26,7 +27,10 @@ export class StudentPlanService {
   }
 
   // start trial
-  async activateTrial(studentId: number) {
+  async activateTrial(studentId: number, startDate?: Date, endDate?: Date) {
+    const trialClaimedAt = startDate ?? new UTCDate();
+    const trialEndsAt = endDate ?? addWeeks(new UTCDate(), 1);
+
     // Get the student data
     const studentData = await this.database.students.findFirst({ where: { id: studentId } });
 
@@ -52,13 +56,13 @@ export class StudentPlanService {
       student_id: studentId,
       course_id: course.id,
       course_tier: 3,
-      expiration_date: addWeeks(new UTCDate(), 1),
+      expiration_date: trialEndsAt,
     }));
 
     // Update the student account type
     await this.database.students.update({
       where: { id: studentId },
-      data: { account_type: 3, claimed_trial: true, claimed_trial_at: new UTCDate() },
+      data: { account_type: 3, claimed_trial: true, claimed_trial_at: trialClaimedAt },
     });
 
     // Create courses
@@ -98,10 +102,17 @@ export class StudentPlanService {
   }
 
   // activate subscription
-  async activatePremium(studentId: number) {
-    const studentData = await this.database.students.findFirst({ where: { id: studentId } });
+  async activatePremium(studentId: number, startDate?: Date, endDate?: Date) {
+    // If student in the middle of trial, set those course to inactive
+    await this.database.student_courses.updateMany({
+      where: { student_id: studentId, status: 1, course_tier: CourseTierStatus.TRIAL },
+      data: { status: 0 },
+    });
 
-    if (studentData.account_type === 2) return;
+    const premiumActivationDate = startDate ?? new Date();
+    const premiumExpirationDate = endDate ?? addMonths(new UTCDate(), 1);
+
+    // const studentData = await this.database.students.findFirst({ where: { id: studentId } });
 
     // Find all owned courses
     const studentCourses = await this.database.student_courses.findMany({
@@ -123,20 +134,14 @@ export class StudentPlanService {
     const insertData = unownedCourses.map((course) => ({
       student_id: studentId,
       course_id: course.id,
-      course_tier: 2,
-      expiration_date: addMonths(new UTCDate(), 1),
+      course_tier: CourseTierStatus.PREMIUM,
+      expiration_date: premiumExpirationDate,
     }));
 
     // Update account type to premium
     await this.database.students.update({
       where: { id: studentId },
-      data: { account_type: 2, last_premium_activation: new Date() },
-    });
-
-    // If student in the middle of trial, set those course to 0
-    await this.database.student_courses.updateMany({
-      where: { student_id: studentId, status: 1, course_tier: 3 },
-      data: { status: 0 },
+      data: { account_type: StudentAccountType.PREMIUM, last_premium_activation: premiumActivationDate },
     });
 
     // Create new student courses base on insertData
@@ -147,40 +152,45 @@ export class StudentPlanService {
     return createdDatas;
   }
 
-  async renewPremium(studentId: number) {
-    return await this.database.$transaction(async (tx) => {
-      // Get all current premium courses
-      const premiumCourses = await tx.student_courses.findMany({
-        where: { course_tier: 2, student_id: studentId, status: 1 },
-        select: { id: true },
-      });
-      const premiumCoursesIds = premiumCourses.map((pc) => pc.id);
+  async renewPremium(studentId: number, endDate?: Date) {
+    const premiumExpirationDate = endDate ?? addMonths(new UTCDate(), 1);
 
-      // Update all premium courses
-      const updatedDatas = await Promise.all(
-        premiumCoursesIds.map(
-          async (courseId) =>
-            await tx.student_courses.update({
-              where: { id: courseId },
-              data: { expiration_date: addMonths(new UTCDate(), 1) },
-            })
-        )
-      );
-
-      return updatedDatas;
+    // Get inactive premium courses all current premium courses
+    const premiumCourses = await this.database.student_courses.findMany({
+      where: { course_tier: 2, student_id: studentId, status: 0 },
+      select: { id: true, course_id: true },
+      distinct: ['course_id'],
     });
+    console.log(`🔥 ~ premiumCourses:`, premiumCourses);
+    const premiumCoursesIds = premiumCourses.map((pc) => pc.id);
+
+    // Update all premium courses
+    const updatedDatas = await Promise.all(
+      premiumCoursesIds.map(
+        async (courseId) =>
+          await this.database.student_courses.update({
+            where: { id: courseId },
+            data: { expiration_date: premiumExpirationDate },
+          })
+      )
+    );
+
+    return updatedDatas;
   }
 
   // end subscription
   async endPremium(studentId: number) {
     await this.stripeService.findAndCancelSubscription(studentId);
+    await this.endPremiumCourses(studentId);
+  }
 
+  async endPremiumCourses(studentId: number) {
     // Update student account to basic
-    await this.database.students.update({ where: { id: studentId }, data: { account_type: 1 } });
+    await this.database.students.update({ where: { id: studentId }, data: { account_type: StudentAccountType.BASIC } });
 
     // Get all courses that came with premium
     const studentCourses = await this.database.student_courses.findMany({
-      where: { student_id: studentId, course_tier: 2, status: 1 },
+      where: { student_id: studentId, course_tier: CourseTierStatus.PREMIUM, status: 1 },
       select: { id: true },
     });
 
@@ -193,7 +203,6 @@ export class StudentPlanService {
         data: { status: 0 },
       });
 
-      console.log(`🔥 ~ result:`, result);
       return result;
     }
   }

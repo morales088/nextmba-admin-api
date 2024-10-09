@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, UnprocessableEntityException } from '@nestjs/common';
 import { PaymentRepository } from '../repositories/payment.repository';
 import { StudentRepository } from 'src/modules/students/repositories/student.repository';
 import { StudentsService } from 'src/modules/students/services/students.service';
@@ -10,6 +10,8 @@ import { PrismaService } from 'src/common/prisma/prisma.service';
 import { StudentPlanService } from '../../student-plan/services/student-plan.service';
 import { ChargeType, SubscriptionStatus } from '../../../common/constants/enum';
 import { StripeService } from '../../stripe/stripe.service';
+import { Payments, Products } from '@prisma/client';
+import { fromUnixTime } from 'date-fns';
 
 @Injectable()
 export class PaymentsService {
@@ -48,20 +50,18 @@ export class PaymentsService {
 
       // Check if email has account and return student_id
       let studentId: number;
-      const findStudent = await this.studentRepository.findByEmail(data.email);
+      const existingStudent = await this.studentRepository.findByEmail(data.email);
 
-      if (findStudent) {
-        // Update student library access and account type based on product
+      if (existingStudent) {
         if (product.library_access === true || product.pro_access === true) {
-          const updateStudent = {
+          // Update student library access and account type based on product
+          await this.studentsService.updateStudent(existingStudent.id, {
             library_access: product.library_access === true ? 1 : 0,
-            // account_type: product.pro_access === true ? 3 : findStudent.account_type,
-          };
-
-          await this.studentsService.updateStudent(findStudent.id, updateStudent);
+            // account_type: product.pro_access === true ? 3 : existingStudent.account_type,
+          });
         }
 
-        studentId = findStudent.id;
+        studentId = existingStudent.id;
       } else {
         // Create new student account
         const studentData = {
@@ -112,18 +112,7 @@ export class PaymentsService {
       if (product.charge_type === ChargeType.ONE_OFF) {
         await this.paymentItemRepository.insert(studentId, createdPayment.id, data.product_code, data.origin);
       } else if (product.charge_type === ChargeType.RECURRING) {
-        // Find subscription of student
-        const subscription = !createdPayment.subscriptionId
-          ? await this.stripeService.findSubscription(studentId, product.code)
-          : await this.stripeService.retrieveSubscription(createdPayment.subscriptionId);
-
-        if (subscription?.status === SubscriptionStatus.TRIALING) {
-          await this.studentPlanService.activateTrial(studentId);
-        } else if (subscription?.status === SubscriptionStatus.ACTIVE) {
-          await this.studentPlanService.activatePremium(studentId);
-        }
-
-        await this.paymentRepository.update(createdPayment.id, { subscriptionId: paymentData.subscriptionId });
+        await this.handleSubscriptionPayment(createdPayment, product, studentId);
       }
 
       if (createdPayment) {
@@ -134,16 +123,14 @@ export class PaymentsService {
         // );
 
         // Email courses information
-        if (findStudent) {
+        if (existingStudent) {
           const coursesName = await this.productRepository.coursesPerProduct(data.product_code);
 
-          const emailCourseData = {
+          await this.sendMailService.emailCourseInformation(data.email, {
             student: data.name,
             productName: product.name,
             courses: coursesName,
-          };
-
-          await this.sendMailService.emailCourseInformation(data.email, emailCourseData);
+          });
         }
       }
 
@@ -158,6 +145,35 @@ export class PaymentsService {
       this.logger.error(`Error: ${error.message}`);
       throw new BadRequestException(error.message);
     }
+  }
+
+  private async handleSubscriptionPayment(payment: Payments, product: Products, studentId: number) {
+    const subscription =
+      payment?.subscriptionId !== null
+        ? await this.stripeService.retrieveSubscription(payment.subscriptionId)
+        : await this.stripeService.findSubscription(studentId, product.code);
+
+    if (!subscription) {
+      throw new UnprocessableEntityException('No subscription found for the student.');
+    }
+
+    if (subscription?.status === SubscriptionStatus.TRIALING) {
+      await this.studentPlanService.activateTrial(
+        studentId,
+        fromUnixTime(subscription.trial_start),
+        fromUnixTime(subscription.trial_end)
+      );
+    } else if (subscription?.status === SubscriptionStatus.ACTIVE) {
+      await this.studentPlanService.activatePremium(
+        studentId,
+        fromUnixTime(subscription.current_period_start),
+        fromUnixTime(subscription.current_period_end)
+      );
+    } else {
+      throw new UnprocessableEntityException('Subscription status is incomplete or inactive.');
+    }
+
+    await this.paymentRepository.update(payment.id, { subscriptionId: subscription.id });
   }
 
   async updatePayment(id: number, data) {
