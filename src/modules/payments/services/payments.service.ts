@@ -147,8 +147,8 @@ export class PaymentsService {
         }
       }
 
-      // Add new created student to mailerlite
-      this.studentsService.addCreatedStudentToCourseGroups(studentId);
+      // // Add new created student to mailerlite
+      // this.studentsService.addCreatedStudentToCourseGroups(studentId);
 
       return createdPayment;
     } catch (error) {

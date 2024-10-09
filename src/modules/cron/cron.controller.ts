@@ -46,4 +46,10 @@ export class CronController {
   // async processPaymentLeads() {
   //   return this.cronService.runProcessPaymentLeads();
   // }
+
+  // @Public()
+  // @Get('/process-payment-subscriptions')
+  // async processPaymentSubscriptions() {
+  //   return this.cronService.runProcessPaymentSubscriptions();
+  // }
 }

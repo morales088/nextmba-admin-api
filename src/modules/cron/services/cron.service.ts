@@ -106,15 +106,15 @@ export class CronService {
   // }
 
   // @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_NOON, {
-  //   name: 'process-payment-leads',
+  //   name: 'process-payment-subscriptions',
   //   timeZone: 'Asia/Manila',
   // })
-  // async runProcessPaymentLeads() {
+  // async runProcessPaymentSubscriptions() {
   //   try {
   //     console.log('');
-  //     this.logger.log('Running: Process payment leads data');
+  //     this.logger.log('Running: Process subscription payments data');
 
-  //     await this.paymentLeadsCronService.checkPaymentLeads();
+  //     await this.paymentLeadsCronService.fixSubscriptionPayments();
   //     this.delay(1000);
 
   //     console.log('');
@@ -123,7 +123,7 @@ export class CronService {
   //     // const job = this.schedulerRegistry.getCronJob('process-payment-leads');
   //     // this.logger.log(`Next Scheduled Date: ${job.nextDate()}`);
   //   } catch (error) {
-  //     this.logger.error(`Error in process-payment-leads cron job: ${error.message}`);
+  //     this.logger.error(`Error in process-payment-subscriptions cron job: ${error.message}`);
   //   }
   // }
 
