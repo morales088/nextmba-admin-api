@@ -70,7 +70,7 @@ export class StripeService {
   async retrieveSubscription(subscriptionId: string) {
     try {
       const subscription = await this.stripe.subscriptions.retrieve(subscriptionId);
-      console.log(`🔥 ~ Retrieved Subscription:`, subscription);
+      // console.log(`🔥 ~ Retrieved Subscription:`, subscription);
       return subscription;
     } catch (error) {
       console.log(`Error occurred retrieving subscription`);
@@ -87,5 +87,9 @@ export class StripeService {
     console.log(`🔥 ~ subscriptionPayment:`, subscriptionPayment);
 
     return this.stripe.subscriptions.cancel(subscriptionPayment.subscriptionId);
+  }
+
+  async retrievePriceInfo(priceId: string) {
+    return this.stripe.prices.retrieve(priceId);
   }
 }

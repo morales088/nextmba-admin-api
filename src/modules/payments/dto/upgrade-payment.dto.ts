@@ -47,4 +47,8 @@ export class PaymentLeadsDTO {
   @IsNotEmpty()
   @IsString()
   language: string;
+
+  @IsNotEmpty()
+  @IsString()
+  subscriptionId: string;
 }

@@ -8,9 +8,11 @@ import { SubscriberGroupsModule } from '../subscriber_groups/subscriber-groups.m
 import { CourseTierCronService } from './services/course_tier-cron.service';
 import { PaymentsModule } from '../payments/payments.module';
 import { PaymentLeadsCronService } from './services/payment-leads-cron.service';
+import { StripeModule } from '../stripe/stripe.module';
+import { PrismaModule } from '../../common/prisma/prisma.module';
 
 @Module({
-  imports: [PaymentsModule, StudentsModule, CoursesModule, SubscriberGroupsModule],
+  imports: [PrismaModule, PaymentsModule, StudentsModule, StripeModule, CoursesModule, SubscriberGroupsModule],
   controllers: [CronController],
   providers: [CronService, MailerliteCronService, CourseTierCronService, PaymentLeadsCronService],
   exports: [CronService],
