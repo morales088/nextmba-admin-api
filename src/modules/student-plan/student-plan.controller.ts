@@ -1,5 +1,6 @@
 import { Controller, Param, Patch, Post, Query, Get } from '@nestjs/common';
 import { StudentPlanService } from './services/student-plan.service';
+import { fromUnixTime } from 'date-fns';
 
 @Controller('student-plan')
 export class StudentPlanController {
@@ -20,14 +21,15 @@ export class StudentPlanController {
     return await this.studentPlanService.endTrial(studentId);
   }
 
-  @Post('/activate-premium/:studentId')
-  async activatePremium(@Param('studentId') studentId: number) {
-    return await this.studentPlanService.activatePremium(studentId);
+  @Post('/activate-premium/:studentId/:')
+  async activatePremium(@Param() activatePremiumParams: { studentId: number; startDate: number; endDate: number }) {
+    const { studentId, startDate, endDate } = activatePremiumParams;
+    return await this.studentPlanService.activatePremium(studentId, fromUnixTime(startDate), fromUnixTime(endDate));
   }
 
-  @Patch('/renew-premium/:studentId')
-  async renewPremium(@Param('studentId') studentId: number) {
-    return await this.studentPlanService.renewPremium(studentId);
+  @Patch('/renew-premium/:studentId/:endDate')
+  async renewPremium(@Param('studentId') studentId: number, @Param('endDate') endDate: number) {
+    return await this.studentPlanService.renewPremium(studentId, fromUnixTime(endDate));
   }
 
   @Patch('/end-premium/:studentId')

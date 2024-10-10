@@ -5,6 +5,7 @@ import { StripeService } from '../stripe/stripe.service';
 import { SubscriptionStatus } from '../../common/constants/enum';
 import { StudentPlanService } from '../student-plan/services/student-plan.service';
 import Stripe from 'stripe';
+import { fromUnixTime } from 'date-fns';
 
 @Injectable()
 export class WebhookService {
@@ -55,7 +56,7 @@ export class WebhookService {
 
       if (!student) throw new NotFoundException('Student not found.');
 
-      await this.studentPlanService.renewPremium(student.id);
+      await this.studentPlanService.renewPremium(student.id, fromUnixTime(subscription.current_period_end));
     }
   }
 
@@ -76,7 +77,6 @@ export class WebhookService {
   }
 
   async handleUpdatedToActiveSubscription(subscription: Stripe.Subscription) {
-    console.log(`🔥 ~ subscription:`, subscription);
     if (subscription.status === SubscriptionStatus.ACTIVE) {
       const subscriptionPayment = await this.database.payments.findFirst({
         where: { subscriptionId: subscription.id },
@@ -86,13 +86,11 @@ export class WebhookService {
       const student = await this.database.students.findUnique({
         where: { id: subscriptionPayment.student_id },
       });
-
       if (!student) throw new NotFoundException('Student not found.');
 
       const product = await this.database.products.findFirst({
         where: { code: subscriptionPayment.product.code, status: 1 },
       });
-
       if (!product) throw new NotFoundException('Product not found.');
 
       const paymentData = {
@@ -104,7 +102,6 @@ export class WebhookService {
       };
 
       await this.paymentService.createPayment(paymentData);
-      console.log(`🔥 ~ paymentData:`, paymentData);
     }
   }
 

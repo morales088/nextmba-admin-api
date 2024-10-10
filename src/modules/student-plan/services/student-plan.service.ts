@@ -82,35 +82,26 @@ export class StudentPlanService {
 
     // Take all of the courses that came along with the trial
     const studentCourses = await this.database.student_courses.findMany({
-      where: { student_id: studentId, course_tier: 3, status: 1 },
+      where: { student_id: studentId, course_tier: CourseTierStatus.TRIAL, status: 1 },
       select: { id: true },
     });
-    console.log(`🔥 ~ studentCourse:`, studentCourses);
 
     // If there are courses to update, use a bulk update (updateMany)
     if (studentCourses.length > 0) {
-      const courseIds = studentCourses.map((course) => course.id);
+      const studentCourseIds = studentCourses.map((sc) => sc.id);
 
-      const result = await this.database.student_courses.updateMany({
-        where: { id: { in: courseIds } },
-        data: { status: 0 },
+      await this.database.student_courses.deleteMany({
+        where: { id: { in: studentCourseIds } },
       });
-
-      console.log(`🔥 ~ result:`, result);
-      return result;
     }
   }
 
   // activate subscription
-  async activatePremium(studentId: number, startDate?: Date, endDate?: Date) {
-    // If student in the middle of trial, set those course to inactive
-    await this.database.student_courses.updateMany({
+  async activatePremium(studentId: number, activationDate: Date, expirationDate: Date) {
+    // If student in the middle of trial, delete those course
+    await this.database.student_courses.deleteMany({
       where: { student_id: studentId, status: 1, course_tier: CourseTierStatus.TRIAL },
-      data: { status: 0 },
     });
-
-    const premiumActivationDate = startDate ?? new Date();
-    const premiumExpirationDate = endDate ?? addMonths(new UTCDate(), 1);
 
     // const studentData = await this.database.students.findFirst({ where: { id: studentId } });
 
@@ -119,13 +110,13 @@ export class StudentPlanService {
       where: { student_id: studentId, status: 1 },
       select: { course_id: true },
     });
-    const studentCourseIds = studentCourses.map((sc) => sc.course_id);
+    const courseIds = studentCourses.map((sc) => sc.course_id);
 
     // Fetch all unowned courses based on owned courses
     const unownedCourses = await this.database.courses.findMany({
       where: {
         status: 1,
-        id: { notIn: studentCourseIds },
+        id: { notIn: courseIds },
       },
       select: { id: true, name: true, price: true, status: true },
     });
@@ -135,13 +126,13 @@ export class StudentPlanService {
       student_id: studentId,
       course_id: course.id,
       course_tier: CourseTierStatus.PREMIUM,
-      expiration_date: premiumExpirationDate,
+      expiration_date: expirationDate,
     }));
 
     // Update account type to premium
     await this.database.students.update({
       where: { id: studentId },
-      data: { account_type: StudentAccountType.PREMIUM, last_premium_activation: premiumActivationDate },
+      data: { account_type: StudentAccountType.PREMIUM, last_premium_activation: activationDate },
     });
 
     // Create new student courses base on insertData
@@ -152,30 +143,22 @@ export class StudentPlanService {
     return createdDatas;
   }
 
-  async renewPremium(studentId: number, endDate?: Date) {
-    const premiumExpirationDate = endDate ?? addMonths(new UTCDate(), 1);
-
+  async renewPremium(studentId: number, endDate: Date) {
     // Get inactive premium courses all current premium courses
-    const premiumCourses = await this.database.student_courses.findMany({
+    const premiumStudentCourses = await this.database.student_courses.findMany({
       where: { course_tier: 2, student_id: studentId, status: 0 },
       select: { id: true, course_id: true },
       distinct: ['course_id'],
     });
-    console.log(`🔥 ~ premiumCourses:`, premiumCourses);
-    const premiumCoursesIds = premiumCourses.map((pc) => pc.id);
+    const premiumStudentCourseIds = premiumStudentCourses.map((sc) => sc.id);
 
-    // Update all premium courses
-    const updatedDatas = await Promise.all(
-      premiumCoursesIds.map(
-        async (courseId) =>
-          await this.database.student_courses.update({
-            where: { id: courseId },
-            data: { expiration_date: premiumExpirationDate },
-          })
-      )
-    );
+    // Update all premium courses at once
+    const results = await this.database.student_courses.updateMany({
+      where: { id: { in: premiumStudentCourseIds } },
+      data: { expiration_date: endDate, status: 1 },
+    });
 
-    return updatedDatas;
+    return results;
   }
 
   // end subscription
@@ -196,14 +179,14 @@ export class StudentPlanService {
 
     // Update all the courses so that the student doesn't have access to it
     if (studentCourses.length > 0) {
-      const courseIds = studentCourses.map((course) => course.id);
+      const studentCourseIds = studentCourses.map((sc) => sc.id);
 
-      const result = await this.database.student_courses.updateMany({
-        where: { id: { in: courseIds } },
+      const results = await this.database.student_courses.updateMany({
+        where: { id: { in: studentCourseIds } },
         data: { status: 0 },
       });
 
-      return result;
+      return results;
     }
   }
 

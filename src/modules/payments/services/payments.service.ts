@@ -166,7 +166,7 @@ export class PaymentsService {
     } else if (subscription?.status === SubscriptionStatus.ACTIVE) {
       await this.studentPlanService.activatePremium(
         studentId,
-        fromUnixTime(subscription.current_period_start),
+        fromUnixTime(subscription.start_date),
         fromUnixTime(subscription.current_period_end)
       );
     } else {
