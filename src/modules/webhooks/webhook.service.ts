@@ -5,11 +5,10 @@ import { StripeService } from '../stripe/stripe.service';
 import { SubscriptionStatus } from '../../common/constants/enum';
 import { StudentPlanService } from '../student-plan/services/student-plan.service';
 import Stripe from 'stripe';
+import { fromUnixTime } from 'date-fns';
 
 @Injectable()
 export class WebhookService {
-  private readonly logger = new Logger(WebhookService.name);
-
   constructor(
     private readonly paymentService: PaymentsService,
     private readonly database: PrismaService,
@@ -32,18 +31,20 @@ export class WebhookService {
       }
     } else if (event.type === 'customer.subscription.updated') {
       const subscription = event.data.object as Stripe.Subscription;
+      const prevAttributes = event.data.previous_attributes;
+
       console.log(`🔥 ~ event.data.previous_attributes.status:`, event.data.previous_attributes.status);
-      if (event.data.previous_attributes.status === SubscriptionStatus.TRIALING) {
-        await this.handleUpdatedSubscription(subscription);
-      } else if (event.data.previous_attributes.status === SubscriptionStatus.ACTIVE) {
-        // check if the subscription is not paid
-        // await this.handleUpdatedSubscription(subscription);
+      if (prevAttributes?.status === SubscriptionStatus.TRIALING) {
+        await this.handleUpdatedToActiveSubscription(subscription);
+      } else if (prevAttributes?.status === SubscriptionStatus.ACTIVE) {
+        await this.handlePastDueAndCanceledSubscription(subscription);
+      } else if (prevAttributes?.status === SubscriptionStatus.CANCELLED || SubscriptionStatus.UNPAID) {
+        await this.handlePastDueAndCanceledToActiveSubscription(subscription);
       }
     }
   }
 
-  async handleUpdatedSubscription(subscription: Stripe.Subscription) {
-    console.log(`🔥 ~ subscription:`, subscription);
+  async handlePastDueAndCanceledToActiveSubscription(subscription: Stripe.Subscription) {
     if (subscription.status === SubscriptionStatus.ACTIVE) {
       const subscriptionPayment = await this.database.payments.findFirst({
         where: { subscriptionId: subscription.id },
@@ -55,10 +56,41 @@ export class WebhookService {
 
       if (!student) throw new NotFoundException('Student not found.');
 
-      const product = await this.database.products.findFirst({
-        where: { code: subscriptionPayment.product_code, status: 1 },
+      await this.studentPlanService.renewPremium(student.id, fromUnixTime(subscription.current_period_end));
+    }
+  }
+
+  async handlePastDueAndCanceledSubscription(subscription: Stripe.Subscription) {
+    if (subscription.status === SubscriptionStatus.PAST_DUE || SubscriptionStatus.CANCELLED) {
+      const subscriptionPayment = await this.database.payments.findFirst({
+        where: { subscriptionId: subscription.id },
       });
 
+      const student = await this.database.students.findUnique({
+        where: { id: subscriptionPayment.student_id },
+      });
+
+      if (!student) throw new NotFoundException('Student not found.');
+
+      await this.studentPlanService.endPremiumCourses(student.id);
+    }
+  }
+
+  async handleUpdatedToActiveSubscription(subscription: Stripe.Subscription) {
+    if (subscription.status === SubscriptionStatus.ACTIVE) {
+      const subscriptionPayment = await this.database.payments.findFirst({
+        where: { subscriptionId: subscription.id },
+        include: { product: true },
+      });
+
+      const student = await this.database.students.findUnique({
+        where: { id: subscriptionPayment.student_id },
+      });
+      if (!student) throw new NotFoundException('Student not found.');
+
+      const product = await this.database.products.findFirst({
+        where: { code: subscriptionPayment.product.code, status: 1 },
+      });
       if (!product) throw new NotFoundException('Product not found.');
 
       const paymentData = {
@@ -66,11 +98,10 @@ export class WebhookService {
         email: student.email,
         product_code: product.code,
         price: product.price,
+        subscriptionId: subscription.id,
       };
 
-      await this.studentPlanService.endTrial(student.id);
-      const newSubscriptionPayment = await this.paymentService.createPayment(paymentData);
-      console.log(`🔥 ~ newSubscriptionPayment:`, newSubscriptionPayment);
+      await this.paymentService.createPayment(paymentData);
     }
   }
 
@@ -81,8 +112,8 @@ export class WebhookService {
       const customerDetails = session.customer_details;
       const subscriptionId = session.subscription.toString();
 
-      this.logger.log('Customer Details', JSON.stringify(customerDetails, null, 2));
-      this.logger.log('Metadata:', JSON.stringify(metaData, null, 2));
+      console.log('Customer Details', JSON.stringify(customerDetails, null, 2));
+      console.log('Metadata', JSON.stringify(metaData, null, 2));
 
       if (!productCode) throw new NotFoundException('Product code undefined.');
       const product = await this.database.products.findFirst({ where: { code: productCode, status: 1 } });
@@ -97,8 +128,8 @@ export class WebhookService {
         price: subscription.status === SubscriptionStatus.TRIALING ? 0 : product.price,
       };
 
-      this.logger.log(`Mode: ${session.mode}`)
-      this.logger.log('Payment Data:', JSON.stringify(paymentData, null, 2));
+      console.log(`Mode: ${session.mode}`);
+      console.log('Payment Data', JSON.stringify(paymentData, null, 2));
 
       await this.paymentService.createPayment(paymentData);
     } catch (error) {
@@ -118,8 +149,8 @@ export class WebhookService {
         price: metaData.price,
       };
 
-      this.logger.log(`Mode: ${session.mode}`)
-      this.logger.log('Payment Data:', JSON.stringify(paymentData, null, 2));
+      console.log(`Mode: ${session.mode}`);
+      console.log('Payment Data', JSON.stringify(paymentData, null, 2));
 
       return this.paymentService.createPayment(paymentData);
     }

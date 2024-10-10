@@ -42,10 +42,9 @@ export class StripeService {
     });
 
     const subscription = subscriptions.data.find((item) => {
-      item.metadata.product_code === productCode;
+      return item.metadata.product_code === productCode;
     });
 
-    console.log(`🔥 ~ Found subscription:`, subscription);
     return subscription;
   }
 
