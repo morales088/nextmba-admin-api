@@ -39,6 +39,7 @@ export class PaymentsService {
   }
 
   async createPayment(data: any) {
+    console.info('New Payment Initialized');
     try {
       // Check reference id if already exists
       const existingPayment = await this.paymentRepository.findByReferenceId(data.reference_id);
@@ -79,7 +80,7 @@ export class PaymentsService {
       }
 
       // Check if student already claimed trial: End trial subscription to generate new invoice
-      if (data.subscriptionId && existingStudent?.claimed_trial === true) {
+      if (data?.subscriptionId && existingStudent?.claimed_trial === true) {
         const subscription = await this.stripeService.retrieveSubscription(data.subscriptionId);
 
         if (subscription?.status === SubscriptionStatus.TRIALING) {
