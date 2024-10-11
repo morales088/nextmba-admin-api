@@ -56,7 +56,11 @@ export class PaymentsService {
         // Check if student already claimed trial: End trial subscription to generate new invoice
         if (data.subscriptionId && existingStudent.claimed_trial === true) {
           const subscription = await this.stripeService.retrieveSubscription(data.subscriptionId);
-          await this.stripeService.endTrialSubscription(subscription.id);
+
+          if (subscription.status === SubscriptionStatus.TRIALING) {
+            console.log('Ending trial subscription: Student already claimed the trial.');
+            await this.stripeService.endTrialSubscription(subscription.id);
+          }
         }
 
         if (product.library_access === true || product.pro_access === true) {

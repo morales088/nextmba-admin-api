@@ -36,7 +36,7 @@ export class WebhookService {
       console.log(`🔥 ~ prevAttributes:`, prevAttributes);
       console.log(`${subscription.id} prev status: [${prevAttributes.status}] updated to: [${subscription.status}]`);
       if (prevAttributes?.status === SubscriptionStatus.TRIALING) {
-        await this.handleUpdatedToActiveSubscription(subscription);
+        await this.handleTrialToActiveSubscription(subscription);
       } else if (prevAttributes?.status === SubscriptionStatus.ACTIVE) {
         await this.handlePastDueAndCanceledSubscription(subscription);
       } else {
@@ -77,7 +77,7 @@ export class WebhookService {
     }
   }
 
-  async handleUpdatedToActiveSubscription(subscription: Stripe.Subscription) {
+  async handleTrialToActiveSubscription(subscription: Stripe.Subscription) {
     if (subscription.status === SubscriptionStatus.ACTIVE) {
       const subscriptionPayment = await this.database.payments.findFirst({
         where: { subscriptionId: subscription.id },
