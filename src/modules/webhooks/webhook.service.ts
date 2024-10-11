@@ -127,6 +127,7 @@ export class WebhookService {
       const product = await this.database.products.findFirst({ where: { code: productCode, status: 1 } });
 
       const subscription = await this.stripeService.retrieveSubscription(subscriptionId);
+      console.log(`🔥 ~ subscription:`, subscription);
 
       const paymentData = {
         name: customerDetails.name,
@@ -140,7 +141,8 @@ export class WebhookService {
 
       await this.paymentService.createPayment(paymentData);
     } catch (error) {
-      console.error('Error occurred: ', error.message);
+      console.error('Error occurred handleSuccessfulSubscription: ')
+      console.error('Error occurred: ', error);
     }
   }
 
