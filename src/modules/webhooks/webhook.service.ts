@@ -18,7 +18,8 @@ export class WebhookService {
 
   async handleEvent(event: Stripe.Event) {
     console.log('');
-    console.log(`🔥 ~ event:`, event);
+    console.log(`🔥 ~ Event:`, event.data.object);
+
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
 
@@ -30,11 +31,16 @@ export class WebhookService {
         throw new BadRequestException('Invalid mode of payment.');
       }
     } else if (event.type === 'customer.subscription.updated') {
+      console.log('');
+      console.log('Customer update event');
       const subscription = event.data.object as Stripe.Subscription;
       const prevAttributes = event.data.previous_attributes;
 
+      if (subscription.status === SubscriptionStatus.INCOMPLETE) return;
+
       console.log(`🔥 ~ prevAttributes:`, prevAttributes);
       console.log(`${subscription.id} prev status: [${prevAttributes.status}] updated to: [${subscription.status}]`);
+
       if (prevAttributes?.status === SubscriptionStatus.TRIALING) {
         await this.handleTrialToActiveSubscription(subscription);
       } else if (prevAttributes?.status === SubscriptionStatus.ACTIVE) {
@@ -113,6 +119,7 @@ export class WebhookService {
       const customerDetails = session.customer_details;
       const subscriptionId = session.subscription.toString();
 
+      console.log(`Mode: ${session.mode}`);
       console.log('Customer Details', JSON.stringify(customerDetails, null, 2));
       console.log('Metadata', JSON.stringify(metaData, null, 2));
 
@@ -129,7 +136,6 @@ export class WebhookService {
         price: subscription.status === SubscriptionStatus.TRIALING ? 0 : product.price,
       };
 
-      console.log(`Mode: ${session.mode}`);
       console.log('Payment Data', JSON.stringify(paymentData, null, 2));
 
       await this.paymentService.createPayment(paymentData);
