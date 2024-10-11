@@ -53,6 +53,12 @@ export class PaymentsService {
       const existingStudent = await this.studentRepository.findByEmail(data.email);
 
       if (existingStudent) {
+        // Check if student already claimed trial: End trial subscription to generate new invoice
+        if (data.subscriptionId && existingStudent.claimed_trial === true) {
+          const subscription = await this.stripeService.retrieveSubscription(data.subscriptionId);
+          await this.stripeService.endTrialSubscription(subscription.id);
+        }
+
         if (product.library_access === true || product.pro_access === true) {
           // Update student library access and account type based on product
           await this.studentsService.updateStudent(existingStudent.id, {
