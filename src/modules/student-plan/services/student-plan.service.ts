@@ -146,11 +146,12 @@ export class StudentPlanService {
   async renewPremium(studentId: number, endDate: Date) {
     // Get inactive premium courses all current premium courses
     const premiumStudentCourses = await this.database.student_courses.findMany({
-      where: { course_tier: 2, student_id: studentId, status: 0 },
+      where: { course_tier: CourseTierStatus.PREMIUM, student_id: studentId, status: 0 },
       select: { id: true, course_id: true },
       distinct: ['course_id'],
     });
     const premiumStudentCourseIds = premiumStudentCourses.map((sc) => sc.id);
+    console.log(`🔥 ~ premiumStudentCourses:`, premiumStudentCourses);
 
     // Update all premium courses at once
     const results = await this.database.student_courses.updateMany({
