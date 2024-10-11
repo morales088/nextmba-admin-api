@@ -33,7 +33,8 @@ export class WebhookService {
       const subscription = event.data.object as Stripe.Subscription;
       const prevAttributes = event.data.previous_attributes;
 
-      console.log(`🔥 ~ event.data.previous_attributes.status:`, event.data.previous_attributes.status);
+      console.log(`🔥 ~ prevAttributes:`, prevAttributes);
+      console.log(`${subscription.id} prev status: [${prevAttributes.status}] updated to: [${subscription.status}]`);
       if (prevAttributes?.status === SubscriptionStatus.TRIALING) {
         await this.handleUpdatedToActiveSubscription(subscription);
       } else if (prevAttributes?.status === SubscriptionStatus.ACTIVE) {

@@ -61,29 +61,26 @@ export class StripeService {
 
     if (!subscriptionPayment) throw new NotFoundException('No subscription payment found.');
 
-    console.log(`🔥 ~ subscriptionPayment:`, subscriptionPayment);
+    console.log(`🔥 ~ findSubscriptionPayment:`, subscriptionPayment);
 
     return subscriptionPayment;
   }
 
   async retrieveSubscription(subscriptionId: string) {
     try {
-      const subscription = await this.stripe.subscriptions.retrieve(subscriptionId);
-      // console.log(`🔥 ~ Retrieved Subscription:`, subscription);
-      return subscription;
+      await this.stripe.subscriptions.retrieve(subscriptionId);
     } catch (error) {
       console.log(`Error occurred retrieving subscription`);
       return null;
     }
   }
 
-  async updateSubscription(subscriptionId: string, metadata: any) {
-    return this.stripe.subscriptions.update(subscriptionId, { metadata });
+  async endTrialSubscription(subscriptionId: string) {
+    await this.stripe.subscriptions.update(subscriptionId, { trial_end: 'now' });
   }
 
   async findAndCancelSubscription(studentId: number) {
     const subscriptionPayment = await this.findSubscriptionPayment(studentId);
-    console.log(`🔥 ~ subscriptionPayment:`, subscriptionPayment);
 
     return this.stripe.subscriptions.cancel(subscriptionPayment.subscriptionId);
   }
