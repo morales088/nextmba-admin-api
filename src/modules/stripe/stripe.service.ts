@@ -68,7 +68,7 @@ export class StripeService {
 
   async retrieveSubscription(subscriptionId: string) {
     try {
-      await this.stripe.subscriptions.retrieve(subscriptionId);
+      return this.stripe.subscriptions.retrieve(subscriptionId);
     } catch (error) {
       console.log(`Error occurred retrieving subscription`);
       return null;
