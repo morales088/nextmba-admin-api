@@ -36,7 +36,7 @@ export class WebhookService {
       const subscription = event.data.object as Stripe.Subscription;
       const prevAttributes = event.data.previous_attributes;
 
-      if (subscription.status === SubscriptionStatus.INCOMPLETE) return;
+      if (prevAttributes?.status === SubscriptionStatus.INCOMPLETE) return;
 
       console.log(`🔥 ~ prevAttributes:`, prevAttributes);
       console.log(`${subscription.id} prev status: [${prevAttributes.status}] updated to: [${subscription.status}]`);
