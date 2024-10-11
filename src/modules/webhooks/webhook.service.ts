@@ -39,13 +39,13 @@ export class WebhookService {
         await this.handleUpdatedToActiveSubscription(subscription);
       } else if (prevAttributes?.status === SubscriptionStatus.ACTIVE) {
         await this.handlePastDueAndCanceledSubscription(subscription);
-      } else if (prevAttributes?.status === SubscriptionStatus.CANCELLED || SubscriptionStatus.UNPAID) {
-        await this.handlePastDueAndCanceledToActiveSubscription(subscription);
+      } else {
+        await this.handleOtherStatusesToActiveSubscription(subscription);
       }
     }
   }
 
-  async handlePastDueAndCanceledToActiveSubscription(subscription: Stripe.Subscription) {
+  async handleOtherStatusesToActiveSubscription(subscription: Stripe.Subscription) {
     if (subscription.status === SubscriptionStatus.ACTIVE) {
       const subscriptionPayment = await this.database.payments.findFirst({
         where: { subscriptionId: subscription.id },
