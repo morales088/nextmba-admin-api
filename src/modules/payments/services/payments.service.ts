@@ -57,7 +57,7 @@ export class PaymentsService {
         if (data.subscriptionId && existingStudent.claimed_trial === true) {
           const subscription = await this.stripeService.retrieveSubscription(data.subscriptionId);
 
-          if (subscription.status === SubscriptionStatus.TRIALING) {
+          if (subscription?.status === SubscriptionStatus.TRIALING) {
             console.log('Ending trial subscription: Student already claimed the trial.');
             await this.stripeService.endTrialSubscription(subscription.id);
           }
