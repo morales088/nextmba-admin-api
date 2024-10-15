@@ -83,7 +83,19 @@ export enum SubscriptionStatus {
   PAST_DUE = 'past_due',
   PAUSED = 'paused',
   UNPAID = 'unpaid',
-  CANCELLED = 'past_due',
+  CANCELLED = 'canceled',
   INCOMPLETE = 'incomplete',
   INCOMPLETE_EXPIRED = 'incomplete_expired',
+}
+
+export enum CourseTierStatus {
+  PERMANENT = 1,
+  PREMIUM = 2,
+  TRIAL = 3,
+}
+
+export enum StudentAccountType {
+  BASIC = 1,
+  PREMIUM = 2,
+  TRIAL = 3,
 }

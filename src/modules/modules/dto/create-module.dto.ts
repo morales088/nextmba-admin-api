@@ -51,4 +51,12 @@ export class CreateModuleDto {
   @Transform(({ value }) => parseInt(value))
   @IsIn([1, 2, 3]) // 1 - Full, 2 - Limited, 3 - All
   tier: number;
+
+  @IsOptional()
+  @IsString()
+  recording_id: string;
+
+  @IsOptional()
+  @IsBoolean()
+  recording_status: boolean;
 }

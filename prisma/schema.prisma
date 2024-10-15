@@ -82,6 +82,8 @@ model Modules {
   custom_course_title  String?
   tier                 Int                    @default(1)
   event_id             String?
+  recording_id         String?
+  recording_status     Boolean                @default(false)
   files                Files[]
   medias               Medias[]
   course               Courses                @relation(fields: [course_id], references: [id])
