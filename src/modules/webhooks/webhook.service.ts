@@ -159,11 +159,13 @@ export class WebhookService {
     const product = await this.database.products.findFirst({ where: { code: metaData.product_code, status: 1 } });
 
     if (metaData && Object.keys(metaData).length > 0) {
+      const amountTotal = session.amount_total / 100;
+
       const paymentData = {
         name: customerName,
         email: customerDetails.email,
         product_code: product.code,
-        price: session.amount_total ?? product.price,
+        price: amountTotal ?? product.price,
       };
 
       console.log(`Mode: ${session.mode}`);
