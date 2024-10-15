@@ -141,7 +141,7 @@ export class WebhookService {
 
       await this.paymentService.createPayment(paymentData);
     } catch (error) {
-      console.error('Error occurred handleSuccessfulSubscription: ')
+      console.error('Error occurred handleSuccessfulSubscription: ');
       console.error('Error occurred: ', error);
     }
   }
@@ -149,13 +149,21 @@ export class WebhookService {
   async handleSuccessfulPayment(session: Stripe.Checkout.Session) {
     const metaData = session.metadata;
     const customerDetails = session.customer_details;
+    const customFields = session.custom_fields || [];
+
+    // Get the value of the name field, if it exists
+    const nameField = customFields.find((field) => field.key === 'name');
+    const customerName = nameField?.text?.value || customerDetails.name;
+
+    if (!metaData.product_code) throw new NotFoundException('Product code undefined.');
+    const product = await this.database.products.findFirst({ where: { code: metaData.product_code, status: 1 } });
 
     if (metaData && Object.keys(metaData).length > 0) {
       const paymentData = {
-        name: customerDetails.name,
+        name: customerName,
         email: customerDetails.email,
-        product_code: metaData.product_code,
-        price: metaData.price,
+        product_code: product.code,
+        price: session.amount_total ?? product.price,
       };
 
       console.log(`Mode: ${session.mode}`);
