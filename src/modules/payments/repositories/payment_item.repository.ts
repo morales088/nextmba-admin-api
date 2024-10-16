@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { AbstractRepository } from 'src/common/repositories/abstract.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { Payment_items } from '@prisma/client';
-import { CourseTierType, PaymentOrigin } from 'src/common/constants/enum';
+import { CourseTierStatus, PaymentOrigin } from '../../../common/constants/enum';
 
 @Injectable()
 export class PaymentItemRepository extends AbstractRepository<Payment_items> {
@@ -57,7 +57,7 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
         course_id: product_item.course_id,
         quantity: product_item.quantity,
         giftable: giftable,
-        course_tier: product_item.course_tier,
+        course_tier: CourseTierStatus.PERMANENT,
       };
 
       const paymentItem = await this.prisma.payment_items.create({ data: itemData });
@@ -76,20 +76,20 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
         course_id: product_item.course_id,
         starting_date: startingDate,
         expiration_date: expirationDate,
-        course_tier: product_item.course_tier,
+        course_tier: CourseTierStatus.PERMANENT,
         is_followed: true,
       };
 
       // add student course for first time enrollee
       if (!studentCourse) await this.prisma.student_courses.create({ data: studentCourseData });
 
-      // update student course tier if not full access already
-      if (studentCourse && studentCourse?.course_tier !== CourseTierType.FULL) {
-        await this.prisma.student_courses.update({
-          where: { id: studentCourse.id },
-          data: { course_tier: CourseTierType.FULL },
-        });
-      }
+      // // update student course tier if not full access already
+      // if (studentCourse && studentCourse?.course_tier !== CourseTierType.FULL) {
+      //   await this.prisma.student_courses.update({
+      //     where: { id: studentCourse.id },
+      //     data: { course_tier: CourseTierType.FULL },
+      //   });
+      // }
 
       // update student course to expired course
       if (studentCourse && !hasStudCourse) {
@@ -104,7 +104,7 @@ export class PaymentItemRepository extends AbstractRepository<Payment_items> {
           module_quantity: newModuleQuantity,
           // course_tier: product_item.course_tier,
         };
-        if (product_item.course_tier == 1) newStudentCourseData.course_tier = product_item.course_tier;
+        // if (product_item.course_tier == 1) newStudentCourseData.course_tier = product_item.course_tier;
 
         await this.prisma.student_courses.update({ where: { id: studentCourse.id }, data: newStudentCourseData });
       }
