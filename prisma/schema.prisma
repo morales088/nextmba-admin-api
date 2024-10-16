@@ -213,6 +213,7 @@ model Students {
   email_sent              Boolean                  @default(false)
   is_translator           Boolean                  @default(false)
   is_speaker              Boolean                  @default(false)
+  is_event_admin          Boolean                  @default(false)
   claimed_trial           Boolean                  @default(false)
   affilate_withdraws      Affilate_withdraws[]
   affiliates              Affiliates[]
