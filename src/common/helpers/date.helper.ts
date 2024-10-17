@@ -6,12 +6,12 @@ export function currentTime() {
   return now().toJSDate();
 }
 
-export const currentStartOfDay = (date = currentTime()) => {
+export const startOfDay = (date = currentTime()) => {
   const startOfDay = DateTime.fromJSDate(date).toUTC().startOf('day');
   return new Date(startOfDay.toJSDate());
 };
 
-export const currentEndOfDay = (date = currentTime()) => {
+export const endOfDay = (date = currentTime()) => {
   const endOfDay = DateTime.fromJSDate(date).toUTC().endOf('day');
   return new Date(endOfDay.toJSDate());
 };
@@ -54,11 +54,11 @@ export const endDayOfMonth = (date = currentTime()) => {
   return new Date(endOfMonth.toJSDate().setUTCHours(23, 59, 59, 999));
 };
 
-export const oneMonthAgo = (date = currentTime()) => {
-  const oneMonthAgo = DateTime.fromJSDate(date).minus({ months: 1 });
+export const lastNumMonth = (numMonths: number, date = currentTime()) => {
+  const oneMonthAgo = DateTime.fromJSDate(date).minus({ months: numMonths });
   return new Date(oneMonthAgo.toJSDate());
 };
 
 export const delayMs = async (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
-}
+};

@@ -1,15 +1,17 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { processAndRemoveEntries } from 'src/common/helpers/csv.helper';
+import { processAndRemoveEntries, saveToCSV } from 'src/common/helpers/csv.helper';
 import { PaymentLeadsDTO } from 'src/modules/payments/dto/upgrade-payment.dto';
 import { PaymentRepository } from 'src/modules/payments/repositories/payment.repository';
 import { PaymentsService } from 'src/modules/payments/services/payments.service';
 import { ProductRepository } from 'src/modules/products/repositories/product.repository';
 import { StripeService } from '../../stripe/stripe.service';
 import { PrismaService } from '../../../common/prisma/prisma.service';
-import { addMonths, addWeeks } from 'date-fns';
+import { addMonths, addWeeks, fromUnixTime } from 'date-fns';
 import { UTCDate } from '@date-fns/utc';
 import { CourseTierStatus, StudentAccountType, SubscriptionStatus } from '../../../common/constants/enum';
 import { replace } from 'lodash';
+import { delayMs, endOfDay, lastNumMonth, startOfDay } from '../../../common/helpers/date.helper';
+import { Payments } from '@prisma/client';
 
 @Injectable()
 export class PaymentLeadsCronService {
@@ -212,6 +214,108 @@ export class PaymentLeadsCronService {
       }
     } catch (error) {
       this.logger.error('An error occurred:', error.message);
+    }
+  }
+
+  async fixStudentCourseData() {
+    try {
+      const startDate = startOfDay(lastNumMonth(1));
+      const endDate = endOfDay();
+      console.log(`🔥 ~ endDate:`, endDate);
+      console.log(`🔥 ~ startDate:`, startDate);
+      const premiumProductCodes = ['all_access_annual', 'all_access_monthly', 'all_access_monthly_10'];
+
+      const payments = await this.database.payments.findMany({
+        where: {
+          NOT: { subscriptionId: null },
+          product_code: { in: premiumProductCodes },
+          createdAt: {
+            gte: startDate,
+            lte: endDate,
+          },
+        },
+        select: { student: true },
+      });
+
+      for (const payment of payments) {
+        const studentPayments = await this.database.payments.findMany({
+          where: { student_id: payment.student.id, status: 1, product_code: { notIn: premiumProductCodes } },
+          select: { product: true, payment_items: true, student: true },
+        });
+        console.log(`🔥 ~ student: ${payment.student.email}`);
+        // console.log(`🔥 ~ studentPayments:`, studentPayments);
+
+        for (const studentPayment of studentPayments) {
+          const paymentItems = studentPayment.payment_items;
+          console.log(`🔥 ~ paymentItems:`, paymentItems);
+
+          const studentCoursesPayments = paymentItems.filter(
+            (paymentItem) => paymentItem.course_tier === CourseTierStatus.PREMIUM
+          );
+          console.log(`🔥 ~ studentCoursesPayments:`, studentCoursesPayments);
+
+          for (const studentCoursesPayment of studentCoursesPayments) {
+            await this.database.payment_items.update({
+              where: { id: studentCoursesPayment.id },
+              data: { course_tier: CourseTierStatus.PERMANENT },
+            });
+
+            const studentCourseToUpdate = await this.database.student_courses.findFirst({
+              where: {
+                course_id: studentCoursesPayment.course_id,
+                student_id: studentPayment.student.id,
+                course_tier: CourseTierStatus.PREMIUM,
+                status: 1,
+              },
+            });
+            console.log(`🔥 ~ studentCourseToUpdate:`, studentCourseToUpdate);
+
+            if (studentCourseToUpdate) {
+              const updatedStudentCourse = await this.database.student_courses.update({
+                where: { id: studentCourseToUpdate.id },
+                data: { course_tier: CourseTierStatus.PERMANENT },
+              });
+              console.log(`🔥 ~ updatedStudentCourse:`, updatedStudentCourse);
+            }
+          }
+        }
+
+        // For fixing student course subscription end date
+        // Get all courses that came with premium
+        await this.updateStudentCourseEndDateSubscription(payment.student.id);
+        await delayMs(500);
+      }
+    } catch (error) {
+      this.logger.error('An error occurred while exporting studentPayments data:', error.message);
+    }
+  }
+
+  async updateStudentCourseEndDateSubscription(studentId: number) {
+    const paymentSubscription = await this.database.payments.findFirst({
+      where: { student_id: studentId, status: 1, NOT: { subscriptionId: null } },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const stripeSubscription = await this.stripeService.retrieveSubscription(paymentSubscription.subscriptionId);
+    const subscriptionEndDate = fromUnixTime(stripeSubscription.current_period_end);
+    console.log(`🔥 ~ subscriptionEndDate:`, subscriptionEndDate);
+
+    const studentCourses = await this.database.student_courses.findMany({
+      where: { student_id: studentId, course_tier: CourseTierStatus.PREMIUM, status: 1 },
+      select: { id: true },
+    });
+
+    // Update all the courses so that the student doesn't have access to it
+    if (studentCourses.length > 0) {
+      const studentCourseIds = studentCourses.map((sc) => sc.id);
+
+      const results = await this.database.student_courses.updateMany({
+        where: { id: { in: studentCourseIds } },
+        data: { expiration_date: subscriptionEndDate },
+      });
+      console.log(`🔥 ~ results:`, results);
+
+      return results;
     }
   }
 

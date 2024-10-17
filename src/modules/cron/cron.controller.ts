@@ -7,7 +7,7 @@ import { MailerLiteService } from 'src/common/mailerlite/mailerlite.service';
 export class CronController {
   constructor(
     private readonly cronService: CronService,
-    private readonly mailerLiteService: MailerLiteService,
+    private readonly mailerLiteService: MailerLiteService
   ) {}
 
   // @Public()
@@ -15,7 +15,7 @@ export class CronController {
   // async getCronInfo() {
   //   return this.cronService.cronJobInfo();
   // }
-  
+
   // @Public()
   // @Get('/test')
   // async test() {
@@ -47,9 +47,9 @@ export class CronController {
   //   return this.cronService.runProcessPaymentLeads();
   // }
 
-  // @Public()
-  // @Get('/process-payment-subscriptions')
-  // async processPaymentSubscriptions() {
-  //   return this.cronService.runProcessPaymentSubscriptions();
-  // }
+  @Public()
+  @Get('/fix-data')
+  async processFixData() {
+    return this.cronService.runFixData();
+  }
 }
