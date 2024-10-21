@@ -30,7 +30,7 @@ export class CronService {
   //     this.logger.log('Running: Export expired students course');
   //     await this.mailerliteCronService.exportExpiredStudentCourse();
   //     this.delay(1000);
-      
+
   //     console.log('');
   //     this.logger.log('Running: Export completed students courses');
   //     await this.mailerliteCronService.exportCompletedStudentsCourses();
@@ -65,7 +65,7 @@ export class CronService {
   //     console.log('');
   //     this.logger.log('Running: Remove students to group');
   //     await this.mailerliteCronService.removeStudentsToGroups();
-      
+
   //     // console.log('');
   //     // this.logger.log('Running: Remove students with completed courses to group');
   //     // await this.mailerliteCronService.removeCompletedStudentsToGroups();
@@ -106,16 +106,17 @@ export class CronService {
   // }
 
   // @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_NOON, {
-  //   name: 'process-payment-subscriptions',
+  //   name: 'process-fix-data',
   //   timeZone: 'Asia/Manila',
   // })
-  // async runProcessPaymentSubscriptions() {
+  // async runFixData() {
   //   try {
   //     console.log('');
-  //     this.logger.log('Running: Process subscription payments data');
+  //     this.logger.log('Running: Process payments data');
 
-  //     await this.paymentLeadsCronService.fixSubscriptionPayments();
-  //     this.delay(1000);
+  //     // await this.paymentLeadsCronService.fixSubscriptionPayments();
+  //     // await this.paymentLeadsCronService.fixStudentCourseData();
+  //     await this.delay(1000);
 
   //     console.log('');
   //     this.logger.log('Cron job is done.');
@@ -123,7 +124,7 @@ export class CronService {
   //     // const job = this.schedulerRegistry.getCronJob('process-payment-leads');
   //     // this.logger.log(`Next Scheduled Date: ${job.nextDate()}`);
   //   } catch (error) {
-  //     this.logger.error(`Error in process-payment-subscriptions cron job: ${error.message}`);
+  //     this.logger.error(`Error in process-fix-data cron job: ${error.message}`);
   //   }
   // }
 
