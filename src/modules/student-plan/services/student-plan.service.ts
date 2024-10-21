@@ -1,6 +1,6 @@
 import { UTCDate } from '@date-fns/utc';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { addMonths, addWeeks } from 'date-fns';
+import { addMonths, addWeeks, fromUnixTime } from 'date-fns';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { StripeService } from '../../stripe/stripe.service';
 import { CourseTierStatus, StudentAccountType } from '../../../common/constants/enum';
@@ -17,12 +17,15 @@ export class StudentPlanService {
 
     if (student?.account_type !== 2) return {};
 
-    const { product } = await this.stripeService.findSubscriptionPayment(studentId);
+    const { product, subscriptionId } = await this.stripeService.findSubscriptionPayment(studentId);
+    const subscription = await this.stripeService.retrieveSubscription(subscriptionId);
 
     return {
       name: product.name,
       code: product.code,
       price: product.price,
+      start_date: fromUnixTime(subscription.start_date),
+      next_payment_date: fromUnixTime(subscription.current_period_end),
     };
   }
 
