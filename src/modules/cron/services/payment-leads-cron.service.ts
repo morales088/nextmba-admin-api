@@ -25,102 +25,6 @@ export class PaymentLeadsCronService {
     private readonly stripeService: StripeService
   ) {}
 
-  // for fixing subscription payment
-  // start trial
-  async activateTrialV2(studentId: number, trialStartDate?: Date) {
-    // Get the student data
-    const student = await this.database.students.findFirst({ where: { id: studentId } });
-
-    const claimedTrial = student.claimed_trial ?? true;
-    const claimedTrialAt = trialStartDate ?? student.claimed_trial_at;
-
-    // Create an array of owned courses
-    const studentCourses = await this.database.student_courses.findMany({
-      where: { student_id: studentId, status: 1 },
-      select: { course_id: true },
-    });
-    const studentCourseIds = studentCourses.map((sc) => sc.course_id);
-
-    // Finds the courses that is unowned
-    const unownedCourses = await this.database.courses.findMany({
-      where: {
-        id: { notIn: studentCourseIds },
-        status: 1,
-      },
-    });
-
-    // Create data for creating student courses
-    const insertData = unownedCourses.map((course) => ({
-      student_id: studentId,
-      course_id: course.id,
-      course_tier: CourseTierStatus.TRIAL,
-      expiration_date: addWeeks(new UTCDate(), 1),
-    }));
-
-    // Update the student account type
-    await this.database.students.update({
-      where: { id: studentId },
-      data: { account_type: StudentAccountType.TRIAL, claimed_trial: claimedTrial, claimed_trial_at: claimedTrialAt },
-    });
-
-    // Create courses
-    const createdDatas = await Promise.all(
-      insertData.map(async (data) => await this.database.student_courses.create({ data }))
-    );
-
-    return createdDatas;
-  }
-
-  // activate subscription
-  async activatePremiumV2(studentId: number, premiumStartDate?: Date) {
-    const student = await this.database.students.findFirst({ where: { id: studentId } });
-
-    const lastPremiumActivation = premiumStartDate ?? student.last_premium_activation;
-
-    // If student in the middle of trial, set those course to 0
-    await this.database.student_courses.updateMany({
-      where: { student_id: studentId, status: 1, course_tier: 3 },
-      data: { status: 0 },
-    });
-
-    // Find all owned courses
-    const studentCourses = await this.database.student_courses.findMany({
-      where: { student_id: studentId, status: 1 },
-      select: { course_id: true },
-    });
-    const studentCourseIds = studentCourses.map((sc) => sc.course_id);
-
-    // Fetch all unowned courses based on owned courses
-    const unownedCourses = await this.database.courses.findMany({
-      where: {
-        status: 1,
-        id: { notIn: studentCourseIds },
-      },
-      select: { id: true, name: true, price: true, status: true },
-    });
-
-    // Set array of data for creating new student_courses
-    const insertData = unownedCourses.map((course) => ({
-      student_id: studentId,
-      course_id: course.id,
-      course_tier: 2,
-      expiration_date: addMonths(new UTCDate(), 1),
-    }));
-
-    // Update account type to premium
-    await this.database.students.update({
-      where: { id: studentId },
-      data: { account_type: StudentAccountType.PREMIUM, last_premium_activation: lastPremiumActivation },
-    });
-
-    // Create new student courses base on insertData
-    const createdDatas = await Promise.all(
-      insertData.map(async (data) => await this.database.student_courses.create({ data }))
-    );
-
-    return createdDatas;
-  }
-
   async fixSubscriptionPayments() {
     try {
       const rowsData = await processAndRemoveEntries('payment-subscriptions.csv', 100);
@@ -217,107 +121,123 @@ export class PaymentLeadsCronService {
     }
   }
 
-  async fixStudentCourseData() {
-    try {
-      const startDate = startOfDay(lastNumMonth(1));
-      const endDate = endOfDay();
-      console.log(`🔥 ~ endDate:`, endDate);
-      console.log(`🔥 ~ startDate:`, startDate);
-      const premiumProductCodes = ['all_access_annual', 'all_access_monthly', 'all_access_monthly_10'];
+  // async fixStudentCourseData() {
+  //   try {
+  //     const startDate = startOfDay(lastNumMonth(1, new Date('2024-10-20')));
+  //     const endDate = endOfDay(new Date('2024-10-11'));
+  //     console.log(`🔥 ~ startDate:`, startDate);
+  //     console.log(`🔥 ~ endDate:`, endDate);
+  //     const premiumProductCodes = ['all_access_annual', 'all_access_monthly', 'all_access_monthly_10'];
 
-      const payments = await this.database.payments.findMany({
-        where: {
-          NOT: { subscriptionId: null },
-          product_code: { in: premiumProductCodes },
-          createdAt: {
-            gte: startDate,
-            lte: endDate,
-          },
-        },
-        select: { student: true },
-      });
+  //     const payments = await this.database.payments.findMany({
+  //       where: {
+  //         student: { status: 1 },
+  //         NOT: { subscriptionId: null },
+  //         product_code: { in: premiumProductCodes },
+  //         createdAt: {
+  //           gte: startDate,
+  //           lte: endDate,
+  //         },
+  //       },
+  //       select: { student: true },
+  //       orderBy: { createdAt: 'asc' },
+  //       distinct: ['student_id'],
+  //       // skip: 100,
+  //       // take: ,
+  //     });
+  //     console.log(`🔥 ~ payments:`, payments.length);
 
-      for (const payment of payments) {
-        const studentPayments = await this.database.payments.findMany({
-          where: { student_id: payment.student.id, status: 1, product_code: { notIn: premiumProductCodes } },
-          select: { product: true, payment_items: true, student: true },
-        });
-        console.log(`🔥 ~ student: ${payment.student.email}`);
-        // console.log(`🔥 ~ studentPayments:`, studentPayments);
+  //     for (const payment of payments) {
+  //       console.log(`🔥 ~ student: ${payment.student.email}`);
 
-        for (const studentPayment of studentPayments) {
-          const paymentItems = studentPayment.payment_items;
-          console.log(`🔥 ~ paymentItems:`, paymentItems);
+  //       const studentPayments = await this.database.payments.findMany({
+  //         where: {
+  //           student_id: payment.student.id,
+  //           status: 1,
+  //           product_code: { notIn: premiumProductCodes },
+  //         },
+  //         select: {
+  //           product: true,
+  //           payment_items: true,
+  //           student: {
+  //             select: {
+  //               id: true,
+  //               email: true,
+  //               claimed_trial: true,
+  //               claimed_trial_at: true,
+  //               last_premium_activation: true,
+  //               status: true,
+  //             },
+  //           },
+  //         },
+  //       });
 
-          const studentCoursesPayments = paymentItems.filter(
-            (paymentItem) => paymentItem.course_tier === CourseTierStatus.PREMIUM
-          );
-          console.log(`🔥 ~ studentCoursesPayments:`, studentCoursesPayments);
+  //       const filterStudentPayments = studentPayments.filter((studPayment) => studPayment.payment_items.length !== 0);
 
-          for (const studentCoursesPayment of studentCoursesPayments) {
-            await this.database.payment_items.update({
-              where: { id: studentCoursesPayment.id },
-              data: { course_tier: CourseTierStatus.PERMANENT },
-            });
+  //       for (const studentPayment of filterStudentPayments) {
+  //         const studentCoursesPermanent = studentPayment.payment_items
+  //           .filter((paymentItem) => paymentItem.course_tier === CourseTierStatus.PERMANENT)
+  //           .map((sc) => sc.course_id);
 
-            const studentCourseToUpdate = await this.database.student_courses.findFirst({
-              where: {
-                course_id: studentCoursesPayment.course_id,
-                student_id: studentPayment.student.id,
-                course_tier: CourseTierStatus.PREMIUM,
-                status: 1,
-              },
-            });
-            console.log(`🔥 ~ studentCourseToUpdate:`, studentCourseToUpdate);
+  //         console.log(`🔥 ~ studentCoursesPermanent:`, studentCoursesPermanent);
 
-            if (studentCourseToUpdate) {
-              const updatedStudentCourse = await this.database.student_courses.update({
-                where: { id: studentCourseToUpdate.id },
-                data: { course_tier: CourseTierStatus.PERMANENT },
-              });
-              console.log(`🔥 ~ updatedStudentCourse:`, updatedStudentCourse);
-            }
-          }
-        }
+  //         // Update student courses that should be premium courses
+  //         const result = await this.database.student_courses.updateMany({
+  //           where: {
+  //             course_id: { notIn: studentCoursesPermanent },
+  //             student_id: studentPayment.student.id,
+  //             // course_tier: CourseTierStatus.PERMANENT,
+  //             status: 1,
+  //           },
+  //           data: {
+  //             course_tier: CourseTierStatus.PREMIUM,
+  //           },
+  //         });
+  //         console.log(`🔥 ~ result:`, result);
+  //       }
 
-        // For fixing student course subscription end date
-        // Get all courses that came with premium
-        await this.updateStudentCourseEndDateSubscription(payment.student.id);
-        await delayMs(500);
-      }
-    } catch (error) {
-      this.logger.error('An error occurred while exporting studentPayments data:', error.message);
-    }
-  }
+  //       // // Get all courses that came with premium
+  //       // await this.updateStudentCourseEndDateSubscription(payment.student.id);
+  //       // await delayMs(300);
+  //     }
+  //   } catch (error) {
+  //     this.logger.error('An error occurred while exporting studentPayments data:', error.message);
+  //   }
+  // }
 
-  async updateStudentCourseEndDateSubscription(studentId: number) {
-    const paymentSubscription = await this.database.payments.findFirst({
-      where: { student_id: studentId, status: 1, NOT: { subscriptionId: null } },
-      orderBy: { createdAt: 'desc' },
-    });
+  // // For fixing student course subscription end date
+  // async updateStudentCourseEndDateSubscription(studentId: number) {
+  //   const paymentSubscription = await this.database.payments.findFirst({
+  //     where: { student_id: studentId, status: 1, NOT: { subscriptionId: null } },
+  //     orderBy: { createdAt: 'desc' },
+  //   });
 
-    const stripeSubscription = await this.stripeService.retrieveSubscription(paymentSubscription.subscriptionId);
-    const subscriptionEndDate = fromUnixTime(stripeSubscription.current_period_end);
-    console.log(`🔥 ~ subscriptionEndDate:`, subscriptionEndDate);
+  //   if (paymentSubscription.subscriptionId) {
+  //     const subscription = await this.stripeService.retrieveSubscription(paymentSubscription.subscriptionId);
+  //     const activationDate = fromUnixTime(subscription.start_date);
+  //     const subscriptionEndDate = fromUnixTime(subscription.current_period_end);
+  //     console.log(`🔥 ~ activationDate:`, activationDate);
+  //     console.log(`🔥 ~ subscriptionEndDate:`, subscriptionEndDate);
 
-    const studentCourses = await this.database.student_courses.findMany({
-      where: { student_id: studentId, course_tier: CourseTierStatus.PREMIUM, status: 1 },
-      select: { id: true },
-    });
+  //     const studentCourses = await this.database.student_courses.findMany({
+  //       where: { student_id: studentId, course_tier: CourseTierStatus.PREMIUM, status: 1 },
+  //       select: { id: true },
+  //     });
 
-    // Update all the courses so that the student doesn't have access to it
-    if (studentCourses.length > 0) {
-      const studentCourseIds = studentCourses.map((sc) => sc.id);
+  //     // Update all the courses so that the student doesn't have access to it
+  //     if (studentCourses.length > 0) {
+  //       const studentCourseIds = studentCourses.map((sc) => sc.id);
 
-      const results = await this.database.student_courses.updateMany({
-        where: { id: { in: studentCourseIds } },
-        data: { expiration_date: subscriptionEndDate },
-      });
-      console.log(`🔥 ~ results:`, results);
+  //       const results = await this.database.student_courses.updateMany({
+  //         where: { id: { in: studentCourseIds } },
+  //         data: { starting_date: activationDate, expiration_date: subscriptionEndDate },
+  //       });
+  //       console.log(`🔥 ~ results:`, results);
 
-      return results;
-    }
-  }
+  //       return results;
+  //     }
+  //   }
+  // }
 
   async checkPaymentLeads() {
     try {

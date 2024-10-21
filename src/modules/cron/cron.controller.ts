@@ -47,9 +47,9 @@ export class CronController {
   //   return this.cronService.runProcessPaymentLeads();
   // }
 
-  @Public()
-  @Get('/fix-data')
-  async processFixData() {
-    return this.cronService.runFixData();
-  }
+  // @Public()
+  // @Get('/fix-data')
+  // async processFixData() {
+  //   return this.cronService.runFixData();
+  // }
 }

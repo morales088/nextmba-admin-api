@@ -109,24 +109,24 @@ export class CronService {
   //   name: 'process-fix-data',
   //   timeZone: 'Asia/Manila',
   // })
-  async runFixData() {
-    try {
-      console.log('');
-      this.logger.log('Running: Process payments data');
+  // async runFixData() {
+  //   try {
+  //     console.log('');
+  //     this.logger.log('Running: Process payments data');
 
-      // await this.paymentLeadsCronService.fixSubscriptionPayments();
-      await this.paymentLeadsCronService.fixStudentCourseData();
-      await this.delay(1000);
+  //     // await this.paymentLeadsCronService.fixSubscriptionPayments();
+  //     // await this.paymentLeadsCronService.fixStudentCourseData();
+  //     await this.delay(1000);
 
-      console.log('');
-      this.logger.log('Cron job is done.');
+  //     console.log('');
+  //     this.logger.log('Cron job is done.');
 
-      // const job = this.schedulerRegistry.getCronJob('process-payment-leads');
-      // this.logger.log(`Next Scheduled Date: ${job.nextDate()}`);
-    } catch (error) {
-      this.logger.error(`Error in process-fix-data cron job: ${error.message}`);
-    }
-  }
+  //     // const job = this.schedulerRegistry.getCronJob('process-payment-leads');
+  //     // this.logger.log(`Next Scheduled Date: ${job.nextDate()}`);
+  //   } catch (error) {
+  //     this.logger.error(`Error in process-fix-data cron job: ${error.message}`);
+  //   }
+  // }
 
   async cronJobInfo() {
     const jobs = this.schedulerRegistry.getCronJobs();
