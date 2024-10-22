@@ -1,16 +1,6 @@
-import { Prisma } from '@prisma/client';
 import { Transform, Type } from 'class-transformer';
-import {
-  IsDate,
-  IsDateString,
-  IsDecimal,
-  IsIn,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  isNumber,
-} from 'class-validator';
+import { IsDate, IsEnum, IsIn, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
+import { CourseTierStatus } from '../../../common/constants/enum';
 
 export class CreateStudentCourseDto {
   @IsNotEmpty()
@@ -42,6 +32,6 @@ export class CreateStudentCourseDto {
 
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
-  @IsIn([1, 2]) // [1-full, 2-limited]
+  @IsEnum(CourseTierStatus)
   course_tier: number;
 }

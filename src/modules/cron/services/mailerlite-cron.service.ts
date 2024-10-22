@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { StudentsService } from '../../students/services/students.service';
 import { processAndRemoveEntries, processAndRemoveFirstEntry, saveToCSV } from '../../../common/helpers/csv.helper';
 import { MailerLiteService } from 'src/common/mailerlite/mailerlite.service';
-import { AccountStatus, AccountType } from 'src/common/constants/enum';
+import { AccountStatus, StudentAccountType } from 'src/common/constants/enum';
 import { SubscriberGroupsService } from '../../subscriber_groups/services/subscriber-groups.service';
 import validator from 'validator';
 
@@ -133,7 +133,7 @@ export class MailerliteCronService {
 
       if (student.status !== AccountStatus.INACTIVE) {
         // Check if student account type is pro account: then add to all student groups
-        if (student.account_type === AccountType.PRO) {
+        if (student.account_type === StudentAccountType.PREMIUM) {
           try {
             await this.mailerLiteService.assignSubscriberToGroups({
               email: studentEmail,

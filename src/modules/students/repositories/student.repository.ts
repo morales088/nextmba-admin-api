@@ -1,18 +1,11 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { AbstractRepository } from 'src/common/repositories/abstract.repository';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/common/prisma/prisma.service';
-import { Students } from '@prisma/client';
+import { Students, Prisma } from '@prisma/client';
 import { FilterOptions } from '../interfaces/student.interface';
 
 @Injectable()
-export class StudentRepository extends AbstractRepository<Students> {
-  constructor(protected readonly prisma: PrismaService) {
-    super(prisma);
-  }
-
-  get modelName(): string {
-    return 'Students'; // Specify the Prisma model name for entity
-  }
+export class StudentRepository {
+  constructor(protected readonly prisma: PrismaService) {}
 
   async countAllActiveStudents(): Promise<number> {
     return this.prisma.students.count({
@@ -24,25 +17,17 @@ export class StudentRepository extends AbstractRepository<Students> {
     return this.prisma.students.count();
   }
 
-  async find(): Promise<Students> {
-    return this.prisma[this.modelName].findMany({
+  async find(): Promise<Students[]> {
+    return this.prisma.students.findMany({
       where: { status: 1 },
-      orderBy: [
-        {
-          id: 'desc',
-        },
-      ],
+      orderBy: [{ id: 'desc' }],
     });
   }
 
-  async studentEmail(): Promise<Students> {
-    return this.prisma[this.modelName].findMany({
+  async studentEmail(): Promise<Students[]> {
+    return this.prisma.students.findMany({
       where: { email_sent: false, status: 1 },
-      orderBy: [
-        {
-          id: 'desc',
-        },
-      ],
+      orderBy: [{ id: 'desc' }],
     });
   }
 
@@ -115,7 +100,7 @@ export class StudentRepository extends AbstractRepository<Students> {
 
     if (admin.role === 2) whereCondition.created_by = { in: [admin.userId] };
 
-    const students = await this.prisma[this.modelName].findMany({
+    const students = await this.prisma.students.findMany({
       where: whereCondition,
       include: { student_courses: { where: { status: 1 }, include: { course: true } } },
       orderBy: [
@@ -128,49 +113,34 @@ export class StudentRepository extends AbstractRepository<Students> {
     });
 
     // Fetch total count of matching students
-    const totalResult = await this.prisma[this.modelName].count({
+    const totalResult = await this.prisma.students.count({
       where: whereCondition,
     });
 
     return { students, totalResult };
   }
 
-  async insert(data: Partial<Students>): Promise<any> {
-    const existingStudent = await this.prisma[this.modelName].findFirst({
-      where: {
-        email: {
-          equals: data.email,
-          mode: 'insensitive',
-        },
-      },
-    });
-
-    if (existingStudent) {
-      throw new BadRequestException('Student already exists.');
-    }
-
-    return this.prisma[this.modelName].create({ data: data });
+  async insert(data: Prisma.StudentsCreateInput): Promise<Students> {
+    return this.prisma.students.create({ data });
   }
 
-  async updateStudent(id: number, data): Promise<Students> {
-    const student = await this.findById(id);
-
-    if (!student) {
-      throw new BadRequestException('Student does not exist.');
-    }
-
-    return this.prisma[this.modelName].update({
-      where: { id: id },
+  async update(id: number, data: Prisma.StudentsUpdateInput): Promise<Students> {
+    return this.prisma.students.update({
+      where: { id },
       data: data,
     });
   }
 
   async findById(id: number) {
-    return this.prisma.students.findUnique({ where: { id: id } });
+    const student = await this.prisma.students.findUnique({ where: { id } });
+
+    if (!student) throw new NotFoundException('Student not found.');
+
+    return student;
   }
 
   async findByEmail(email: string) {
-    return this.prisma[this.modelName].findFirst({
+    return this.prisma.students.findFirst({
       where: { email: { contains: email, mode: 'insensitive' } },
       include: { student_courses: { where: { status: 1 } } },
     });
@@ -188,7 +158,7 @@ export class StudentRepository extends AbstractRepository<Students> {
       throw new InternalServerErrorException('Invalid filter options.');
     }
 
-    return this.prisma[this.modelName].findMany({
+    return this.prisma.students.findMany({
       where: whereCondition,
       include: { student_courses: { include: { course: true } } },
     });

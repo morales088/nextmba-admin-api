@@ -81,7 +81,7 @@ export class GiftsService {
           library_access: 1,
         };
 
-        const createStudent = await this.studentsService.createStudent(studentData);
+        const createStudent = await this.studentsService.createStudentTx(studentData);
 
         studentId = createStudent.id;
       }
