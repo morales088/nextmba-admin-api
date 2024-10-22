@@ -145,8 +145,8 @@ export class PaymentsService {
         }
       }
 
-      // // Add new created student to mailerlite
-      // this.studentsService.addCreatedStudentToCourseGroups(studentId);
+      // Add new created student to mailerlite
+      this.studentsService.addCreatedStudentToCourseGroups(studentId);
 
       console.info(`Payment Completed: ${createdPayment.email}`);
       return createdPayment;

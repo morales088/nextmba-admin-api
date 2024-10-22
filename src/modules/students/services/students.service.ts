@@ -61,38 +61,41 @@ export class StudentsService {
 
   async createStudentTx(data) {
     try {
-      return await this.prismaService.$transaction(async (tx) => {
-        const password = data.password ?? this.generateRandomString(8);
-        const hashedPassword = await this.hashService.hashPassword(password);
+      return await this.prismaService.$transaction(
+        async (tx) => {
+          const password = data.password ?? this.generateRandomString(8);
+          const hashedPassword = await this.hashService.hashPassword(password);
 
-        const studentData = {
-          ...data,
-          password: hashedPassword,
-          email: data.email.trim(),
-        };
+          const studentData = {
+            ...data,
+            password: hashedPassword,
+            email: data.email.trim(),
+          };
 
-        const existingStudent = await tx.students.findFirst({
-          where: {
-            email: {
-              equals: studentData.email,
-              mode: 'insensitive',
+          const existingStudent = await tx.students.findFirst({
+            where: {
+              email: {
+                equals: studentData.email,
+                mode: 'insensitive',
+              },
             },
-          },
-        });
+          });
 
-        if (existingStudent) {
-          throw new BadRequestException('Student already exists.');
-        }
+          if (existingStudent) {
+            throw new BadRequestException('Student already exists.');
+          }
 
-        const createdStudent = await tx.students.create({ data: studentData });
+          const createdStudent = await tx.students.create({ data: studentData });
 
-        // send email credential if student is created
-        if (createdStudent) {
-          await this.sendMailService.emailLoginCredentials(createdStudent.email, password);
-        }
+          // send email credential if student is created
+          if (createdStudent) {
+            await this.sendMailService.emailLoginCredentials(createdStudent.email, password);
+          }
 
-        return createdStudent;
-      }, { timeout: 120000 });
+          return createdStudent;
+        },
+        { timeout: 120000 }
+      );
     } catch (error) {
       throw new Error(error.message);
     }
@@ -295,64 +298,70 @@ export class StudentsService {
     if (!subscriber) {
       console.debug(`Skipping student with invalid email: ${student.email}`);
       console.debug(`Unable to add student to group/list.`);
-      return;
+      return false;
     }
 
-    const { courseStartingDates, allSubscriberGroups } = await this.mailerLiteService.getAllSubscriberLists();
-    const activeSubscribersGroup = Object.values(SubscriberGroupV2).map(group => group.active);
-    const activeAndCourseGroupIds = [...allSubscriberGroups, ...activeSubscribersGroup];
+    // Handle PRO Students
+    if (student.account_type === AccountType.PRO) {
+      const activeSubscribersGroup = Object.values(SubscriberGroupV2).map((group) => group.active);
+      const { courseStartingDates, allSubscriberGroups } = await this.mailerLiteService.getAllSubscriberLists();
+      const activeAndCourseGroupIds = [...allSubscriberGroups, ...activeSubscribersGroup];
 
+      try {
+        await this.mailerLiteService.assignSubscriberToGroups({
+          email: student.email,
+          fields: courseStartingDates,
+          groups: activeAndCourseGroupIds,
+        });
+
+        console.log(`Student added to all groups: ${student.email}`);
+        return true;
+      } catch (error) {
+        console.error('Error adding PRO student to groups:', error.message);
+        return false;
+      }
+    }
+
+    // Handle regular students
     const studentCourses = await this.studentCoursesRepository.findByStudentId(studentId);
 
     for (const studentCourse of studentCourses) {
-      const studentEmail = student.email
+      const studentEmail = student.email;
       const courseId = studentCourse.course_id;
 
-      if (student.account_type === AccountType.PRO) {
-        try {
-          await this.mailerLiteService.assignSubscriberToGroups({
-            email: studentEmail,
-            fields: courseStartingDates,
-            groups: activeAndCourseGroupIds,
-          });
-          console.log(`Student successfully added to all groups: ${studentEmail}`);
-        } catch (error) {
-          console.error('An error occurred:', error.message);
-        }
-      } else {
-        const subscriberGroup = await this.mailerLiteService.getGroupByCourseId(courseId);
-        const courseGroupActive = SubscriberGroupV2[courseId];
+      const subscriberGroup = await this.mailerLiteService.getGroupByCourseId(courseId);
+      const courseGroupActive = SubscriberGroupV2[courseId];
 
-        if (!subscriberGroup) {
-          console.debug(`Skipping student course ${courseId}, No data available.`);
-          continue; // skip student course
-        }
-
-        const courseStartDate = studentCourse.starting_date;
-        const courseStartDateField = { [`${subscriberGroup.start_date_field}`]: courseStartDate };
-
-        try {
-          await this.mailerLiteService.createOrUpdateSubscriber({
-            email: studentEmail,
-            fields: courseStartDateField,
-          });
-
-          const groupIds = [
-            subscriberGroup.group_id, // Course group
-            courseGroupActive.active, // Course active group
-            SubscriberGroupV2[0].active, // Active students group
-          ];
-
-          await Promise.all(
-            groupIds.map((groupId) =>
-              this.mailerLiteService.assignSubscriberToGroup(subscriber.email, groupId)
-            )
-          );
-        } catch (error) {
-          console.error('An error occurred:', error.message);
-        }
+      if (!subscriberGroup) {
+        console.debug(`Skipping student course ${courseId}, No data available.`);
+        continue; // skip student course
       }
-      console.log(`Student successfully added to group(s): ${studentEmail}`);
+
+      const courseStartDate = studentCourse.starting_date;
+      const courseStartDateField = { [`${subscriberGroup.start_date_field}`]: courseStartDate };
+
+      try {
+        await this.mailerLiteService.createOrUpdateSubscriber({
+          email: studentEmail,
+          fields: courseStartDateField,
+        });
+
+        const groupIds = [
+          subscriberGroup.group_id, // Course group
+          courseGroupActive.active, // Course active group
+          SubscriberGroupV2[0].active, // Active students group
+        ];
+
+        await Promise.all(
+          groupIds.map((groupId) => this.mailerLiteService.assignSubscriberToGroup(subscriber.email, groupId))
+        );
+
+        console.log(`${student.email} added to group: ${subscriberGroup.group_name}`);
+        return true;
+      } catch (error) {
+        console.error('An error occurred:', error.message);
+        return false;
+      }
     }
   }
 }
