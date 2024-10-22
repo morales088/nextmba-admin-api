@@ -8,11 +8,6 @@ export enum AccountStatus {
   ACTIVE = Status.ACTIVE,
 }
 
-export enum AccountType {
-  REGULAR = 1,
-  PRO = 3,
-}
-
 export enum ModuleType {
   DELETED = 0,
   DRAFT = 1,

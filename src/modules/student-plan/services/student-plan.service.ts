@@ -1,6 +1,6 @@
 import { UTCDate } from '@date-fns/utc';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { addMonths, addWeeks, fromUnixTime } from 'date-fns';
+import { addWeeks, fromUnixTime } from 'date-fns';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { StripeService } from '../../stripe/stripe.service';
 import { CourseTierStatus, StudentAccountType } from '../../../common/constants/enum';
@@ -50,6 +50,8 @@ export class StudentPlanService {
     const unownedCourses = await this.database.courses.findMany({
       where: {
         status: 1,
+        paid: 1,
+        is_displayed: 1,
         id: { notIn: studentCourseIds },
       },
     });
@@ -119,6 +121,8 @@ export class StudentPlanService {
     const unownedCourses = await this.database.courses.findMany({
       where: {
         status: 1,
+        paid: 1,
+        is_displayed: 1,
         id: { notIn: courseIds },
       },
       select: { id: true, name: true, price: true, status: true },
@@ -154,7 +158,6 @@ export class StudentPlanService {
       distinct: ['course_id'],
     });
     const premiumStudentCourseIds = premiumStudentCourses.map((sc) => sc.id);
-    console.log(`🔥 ~ premiumStudentCourses:`, premiumStudentCourses);
 
     // Update all premium courses at once
     const results = await this.database.student_courses.updateMany({
@@ -238,6 +241,8 @@ export class StudentPlanService {
     const unownedCourses = await this.database.courses.findMany({
       where: {
         status: 1,
+        paid: 1,
+        is_displayed: 1,
         id: { notIn: studentCourseIds },
       },
     });
@@ -254,5 +259,7 @@ export class StudentPlanService {
     const createdDatas = await Promise.all(
       insertData.map(async (data) => await this.database.student_courses.create({ data }))
     );
+
+    return createdDatas;
   }
 }

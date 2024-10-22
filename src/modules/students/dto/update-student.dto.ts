@@ -1,6 +1,5 @@
-import { Prisma } from '@prisma/client';
-import { Transform, Type } from 'class-transformer';
-import { IsDate, IsDateString, IsDecimal, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, MinLength, isNumber } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsIn, IsNumber, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class UpdateStudentDto {
   @IsOptional()
@@ -37,16 +36,16 @@ export class UpdateStudentDto {
   @IsOptional()
   @IsString()
   position: string;
-  
+
   @IsOptional()
   @IsString()
   @IsIn(['en', 'es', 'pt', 'fr']) // en - english, es - espanish, pt - portuguese, fr - french
   language: string;
-  
+
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1])
-  library_access : number
+  library_access: number;
 
   @IsOptional()
   is_translator: boolean;

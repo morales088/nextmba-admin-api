@@ -1,9 +1,8 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { AbstractRepository } from 'src/common/repositories/abstract.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
-import { Prisma, Student_courses, Students } from '@prisma/client';
+import { Prisma, Student_courses } from '@prisma/client';
 import { UpdateStudentDto } from '../dto/update-student.dto';
-import { FilterOptions } from '../interfaces/student.interface';
 
 @Injectable()
 export class StudentCoursesRepository extends AbstractRepository<Student_courses> {
@@ -27,9 +26,9 @@ export class StudentCoursesRepository extends AbstractRepository<Student_courses
     });
   }
 
-  async findByCourse(courseId:number): Promise<Student_courses[]> {
+  async findByCourse(courseId: number): Promise<Student_courses[]> {
     return this.prisma[this.modelName].findMany({
-      where: { status: 1, course_id : courseId },
+      where: { status: 1, course_id: courseId },
       include: { student: true },
       orderBy: [
         {
@@ -49,15 +48,17 @@ export class StudentCoursesRepository extends AbstractRepository<Student_courses
     }
 
     const courseExist = await this.prisma.courses.findMany({ where: { id: data.course_id, status: 1 } });
+
     if (courseExist.length === 0) {
-      throw new BadRequestException('Course dont exists.');
+      throw new BadRequestException(`Course don't exists.`);
     }
 
     const studCourse = await this.prisma[this.modelName].create({ data: data });
+
     return await this.findById(studCourse.id);
   }
 
-  async updateStudentCourse(id: number, data: UpdateStudentDto): Promise<Student_courses> {
+  async update(id: number, data: UpdateStudentDto): Promise<Student_courses> {
     const student = await this.findById(id);
 
     if (!student) {
@@ -203,9 +204,9 @@ export class StudentCoursesRepository extends AbstractRepository<Student_courses
     }
   }
 
-  async findByStudCourse(courseId:number, studId:number): Promise<Student_courses> {
+  async findByStudCourse(courseId: number, studId: number): Promise<Student_courses> {
     return this.prisma[this.modelName].findFirst({
-      where: { status: 1, course_id : courseId, student_id : studId },
+      where: { status: 1, course_id: courseId, student_id: studId },
     });
   }
 }

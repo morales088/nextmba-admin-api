@@ -31,28 +31,24 @@ export class StudentsController {
       page_number,
       per_page
     );
+
     return { students, studentsCount: totalResult };
   }
 
   @Post('/')
   async createStudent(@Request() req: any, @Body() createStudentDto: CreateStudentDto) {
-    const { id } = req.user;
     const studentData = {
       ...createStudentDto,
-      created_by: id,
+      created_by: req.user.id,
       library_access: 1,
     };
 
-    return await this.studentsService.createStudent(studentData);
+    return this.studentsService.createStudentTx(studentData);
   }
 
   @Put('/:studentId')
-  async updateStudent(
-    @Param('studentId') studentId: number,
-    @Request() req: any,
-    @Body() updateStudentDto: UpdateStudentDto
-  ) {
-    return await this.studentsService.updateStudent(studentId, updateStudentDto);
+  async updateStudent(@Param('studentId') studentId: number, @Body() updateStudentDto: UpdateStudentDto) {
+    return this.studentsService.updateStudent(studentId, updateStudentDto);
   }
 
   @Get('/payments/:StudentId')
@@ -67,17 +63,12 @@ export class StudentsController {
 
   @Post('/student-course')
   async createStudentCourse(@Body() createStudentCourseDto: CreateStudentCourseDto) {
-    const studentCourseData = {
-      ...createStudentCourseDto,
-    };
-
-    return await this.studentsService.createStudentCourse(studentCourseData);
+    return this.studentsService.createStudentCourse(createStudentCourseDto);
   }
 
   @Put('/student-course/:studCourseId')
   async updateStudentCourse(
     @Param('studCourseId') studCourseId: number,
-    @Request() req: any,
     @Body() updateStudentCourseDto: UpdateStudentCourseDto
   ) {
     return await this.studentsService.updateStudentCourse(studCourseId, updateStudentCourseDto);

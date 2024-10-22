@@ -74,9 +74,9 @@ export class PaymentsService {
         };
 
         // Use transaction query
-        const createStudent = await this.studentsService.createStudentTx(studentData);
+        const createdStudent = await this.studentsService.createStudentTx(studentData);
 
-        studentId = createStudent.id;
+        studentId = createdStudent.id;
       }
 
       // Check if student already claimed trial: End trial subscription to generate new invoice

@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateCourseDto } from '../dto/create-course.dto';
 import { CourseRepository } from '../repositories/course.repository';
 import { StudentCoursesRepository } from 'src/modules/students/repositories/student_courses.repository';
 

@@ -8,7 +8,7 @@ import { FilterOptions } from '../interfaces/student.interface';
 import { currentTime, last24Hours, previousEndOfDay, previousStartOfDay } from 'src/common/helpers/date.helper';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { MailerLiteService } from '../../../common/mailerlite/mailerlite.service';
-import { AccountType } from '../../../common/constants/enum';
+import { StudentAccountType } from '../../../common/constants/enum';
 import { SubscriberGroupV2 } from '../../../common/constants/groups';
 
 @Injectable()
@@ -37,26 +37,6 @@ export class StudentsService {
 
   async getStudents(admin, search: string, filters, page: number = 1, per_page: number = 10) {
     return this.studentRepository.students(admin, search, filters, page, per_page);
-  }
-
-  async createStudent(data) {
-    const password = data.password ?? this.generateRandomString(8);
-    const hashedPassword = await this.hashService.hashPassword(password);
-
-    const studentData = {
-      ...data,
-      password: hashedPassword,
-      email: data.email.trim(),
-    };
-
-    const createdStudent = await this.studentRepository.insert(studentData);
-
-    // send email credential if student is created
-    if (createdStudent) {
-      await this.sendMailService.emailLoginCredentials(createdStudent.email, password);
-    }
-
-    return createdStudent;
   }
 
   async createStudentTx(data) {
@@ -108,28 +88,7 @@ export class StudentsService {
 
     // insert student course if pro
     if (data.account_type === 2) {
-      const courses = await this.studentCoursesRepository.activeCourses();
-      const studCourses = await this.studentCoursesRepository.findByStudentId(id);
-
-      for (const course of courses) {
-        const checkCourse = studCourses.find((studCourse) => studCourse.course_id === course.id);
-        if (checkCourse === undefined) {
-          const startingDate = new Date();
-          const expirationDate = new Date();
-          expirationDate.setFullYear(expirationDate.getFullYear() + 1);
-          const modulePerCourse = parseInt(process.env.MODULE_PER_COURSE);
-
-          const studCourseData = {
-            student_id: id,
-            course_id: course.id,
-            course_type: 2,
-            module_quantity: modulePerCourse,
-            starting_date: startingDate,
-            expiration_date: expirationDate,
-          };
-          await this.createStudentCourse(studCourseData);
-        }
-      }
+      await this.addAllStudentCourses(id);
     }
 
     if (data.password) {
@@ -137,7 +96,7 @@ export class StudentsService {
       studentData.password = hashedPassword;
     }
 
-    return this.studentRepository.updateStudent(id, studentData);
+    return this.studentRepository.update(id, studentData);
   }
 
   generateRandomString(length: number): string {
@@ -160,16 +119,40 @@ export class StudentsService {
     return this.studentCoursesRepository.findByStudentId(id);
   }
 
-  async createStudentCourse(data) {
-    const studentCourseData = {
-      ...data,
-    };
+  async addAllStudentCourses(studentId: number) {
+    const courses = await this.studentCoursesRepository.activeCourses();
+    const studCourses = await this.studentCoursesRepository.findByStudentId(studentId);
 
-    return this.studentCoursesRepository.insert(studentCourseData);
+    for (const course of courses) {
+      const checkCourse = studCourses.find((studCourse) => studCourse.course_id === course.id);
+
+      if (checkCourse === undefined) {
+        const startingDate = new Date();
+        const expirationDate = new Date();
+        expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+        const modulePerCourse = parseInt(process.env.MODULE_PER_COURSE);
+
+        const studCourseData = {
+          student_id: studentId,
+          course_id: course.id,
+          course_type: 2,
+          module_quantity: modulePerCourse,
+          starting_date: startingDate,
+          expiration_date: expirationDate,
+        };
+
+        await this.studentCoursesRepository.insert(studCourseData);
+        await this.createStudentCourse(studCourseData);
+      }
+    }
+  }
+
+  async createStudentCourse(data) {
+    return this.studentCoursesRepository.insert(data);
   }
 
   async updateStudentCourse(id: number, data) {
-    return this.studentCoursesRepository.updateStudentCourse(id, data);
+    return this.studentCoursesRepository.update(id, data);
   }
 
   async emailStudents() {
@@ -193,7 +176,7 @@ export class StudentsService {
           // console.log(student.id, password, studentData);
 
           //update student
-          await this.studentRepository.updateStudent(student.id, studentData);
+          await this.studentRepository.update(student.id, studentData);
         }
       }
     } catch (error) {
@@ -302,7 +285,7 @@ export class StudentsService {
     }
 
     // Handle PRO Students
-    if (student.account_type === AccountType.PRO) {
+    if (student.account_type === StudentAccountType.PREMIUM) {
       const activeSubscribersGroup = Object.values(SubscriberGroupV2).map((group) => group.active);
       const { courseStartingDates, allSubscriberGroups } = await this.mailerLiteService.getAllSubscriberLists();
       const activeAndCourseGroupIds = [...allSubscriberGroups, ...activeSubscribersGroup];
