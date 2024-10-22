@@ -166,7 +166,7 @@ export class StudentRepository extends AbstractRepository<Students> {
   }
 
   async findById(id: number) {
-    return this.prisma[this.modelName].findUnique({ where: { id: id } });
+    return this.prisma.students.findUnique({ where: { id: id } });
   }
 
   async findByEmail(email: string) {
