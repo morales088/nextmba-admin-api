@@ -34,7 +34,7 @@ export class StudentPlanController {
 
   @Patch('/end-premium/:studentId')
   async endPremium(@Param('studentId') studentId: number) {
-    return await this.studentPlanService.endPremium(studentId);
+    return await this.studentPlanService.endPremiumAndCancelSubscription(studentId);
   }
 
   @Patch('/convert-basic/:studentId')
@@ -46,4 +46,9 @@ export class StudentPlanController {
   async addNewPremiumCourses(@Param('studentId') studentId: number) {
     return await this.studentPlanService.addNewPremiumCourses(studentId);
   }
+
+  // @Patch('/expired-course/:studentId')
+  // async testEndpoint(@Param('studentId') studentId: number) {
+  //   return this.studentPlanService.convertExpiredToPremiumCourses(studentId);
+  // }
 }
