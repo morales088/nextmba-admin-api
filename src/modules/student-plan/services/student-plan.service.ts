@@ -48,12 +48,7 @@ export class StudentPlanService {
 
     // Finds the courses that is unowned
     const unownedCourses = await this.database.courses.findMany({
-      where: {
-        status: 1,
-        paid: 1,
-        is_displayed: 1,
-        id: { notIn: studentCourseIds },
-      },
+      where: { id: { notIn: studentCourseIds }, status: 1 },
     });
 
     // Create data for creating student courses
@@ -184,12 +179,7 @@ export class StudentPlanService {
 
     // Get all available premium courses not owned by student
     const unownedCourses = await this.database.courses.findMany({
-      where: {
-        id: { notIn: courseIds },
-        paid: 1,
-        is_displayed: 1,
-        status: 1,
-      },
+      where: { id: { notIn: courseIds }, status: 1 },
       select: { id: true, name: true, price: true, status: true },
     });
 
@@ -228,16 +218,13 @@ export class StudentPlanService {
     const expiredCourses = await this.database.student_courses.findMany({
       where: {
         student_id: studentId,
-        status: 0,
         course_tier: CourseTierStatus.PERMANENT,
         expiration_date: {
           lte: new UTCDate(),
         },
+        status: 0,
       },
-      select: {
-        id: true,
-        course_id: true,
-      },
+      select: { id: true, course_id: true },
     });
 
     if (expiredCourses.length === 0) return;
@@ -289,11 +276,11 @@ export class StudentPlanService {
         where: {
           student_id: studentId,
           course_tier: CourseTierStatus.PERMANENT,
-          status: 0,
           expiration_date: {
             not: null,
             lte: new UTCDate(),
           },
+          status: 0,
         },
         distinct: ['course_id'],
         select: { id: true, course_id: true },
