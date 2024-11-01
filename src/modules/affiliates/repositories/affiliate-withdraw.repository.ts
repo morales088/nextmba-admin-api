@@ -3,7 +3,7 @@ import { PrismaService } from 'src/common/prisma/prisma.service';
 import { Affilate_withdraws } from '@prisma/client';
 import { UpdateWithdrawRequestDto } from '../dto/update-withdraw-request.dto';
 import { Decimal } from '@prisma/client/runtime/library';
-import { CommissionStatus, WithdrawRequestStatus } from '../../../common/constants/enum';
+import { CommissionStatus, WithdrawStatus } from '../../../common/constants/enum';
 
 @Injectable()
 export class AffiliateWithdrawRepository {
@@ -61,9 +61,7 @@ export class AffiliateWithdrawRepository {
   ): Promise<Affilate_withdraws> {
     // Update commission_status on payments
     const commissionStatus =
-      updateWithdrawRequestDto.status === WithdrawRequestStatus.PROCESSED
-        ? CommissionStatus.PAID
-        : CommissionStatus.UNPAID;
+      updateWithdrawRequestDto.status === WithdrawStatus.APPROVED ? CommissionStatus.PAID : CommissionStatus.UNPAID;
 
     const withdrawalPayments = await this.prisma.withdrawal_payments.findMany({
       where: { withdrawal_id: withdrawId },

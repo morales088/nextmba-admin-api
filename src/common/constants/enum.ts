@@ -80,12 +80,6 @@ export enum WithdrawStatus {
   APPROVED = 2,
 }
 
-export enum WithdrawRequestStatus {
-  DECLINED = 0,
-  PENDING = 1,
-  PROCESSED = 2,
-}
-
 // Subscriptions
 export enum SubscriptionStatus {
   TRIALING = 'trialing',

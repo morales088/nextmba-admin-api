@@ -1,6 +1,6 @@
 import { Transform } from 'class-transformer';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { WithdrawRequestStatus } from '../../../common/constants/enum';
+import { WithdrawStatus } from '../../../common/constants/enum';
 
 export class UpdateWithdrawRequestDto {
   @IsOptional()
@@ -13,6 +13,6 @@ export class UpdateWithdrawRequestDto {
 
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
-  @IsEnum(WithdrawRequestStatus)
+  @IsEnum(WithdrawStatus)
   status: number;
 }
