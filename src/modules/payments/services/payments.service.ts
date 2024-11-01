@@ -10,8 +10,9 @@ import { PrismaService } from 'src/common/prisma/prisma.service';
 import { StudentPlanService } from '../../student-plan/services/student-plan.service';
 import { ChargeType, SubscriptionStatus } from '../../../common/constants/enum';
 import { StripeService } from '../../stripe/stripe.service';
-import { Payments, Products } from '@prisma/client';
+import { Affiliates, Payments, Products } from '@prisma/client';
 import { fromUnixTime } from 'date-fns';
+import { Decimal } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class PaymentsService {
@@ -95,25 +96,12 @@ export class PaymentsService {
 
       // Affiliate's feature
       const affiliate = await this.paymentAffiliateRepository.findPerCode(data.affiliate_code);
+
       if (data.affiliate_code && affiliate) {
-        // Count affiliate on payments
-        const affiliatePayment = await this.paymentRepository.findByFromStudId(affiliate.student_id);
-        let affiliateCount = (affiliatePayment as unknown as object[]).length;
-        // ++affiliateCount;
-
-        const partnerAffiliate = parseInt(process.env.partnerAffiliate_count);
-        const proAffiliate = parseInt(process.env.proAffiliate_count);
-
-        const beginnerPercentage = parseFloat(process.env.beginnerCommissionPercent);
-        const partnerPercentage = parseFloat(process.env.partnerCommissionPercent);
-
-        let commission_percentage = beginnerPercentage;
-        if (affiliateCount >= partnerAffiliate) commission_percentage = partnerPercentage;
-
-        await this.paymentAffiliateRepository.update(affiliate.id, { percentage: commission_percentage });
+        const newCommissionPercent = await this.updateCommissionPercentage(affiliate);
 
         paymentData.from_student_id = affiliate.student_id;
-        paymentData.commission_percentage = commission_percentage;
+        paymentData.commission_percentage = newCommissionPercent;
       }
 
       // Insert data to payments
@@ -188,9 +176,31 @@ export class PaymentsService {
     await this.paymentRepository.update(payment.id, { subscriptionId: subscription.id });
   }
 
+  private async updateCommissionPercentage(affiliate: Affiliates) {
+    // Count affiliate payments
+    const affiliatePaymentCount = (await this.paymentRepository.findAffiliatePayments(affiliate.student_id)).length;
+
+    // Affiliate tier count
+    const partnerAffiliate = parseInt(process.env.PARTNER_AFFILIATE_COUNT);
+    const proAffiliate = parseInt(process.env.PRO_AFFILIATE_COUNT);
+
+    // Affiliate percentage
+    const beginnerPercentage = parseFloat(process.env.BEGINNER_COMMISSION_PERCENT);
+    const partnerPercentage = parseFloat(process.env.PARTNER_COMMISSION_PERCENT);
+
+    let commissionPercentage = beginnerPercentage;
+
+    if (affiliatePaymentCount >= partnerAffiliate) commissionPercentage = partnerPercentage;
+
+    await this.paymentAffiliateRepository.update(affiliate.id, { percentage: new Decimal(commissionPercentage) });
+
+    return commissionPercentage;
+  }
+
   async updatePayment(id: number, data) {
     return this.paymentRepository.update(id, data);
   }
+
   async studentPaymentInfo(id: number) {
     return this.paymentRepository.studentPaymentInfo(id);
   }

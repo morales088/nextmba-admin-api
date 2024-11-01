@@ -138,14 +138,10 @@ export class PaymentRepository extends AbstractRepository<Payments> {
     return payment;
   }
 
-  async findByFromStudId(studentId: number): Promise<Payments> {
-    return this.prisma[this.modelName].findMany({
+  async findAffiliatePayments(studentId: number): Promise<Payments[]> {
+    return this.prisma.payments.findMany({
       where: { from_student_id: studentId, status: 1 },
-      orderBy: [
-        {
-          id: 'asc',
-        },
-      ],
+      orderBy: { id: 'asc' },
     });
   }
 

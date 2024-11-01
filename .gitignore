@@ -36,11 +36,8 @@ lerna-debug.log*
 .vscode/launch.json
 .vscode/extensions.json
 
-# remove env
-.env
-.env-local
-.env-dev
-.env-prod
+# Environment Variables
+.env*
 
 # # Exclude specific CSV files
 # src/common/files/csv/students-to-add.csv
