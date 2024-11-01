@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Param, Put, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AffiliatesService } from './services/affiliates.service';
 import { UpdateAffiliateDto } from './dto/update-affiliate.dto';
-import { UpdateAffiliateWithdrawDto } from './dto/update-affiliateWithdraw.dto';
+import { UpdateWithdrawRequestDto } from './dto/update-withdraw-request.dto';
 
 @Controller('affiliates')
 @UseGuards(AuthGuard('jwt'))
@@ -11,39 +11,34 @@ export class AffiliatesController {
 
   @Get('/')
   async getAffiliates() {
-    return await this.affiliatesService.getAffiliates();
+    return this.affiliatesService.getAffiliates();
   }
 
-  @Get('withdraws')
+  @Get('/withdraws')
   async getAffiliateWithdraws() {
-    return await this.affiliatesService.getAffiliateWithdraws();
+    return this.affiliatesService.getAffiliateWithdraws();
   }
 
   @Get('/:affiliateId')
   async getAffiliate(@Param('affiliateId') affiliateId: number) {
-    return await this.affiliatesService.getAffiliate(affiliateId);
+    return this.affiliatesService.getAffiliate(affiliateId);
   }
 
   @Put('/:affiliateId')
-  async updateAffiliate(
-    @Param('affiliateId') affiliateId: number,
-    @Request() req: any,
-    @Body() updateAffiliateDto: UpdateAffiliateDto
-  ) {
-    return await this.affiliatesService.updateAffiliate(affiliateId, updateAffiliateDto);
+  async updateAffiliate(@Param('affiliateId') affiliateId: number, @Body() updateAffiliateDto: UpdateAffiliateDto) {
+    return this.affiliatesService.updateAffiliate(affiliateId, updateAffiliateDto);
   }
 
-  @Get('/withdraws/:affiliateWithdrawId')
-  async getAffiliateWithdraw(@Param('affiliateWithdrawId') affiliateWithdrawId: number) {
-    return await this.affiliatesService.getAffiliateWithdraw(affiliateWithdrawId);
+  @Get('/withdraws/:withdrawId')
+  async getAffiliateWithdraw(@Param('withdrawId') withdrawId: number) {
+    return this.affiliatesService.getAffiliateWithdraw(withdrawId);
   }
-  
-  @Put('withdraws/:affiliateWithdrawId')
+
+  @Put('withdraws/:withdrawId')
   async updateAffiliateWithdraw(
-    @Param('affiliateWithdrawId') affiliateWithdrawId: number,
-    @Request() req: any,
-    @Body() UpdateAffiliateWithdrawDto: UpdateAffiliateWithdrawDto
+    @Param('withdrawId') withdrawId: number,
+    @Body() updateWithdrawRequestDto: UpdateWithdrawRequestDto
   ) {
-    return await this.affiliatesService.updateAffiliateWithdraw(affiliateWithdrawId, UpdateAffiliateWithdrawDto);
+    return this.affiliatesService.updateAffiliateWithdraw(withdrawId, updateWithdrawRequestDto);
   }
 }

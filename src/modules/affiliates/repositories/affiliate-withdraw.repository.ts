@@ -1,86 +1,39 @@
-import { BadRequestException, Injectable, UseGuards } from '@nestjs/common';
-import { AbstractRepository } from 'src/common/repositories/abstract.repository';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { Affilate_withdraws } from '@prisma/client';
-import { UpdateAffiliateWithdrawDto } from '../dto/update-affiliateWithdraw.dto';
+import { UpdateWithdrawRequestDto } from '../dto/update-withdraw-request.dto';
+import { Decimal } from '@prisma/client/runtime/library';
+import { CommissionStatus, WithdrawStatus } from '../../../common/constants/enum';
 
 @Injectable()
-export class AffiliateWithdrawRepository extends AbstractRepository<Affilate_withdraws> {
-  constructor(protected readonly prisma: PrismaService) {
-    super(prisma);
+export class AffiliateWithdrawRepository {
+  constructor(protected readonly prisma: PrismaService) {}
+
+  async findById(withdrawId: number) {
+    return this.prisma.affilate_withdraws.findFirst({ where: { id: withdrawId }, include: { student: true } });
   }
 
-  get modelName(): string {
-    return 'Affilate_withdraws'; // Specify the Prisma model name for entity
-  }
-
-  async find(): Promise<Affilate_withdraws> {
-    return this.prisma[this.modelName].findMany({
-      where: {},
-      orderBy: [
-        {
-          id: 'asc',
-        },
-      ],
+  async findAffiliateWithdraws(status?: number): Promise<Affilate_withdraws[]> {
+    return this.prisma.affilate_withdraws.findMany({
+      where: { ...(status && { status }) },
       include: { student: true },
+      orderBy: { id: 'desc' },
     });
-  }
-
-  async updateAffiliateWithdraw(id: number, data: UpdateAffiliateWithdrawDto): Promise<Affilate_withdraws> {
-    const affiliateWithdraw = await this.findById(id);
-
-    if (!affiliateWithdraw) {
-      throw new BadRequestException('Affiliate Withdraw does not exist.');
-    }
-    
-    // update commission_status on payment
-    const status = data.status === 2 ? 1 : 0
-    const affliatePayment = await this.prisma.withdrawal_payments.findMany({
-      where: {withdrawal_id : id},
-    });
-    
-    for(const data of affliatePayment){
-       await this.prisma.payments.update({
-          where: { id: data.payment_id },
-          data: {commission_status : status},
-        });
-    }
-    
-    return this.prisma[this.modelName].update({
-      where: { id: id },
-      data: data,
-      include: { student: true },
-    });
-  }
-
-  async pendingWithdraws() {
-    return this.prisma[this.modelName].findMany({ where: { status: 1 } }); //[0 - decline, 1 - pending, 2 - approved]
-  }
-
-  async approvedWithdraws() {
-    return this.prisma[this.modelName].findMany({
-      where: { status: 2 },
-    }); //[0 - decline, 1 - pending, 2 - approved]
   }
 
   async getWithdrawalInfo(studentId: number) {
-    // total commission
-    const commissions = await this.prisma.payments.findMany({
-      where: {
-        from_student_id: studentId,
-        status: 1,
-      },
+    // Total commission calculation
+    const paymentCommissions = await this.prisma.payments.findMany({
+      where: { from_student_id: studentId, status: 1 },
     });
 
-    let total_commission: number = 0;
-    for (const commision of commissions) {
-      const commissionPrice = commision.price as unknown as string;
-      const commissionPercentage = commision.commission_percentage as unknown as string;
-      total_commission += parseFloat(commissionPrice) * parseFloat(commissionPercentage);
-    }
+    const totalCommissionAmount = paymentCommissions.reduce((total, payment) => {
+      const commissionAmount = new Decimal(payment.price).mul(new Decimal(payment.commission_percentage));
+      return total.plus(commissionAmount);
+    }, new Decimal(0));
 
-    // paid commision
-    const paidCommitions = await this.prisma.payments.findMany({
+    // Paid commission calculation
+    const paidCommissions = await this.prisma.payments.findMany({
       where: {
         from_student_id: studentId,
         commission_status: 1,
@@ -88,19 +41,43 @@ export class AffiliateWithdrawRepository extends AbstractRepository<Affilate_wit
       },
     });
 
-    let paid_commission: number = 0;
-    for (const paidCommission of paidCommitions) {
-      const commissionPrice = paidCommission.price as unknown as string;
-      const commissionPercentage = paidCommission.commission_percentage as unknown as string;
-      paid_commission += parseFloat(commissionPrice) * parseFloat(commissionPercentage);
-    }
+    const paidCommissionAmount = paidCommissions.reduce((total, commission) => {
+      const commissionAmount = new Decimal(commission.price).mul(new Decimal(commission.commission_percentage));
+      return total.plus(commissionAmount);
+    }, new Decimal(0));
 
-    const currentBalance = total_commission - paid_commission;
+    const currentBalance = totalCommissionAmount.minus(paidCommissionAmount);
 
-    return { total_commission, paid_commission, currentBalance };
+    return {
+      total_commission: totalCommissionAmount.toFixed(2),
+      paid_commission: paidCommissionAmount.toFixed(2),
+      currentBalance: currentBalance.toFixed(2),
+    };
   }
 
-  async findById(id: number) {
-    return this.prisma[this.modelName].findFirst({ where: { id }, include: { student: true } });
+  async updateAffiliateWithdraw(
+    withdrawId: number,
+    updateWithdrawRequestDto: UpdateWithdrawRequestDto
+  ): Promise<Affilate_withdraws> {
+    // Update commission_status on payments
+    const commissionStatus =
+      updateWithdrawRequestDto.status === WithdrawStatus.APPROVED ? CommissionStatus.PAID : CommissionStatus.UNPAID;
+
+    const withdrawalPayments = await this.prisma.withdrawal_payments.findMany({
+      where: { withdrawal_id: withdrawId },
+    });
+
+    const withdrawalPaymentIds = withdrawalPayments.map((withdrawal) => withdrawal.payment_id);
+
+    await this.prisma.payments.updateMany({
+      where: { id: { in: withdrawalPaymentIds } },
+      data: { commission_status: commissionStatus },
+    });
+
+    return this.prisma.affilate_withdraws.update({
+      where: { id: withdrawId },
+      data: updateWithdrawRequestDto,
+      include: { student: true },
+    });
   }
 }

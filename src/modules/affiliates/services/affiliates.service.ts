@@ -1,6 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { AffiliateRepository } from '../repositories/affiliate.repository';
 import { AffiliateWithdrawRepository } from '../repositories/affiliate-withdraw.repository';
+import { WithdrawStatus } from '../../../common/constants/enum';
+import { UpdateAffiliateDto } from '../dto/update-affiliate.dto';
+import { UpdateWithdrawRequestDto } from '../dto/update-withdraw-request.dto';
+import { Decimal } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class AffiliatesService {
@@ -10,45 +14,62 @@ export class AffiliatesService {
   ) {}
 
   async getAffiliate(id: number) {
-    const result = await this.affiliateRepository.findById(id);
-    result.withdrawInfo = await this.affiliateWithdrawRepository.getWithdrawalInfo(result.student_id)
-    return result
+    const affiliate = await this.affiliateRepository.findById(id);
+
+    const withdrawInfo = await this.affiliateWithdrawRepository.getWithdrawalInfo(affiliate.student_id);
+
+    return {
+      ...affiliate,
+      withdrawInfo,
+    };
   }
 
   async getAffiliates() {
-    const results = await this.affiliateRepository.find();
-    const affiliates = results as unknown as {
-      student_id: number;
-      withdrawInfo: Object;
-    }[]
-    for(const affiliate of affiliates){
-      affiliate.withdrawInfo = await this.affiliateWithdrawRepository.getWithdrawalInfo(affiliate.student_id)
-    }
-    return affiliates
+    const affiliates = await this.affiliateRepository.find();
+
+    const results = await Promise.all(
+      affiliates.map(async (affiliate) => ({
+        ...affiliate,
+        withdrawInfo: await this.affiliateWithdrawRepository.getWithdrawalInfo(affiliate.student_id),
+      }))
+    );
+
+    return results;
   }
 
-  async updateAffiliate(id: number, data) {
-    return await this.affiliateRepository.updateAffiliate(id, data);
+  async updateAffiliate(id: number, updateAffiliateDto: UpdateAffiliateDto) {
+    return this.affiliateRepository.updateAffiliate(id, updateAffiliateDto);
   }
 
-  async getAffiliateWithdraw(id: number) {
-    return this.affiliateWithdrawRepository.findById(id);
+  async getAffiliateWithdraw(withdrawId: number) {
+    return this.affiliateWithdrawRepository.findById(withdrawId);
   }
 
   async getAffiliateWithdraws() {
-    const withdraws = await this.affiliateWithdrawRepository.find();
-    const pending = await this.affiliateWithdrawRepository.pendingWithdraws();
-    const approved = await this.affiliateWithdrawRepository.approvedWithdraws();
-    
-    let paid = 0;
-    approved.map((approve) => {
-      paid += parseFloat(approve.withdraw_amount);
-    });
+    const [withdraws, pending, approved] = await Promise.all([
+      this.affiliateWithdrawRepository.findAffiliateWithdraws(),
+      this.affiliateWithdrawRepository.findAffiliateWithdraws(WithdrawStatus.PENDING),
+      this.affiliateWithdrawRepository.findAffiliateWithdraws(WithdrawStatus.APPROVED),
+    ]);
 
-    return { withdraws, pending: pending.length, approved: approved.length, paid };
+    const totalPaidAmount = approved.reduce((total, item) => {
+      const paidAmount = new Decimal(item.withdraw_amount);
+      return total.plus(paidAmount);
+    }, new Decimal(0));
+
+    return {
+      withdraws,
+      pending: pending.length,
+      approved: approved.length,
+      paid: totalPaidAmount,
+    };
   }
 
-  async updateAffiliateWithdraw(id: number, data) {
-    return await this.affiliateWithdrawRepository.updateAffiliateWithdraw(id, data);
+  async updateAffiliateWithdraw(id: number, updateWithdrawRequestDto: UpdateWithdrawRequestDto) {
+    const affiliateWithdraw = await this.affiliateWithdrawRepository.findById(id);
+
+    if (!affiliateWithdraw) throw new NotFoundException('Affiliate withdraw does not exist.');
+
+    return this.affiliateWithdrawRepository.updateAffiliateWithdraw(affiliateWithdraw.id, updateWithdrawRequestDto);
   }
 }

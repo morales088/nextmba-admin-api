@@ -17,11 +17,6 @@ export enum ModuleType {
   REPLAY = 5,
 }
 
-export enum CourseTierType {
-  FULL = 1,
-  LIMITED = 2,
-}
-
 export enum PaymentOrigin {
   NextMba = 1,
   NextUni = 2,
@@ -61,17 +56,31 @@ export enum ChargeType {
   RECURRING = 2,
 }
 
-export enum CommissionStatus {
-  UNPAID = 0,
-  PAID = 1,
-}
-
 export enum PaymentStatus {
   VOID = 0,
   PAID = 1,
   REFUNDED = 2,
 }
 
+// Affiliates
+export enum AffiliateStatus {
+  DECLINED = 0,
+  ACTIVE = 1,
+  PENDING = 2,
+}
+
+export enum CommissionStatus {
+  UNPAID = 0,
+  PAID = 1,
+}
+
+export enum WithdrawStatus {
+  DECLINED = 0,
+  PENDING = 1,
+  APPROVED = 2,
+}
+
+// Subscriptions
 export enum SubscriptionStatus {
   TRIALING = 'trialing',
   ACTIVE = 'active',
