@@ -1,8 +1,8 @@
-import { BadRequestException, Injectable, UseGuards } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { AbstractRepository } from 'src/common/repositories/abstract.repository';
 import { PrismaService } from 'src/common/prisma/prisma.service';
-import { Affiliates, Files } from '@prisma/client';
 import { UpdateAffiliateDto } from '../dto/update-affiliate.dto';
+import { Affiliates } from '@prisma/client';
 
 @Injectable()
 export class AffiliateRepository extends AbstractRepository<Affiliates> {
@@ -14,34 +14,28 @@ export class AffiliateRepository extends AbstractRepository<Affiliates> {
     return 'Affiliates'; // Specify the Prisma model name for entity
   }
 
-  async find(): Promise<Affiliates> {
-    return this.prisma[this.modelName].findMany({
+  async find(): Promise<Affiliates[]> {
+    return this.prisma.affiliates.findMany({
       include: { student: true },
-      orderBy: [
-        {
-          id: 'asc',
-        },
-      ],
+      orderBy: { id: 'desc' },
     });
   }
 
   async findById(id: number) {
-    return this.prisma[this.modelName].findFirst({
+    return this.prisma.affiliates.findFirst({
       include: { student: true },
       where: { id },
     });
   }
 
-  async updateAffiliate(id: number, data: UpdateAffiliateDto): Promise<Affiliates> {
+  async updateAffiliate(id: number, updateData: UpdateAffiliateDto): Promise<Affiliates> {
     const affiliate = await this.findById(id);
 
-    if (!affiliate) {
-      throw new BadRequestException('affiliate does not exist.');
-    }
+    if (!affiliate) throw new NotFoundException('Affiliate does not exist.');
 
-    return this.prisma[this.modelName].update({
-      where: { id: id },
-      data: data,
+    return this.prisma.affiliates.update({
+      where: { id },
+      data: updateData,
       include: { student: true },
     });
   }

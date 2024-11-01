@@ -4,7 +4,7 @@ import { PrismaService } from 'src/common/prisma/prisma.service';
 import { Modules } from '@prisma/client';
 import { UpdateModuleDto } from '../dto/update-module.dto';
 import { currentTime } from 'src/common/helpers/date.helper';
-import { CourseTierType, ModuleTierType, ModuleType } from 'src/common/constants/enum';
+import { ModuleType } from 'src/common/constants/enum';
 
 @Injectable()
 export class ModuleRepository extends AbstractRepository<Modules> {
