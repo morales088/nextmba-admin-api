@@ -14,9 +14,13 @@ export class AffiliateRepository extends AbstractRepository<Affiliates> {
     return 'Affiliates'; // Specify the Prisma model name for entity
   }
 
-  async find(): Promise<Affiliates[]> {
+  async find(pageNumber: number, perPage: number): Promise<Affiliates[]> {
+    const skipAmount = (pageNumber - 1) * perPage;
+
     return this.prisma.affiliates.findMany({
       include: { student: true },
+      skip: skipAmount,
+      take: perPage,
       orderBy: { id: 'desc' },
     });
   }

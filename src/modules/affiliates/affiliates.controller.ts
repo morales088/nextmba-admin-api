@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AffiliatesService } from './services/affiliates.service';
 import { UpdateAffiliateDto } from './dto/update-affiliate.dto';
@@ -10,8 +10,11 @@ export class AffiliatesController {
   constructor(private readonly affiliatesService: AffiliatesService) {}
 
   @Get('/')
-  async getAffiliates() {
-    return this.affiliatesService.getAffiliates();
+  async getAffiliates(@Query('page_number') page_number?: number, @Query('per_page') per_page?: number) {
+    const pageNumber = page_number ? page_number : 1;
+    const perPage = per_page ? per_page : 10;
+
+    return this.affiliatesService.getAffiliates(pageNumber, perPage);
   }
 
   @Get('/withdraws')

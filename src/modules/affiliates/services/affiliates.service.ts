@@ -24,8 +24,8 @@ export class AffiliatesService {
     };
   }
 
-  async getAffiliates() {
-    const affiliates = await this.affiliateRepository.find();
+  async getAffiliates(page: number, perPage: number) {
+    const affiliates = await this.affiliateRepository.find(page, perPage);
 
     const results = await Promise.all(
       affiliates.map(async (affiliate) => ({
