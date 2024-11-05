@@ -156,6 +156,7 @@ export class WebhookService {
     const customerName = nameField?.text?.value || customerDetails.name;
 
     if (!metaData.product_code) throw new NotFoundException('Product code undefined.');
+
     const product = await this.database.products.findFirst({ where: { code: metaData.product_code, status: 1 } });
 
     if (metaData && Object.keys(metaData).length > 0) {
@@ -166,6 +167,7 @@ export class WebhookService {
         email: customerDetails.email,
         product_code: product.code,
         price: amountTotal ?? product.price,
+        ...(metaData.affiliate_code != null && { affiliate_code: metaData.affiliate_code })
       };
 
       console.log(`Mode: ${session.mode}`);
