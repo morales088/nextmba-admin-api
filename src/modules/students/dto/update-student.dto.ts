@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsIn, IsNumber, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsBoolean, IsIn, IsNumber, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class UpdateStudentDto {
   @IsOptional()
@@ -93,4 +93,8 @@ export class UpdateStudentDto {
   @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1]) // 0 - delete, 1 - active
   status: number;
+
+  @IsOptional()
+  @IsBoolean()
+  affiliate_only: boolean;
 }
