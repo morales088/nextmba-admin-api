@@ -1,6 +1,18 @@
 import { Prisma } from '@prisma/client';
 import { Transform, Type } from 'class-transformer';
-import { IsDate, IsDateString, IsDecimal, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, MinLength, isNumber } from 'class-validator';
+import {
+  IsBoolean,
+  IsDate,
+  IsDateString,
+  IsDecimal,
+  IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  MinLength,
+  isNumber,
+} from 'class-validator';
 
 export class CreateStudentDto {
   @IsNotEmpty()
@@ -37,16 +49,16 @@ export class CreateStudentDto {
   @IsOptional()
   @IsString()
   position: string;
-  
+
   @IsOptional()
   @IsString()
   @IsIn(['en', 'es', 'pt', 'fr']) // en - english, es - espanish, pt - portuguese, fr - french
   language: string;
-  
+
   @IsOptional()
   @Transform(({ value }) => parseInt(value))
   @IsIn([0, 1])
-  library_access : number
+  library_access: number;
 
   @IsOptional()
   is_translator: boolean;
@@ -89,4 +101,8 @@ export class CreateStudentDto {
   @IsOptional()
   @IsString()
   telegram: string;
+
+  @IsOptional()
+  @IsBoolean()
+  affiliate_only: boolean;
 }
