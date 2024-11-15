@@ -12,7 +12,7 @@ export class RegisterUserDTO {
     message: 'Password must be at least 8 characters long.',
   })
   password: string;
-  
+
   @IsNotEmpty()
   role: number;
 }
@@ -22,4 +22,5 @@ export class ValidateUserDTO {
   name: string;
   email: string;
   role: number;
+  affiliate_only: boolean;
 }

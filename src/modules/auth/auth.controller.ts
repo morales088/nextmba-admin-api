@@ -16,7 +16,8 @@ export class AuthController {
       sub: user.id,
       name: user.name,
       email: user.email,
-      role: user.role
+      role: user.role,
+      affiliate_only: user.affiliate_only,
     });
   }
 

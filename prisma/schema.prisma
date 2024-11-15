@@ -215,6 +215,7 @@ model Students {
   is_speaker              Boolean                  @default(false)
   is_event_admin          Boolean                  @default(false)
   claimed_trial           Boolean                  @default(false)
+  affiliate_only          Boolean                  @default(false)
   affilate_withdraws      Affilate_withdraws[]
   affiliates              Affiliates[]
   billing_infos           Billing_infos[]
